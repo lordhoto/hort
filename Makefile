@@ -6,7 +6,8 @@ DEPDIR:=.deps
 
 OBJS := base/main.o \
 		gui/screen.o \
-		gui/window.o
+		gui/window.o \
+		gui/input.o
 
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 

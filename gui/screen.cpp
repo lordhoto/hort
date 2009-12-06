@@ -6,17 +6,15 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <stdlib.h>
 
 namespace GUI {
 
 Screen *Screen::_instance = 0;
 
 Screen::Screen() : _needRedraw(false), _windows() {
+	setenv("ESCDELAY", "10", 1);
 	initscr();
-	cbreak();
-	noecho();
-	keypad(stdscr, TRUE);
-	curs_set(0);
 
 	// TODO
 	if (!has_colors())
@@ -34,6 +32,11 @@ Screen::Screen() : _needRedraw(false), _windows() {
 	init_pair(kBlackOnWhite, COLOR_BLACK, COLOR_WHITE);
 
 	attron(COLOR_PAIR(kWhiteOnBlack));
+
+	cbreak();
+	noecho();
+	keypad(stdscr, TRUE);
+	notimeout(stdscr, TRUE);
 }
 
 Screen::~Screen() {
@@ -73,7 +76,6 @@ void Screen::update() {
 	_needRedraw = false;
 
 	std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::refresh));
-
 	doupdate();
 }
 

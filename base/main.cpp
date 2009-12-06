@@ -1,10 +1,14 @@
 #include "gui/screen.h"
 #include "gui/window.h"
+#include "gui/input.h"
+
+#include <stdio.h>
 
 int main(int argc, char *argv[]) {
 	using namespace GUI;
 
 	Screen &scr = Screen::instance();
+	Input &in = Input::instance();
 
 	/*Window *win1 = new Window(0, 0, 80, 1, false);
 	Window *win2 = new Window(0, 1, 80, 23, true);
@@ -51,9 +55,18 @@ int main(int argc, char *argv[]) {
 
 	scr.update();
 
-	for(;;)
-		;*/
+	for(;;) {
+		win1->clear();
+		int key = in.poll();
+		char buffer[80];
+		snprintf(buffer, sizeof(buffer), "Key: %3d %3d/%3d", key, KEY_DOWN, KEY_C1);
+		win1->printLine(buffer, kBlueOnBlack, kAttribBold | kAttribUnderline);
+		scr.update();
 
+		if (key == kKeyEscape)
+			break;
+	}*/
 
 	Screen::destroy();
+	Input::destroy();
 }
