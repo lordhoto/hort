@@ -29,6 +29,12 @@ enum ColorPair {
 #define kHorizontalLine ACS_HLINE
 #define kDiamond ACS_DIAMOND
 
+enum Attributes {
+	kAttribNormal = A_NORMAL,
+	kAttribUnderline = A_UNDERLINE,
+	kAttribBold = A_BOLD
+};
+
 }
 
 #endif

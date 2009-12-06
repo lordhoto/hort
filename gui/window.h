@@ -16,9 +16,9 @@ public:
 	const int width() const { return _w; }
 	const int height() const { return _h; }
 
-	void printLine(const char *str, ColorPair color = kWhiteOnBlack);
-	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
-	void printChar(int ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
+	void printLine(const char *str, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
+	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
+	void printChar(int ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
 
 	void clear();
 private:
