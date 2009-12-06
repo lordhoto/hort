@@ -1,4 +1,4 @@
-CXXFLAGS:=-g
+CXXFLAGS:=-g -Wall
 CPPFLAGS:=-I./
 LDFLAGS:=-g -lncurses
 CXX:=g++
