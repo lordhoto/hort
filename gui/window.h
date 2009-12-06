@@ -5,19 +5,19 @@ namespace GUI {
 class Window {
 friend class Screen;
 public:
-	Window(int x, int y, int w, int h, bool border = false);
+	Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border = false);
 	~Window();
 
 	const int width() const { return _w; }
 	const int height() const { return _h; }
 
 	void printLine(const char *str);
-	void printLine(const char *str, int x, int y);
-	void printChar(char ch, int x, int y);
+	void printLine(const char *str, unsigned int x, unsigned int y);
+	void printChar(char ch, unsigned int x, unsigned int y);
 
 	void clear();
 private:
-	const int _w, _h;
+	const unsigned int _w, _h;
 	WINDOW *_cursesWin;
 	bool _hasBorder;
 
