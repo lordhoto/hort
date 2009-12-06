@@ -30,7 +30,6 @@ Screen::Screen() : _needRedraw(false), _curX(0), _curY(0), _windows() {
 	init_pair(kBlueOnBlack, COLOR_BLUE, COLOR_BLACK);
 	init_pair(kMagentaOnBlack, COLOR_MAGENTA, COLOR_BLACK);
 	init_pair(kCyanOnBlack, COLOR_CYAN, COLOR_BLACK);
-	init_pair(kBlackOnWhite, COLOR_BLACK, COLOR_WHITE);
 
 	attron(COLOR_PAIR(kWhiteOnBlack));
 

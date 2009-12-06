@@ -12,8 +12,7 @@ enum ColorPair {
 	kYellowOnBlack,
 	kBlueOnBlack,
 	kMagentaOnBlack,
-	kCyanOnBlack,
-	kBlackOnWhite,
+	kCyanOnBlack
 };
 
 #define kUpperLeftEdge ACS_ULCORNER
@@ -32,7 +31,9 @@ enum ColorPair {
 enum Attributes {
 	kAttribNormal = A_NORMAL,
 	kAttribUnderline = A_UNDERLINE,
-	kAttribBold = A_BOLD
+	kAttribBold = A_BOLD,
+	kAttribReverse = A_REVERSE,
+	kAttribDim = A_DIM
 };
 
 }
