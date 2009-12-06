@@ -1,17 +1,19 @@
 CXXFLAGS:=-g
-CPPFLAGS:=
-LDFLAGS:=-g
+CPPFLAGS:=-I./
+LDFLAGS:=-g -lncurses
 CXX:=g++
 DEPDIR:=.deps
 
-OBJS:=base/main.o
+OBJS := base/main.o \
+		gui/screen.o
+
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 
 -include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
 
 # common rule for .cpp files
 %.o: %.cpp
-	mkdir $(*D)/$(DEPDIR)
+	mkdir -p $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(CXXFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
 
 hort: $(OBJS)
