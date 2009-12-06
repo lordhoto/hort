@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
 	scr.add(win1);
 	scr.add(win2);
 
+	scr.setCursor(1, 2);
+
 	scr.update();
 
 	for(;;) {

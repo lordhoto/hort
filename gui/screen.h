@@ -21,12 +21,15 @@ public:
 	void add(Window *window);
 	void remove(Window *window);
 
+	void setCursor(unsigned int x, unsigned int y);
+
 	void update();
 private:
 	Screen();
 	static Screen *_instance;
 
 	bool _needRedraw;
+	unsigned int _curX, _curY;
 
 	typedef std::list<Window *> WindowList;
 	WindowList _windows;
