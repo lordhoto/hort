@@ -46,7 +46,7 @@ void Window::printLine(const char *str, unsigned int x, unsigned int y, ColorPai
 void Window::clear() {
 	wclear(_cursesWin);
 	if (_hasBorder)
-		wborder(_cursesWin, '|', '|', '-', '-', '+', '+', '+', '+');
+		wborder(_cursesWin, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 }
 
 void Window::redraw() {
