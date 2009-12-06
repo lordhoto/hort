@@ -23,7 +23,7 @@ Window::~Window() {
 	_cursesWin = 0;
 }
 
-void Window::printChar(char ch, unsigned int x, unsigned int y, ColorPair color) {
+void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color) {
 	if (_hasBorder)
 		mvwaddch(_cursesWin, y + 1, x + 1, ch | COLOR_PAIR(color));
 	else

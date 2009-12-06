@@ -18,7 +18,7 @@ public:
 
 	void printLine(const char *str, ColorPair color = kWhiteOnBlack);
 	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
-	void printChar(char ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
+	void printChar(int ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
 
 	void clear();
 private:
