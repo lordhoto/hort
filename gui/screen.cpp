@@ -15,6 +15,7 @@ Screen::Screen() : _needRedraw(false), _windows() {
 	cbreak();
 	noecho();
 	keypad(stdscr, TRUE);
+	curs_set(0);
 }
 
 Screen::~Screen() {
@@ -54,6 +55,7 @@ void Screen::update() {
 	_needRedraw = false;
 
 	std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::refresh));
+
 	doupdate();
 }
 
