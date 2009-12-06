@@ -1,3 +1,8 @@
+#ifndef GUI_WINDOW_H
+#define GUI_WINDOW_H
+
+#include "screen.h"
+
 #include <ncurses.h>
 
 namespace GUI {
@@ -11,9 +16,9 @@ public:
 	const int width() const { return _w; }
 	const int height() const { return _h; }
 
-	void printLine(const char *str);
-	void printLine(const char *str, unsigned int x, unsigned int y);
-	void printChar(char ch, unsigned int x, unsigned int y);
+	void printLine(const char *str, ColorPair color = kWhiteOnBlack);
+	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
+	void printChar(char ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack);
 
 	void clear();
 private:
@@ -26,4 +31,6 @@ private:
 };
 
 }
+
+#endif
 

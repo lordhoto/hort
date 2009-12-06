@@ -1,8 +1,22 @@
+#ifndef GUI_SCREEN_H
+#define GUI_SCREEN_H
+
 #include <list>
 
 namespace GUI {
 
 class Window;
+
+enum ColorPair {
+	kWhiteOnBlack = 1,
+	kRedOnBlack,
+	kGreenOnBlack,
+	kYellowOnBlack,
+	kBlueOnBlack,
+	kMagentaOnBlack,
+	kCyanOnBlack,
+	kBlackOnWhite,
+};
 
 class Screen {
 public:
@@ -28,4 +42,6 @@ private:
 };
 
 }
+
+#endif
 

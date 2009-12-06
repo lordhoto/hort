@@ -23,24 +23,24 @@ Window::~Window() {
 	_cursesWin = 0;
 }
 
-void Window::printChar(char ch, unsigned int x, unsigned int y) {
+void Window::printChar(char ch, unsigned int x, unsigned int y, ColorPair color) {
 	if (_hasBorder)
-		mvwaddch(_cursesWin, y + 1, x + 1, ch);
+		mvwaddch(_cursesWin, y + 1, x + 1, ch | COLOR_PAIR(color));
 	else
-		mvwaddch(_cursesWin, y, x, ch);
+		mvwaddch(_cursesWin, y, x, ch | COLOR_PAIR(color));
 }
 
-void Window::printLine(const char *str) {
+void Window::printLine(const char *str, ColorPair color) {
 	const size_t strLength = std::max<size_t>(_w, std::strlen(str));
-	printLine(str, (_w - strLength) / 2, _h / 2);
+	printLine(str, (_w - strLength) / 2, _h / 2, color);
 }
 
-void Window::printLine(const char *str, unsigned int x, unsigned int y) {
+void Window::printLine(const char *str, unsigned int x, unsigned int y, ColorPair color) {
 	if (y >= _h || x >= _w)
 		return;
 
 	for (; x < _w && *str; ++str, ++x)
-		printChar(*str, x, y);
+		printChar(*str, x, y, color);
 }
 
 void Window::clear() {

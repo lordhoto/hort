@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <string>
 
 namespace GUI {
 
@@ -16,6 +17,21 @@ Screen::Screen() : _needRedraw(false), _windows() {
 	noecho();
 	keypad(stdscr, TRUE);
 	curs_set(0);
+
+	// TODO
+	if (!has_colors())
+		throw std::string("Your terminal misses color support");
+
+	start_color();
+
+	init_pair(kWhiteOnBlack, COLOR_WHITE, COLOR_BLACK);
+	init_pair(kRedOnBlack, COLOR_RED, COLOR_BLACK);
+	init_pair(kGreenOnBlack, COLOR_GREEN, COLOR_BLACK);
+	init_pair(kYellowOnBlack, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(kBlueOnBlack, COLOR_BLUE, COLOR_BLACK);
+	init_pair(kMagentaOnBlack, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(kCyanOnBlack, COLOR_CYAN, COLOR_BLACK);
+	init_pair(kBlackOnWhite, COLOR_BLACK, COLOR_WHITE);
 }
 
 Screen::~Screen() {
