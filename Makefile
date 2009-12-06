@@ -5,7 +5,8 @@ CXX:=g++
 DEPDIR:=.deps
 
 OBJS := base/main.o \
-		gui/screen.o
+		gui/screen.o \
+		gui/window.o
 
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 

@@ -1,7 +1,9 @@
 #include "gui/screen.h"
+#include "gui/window.h"
 
 int main(int argc, char *argv[]) {
-	GUI::Screen::instance();
+	using namespace GUI;
 
-	GUI::Screen::destroy();
+	Screen &scr = Screen::instance();
+	Screen::destroy();
 }
