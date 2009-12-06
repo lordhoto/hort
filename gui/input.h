@@ -1,7 +1,10 @@
 #ifndef GUI_INPUT_H
 #define GUI_INPUT_H
 
+#include "window.h"
+
 #include <ncurses.h>
+#include <string>
 
 namespace GUI {
 
@@ -16,13 +19,15 @@ enum {
 	kKeyKeypad8 = '8',
 	kKeyKeypad9 = '9',
 	kKeyBackspace = KEY_BACKSPACE,
-	kKeyReturn = KEY_ENTER,
+	kKeyReturn = 10,
 	kKeyEscape = 27
 };
 
 class Input {
 public:
 	int poll();
+
+	const std::string getLine(Window &win, unsigned int x, unsigned int y);
 
 	static Input &instance();
 	static void destroy();

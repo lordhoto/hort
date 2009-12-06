@@ -59,13 +59,11 @@ int main(int argc, char *argv[]) {
 
 	for(;;) {
 		win1->clear();
-		int key = in.poll();
-		char buffer[80];
-		snprintf(buffer, sizeof(buffer), "Key: %3d %3d/%3d", key, KEY_DOWN, KEY_C1);
-		win1->printLine(buffer, kBlueOnBlack, kAttribBold | kAttribUnderline);
+		win1->printLine("You wish for: ", 0, 0);
+		std::string input = in.getLine(*win1, 14, 0);
 		scr.update();
 
-		if (key == kKeyEscape)
+		if (input == "exit")
 			break;
 	}*/
 

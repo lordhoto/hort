@@ -31,7 +31,7 @@ void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, 
 }
 
 void Window::printLine(const char *str, ColorPair color, int attrib) {
-	const size_t strLength = std::max<size_t>(_w, std::strlen(str));
+	const size_t strLength = std::min<size_t>(_w, std::strlen(str));
 	printLine(str, (_w - strLength) / 2, _h / 2, color, attrib);
 }
 

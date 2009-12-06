@@ -9,12 +9,13 @@ namespace GUI {
 
 class Window {
 friend class Screen;
+friend class Input;
 public:
 	Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border = false);
 	~Window();
 
-	const int width() const { return _w; }
-	const int height() const { return _h; }
+	const unsigned int width() const { return _w; }
+	const unsigned int height() const { return _h; }
 
 	void printLine(const char *str, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
 	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
