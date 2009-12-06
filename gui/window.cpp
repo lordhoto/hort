@@ -7,7 +7,9 @@
 namespace GUI {
 
 Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border)
-    : _w(border ? w - 2 : w),
+    : _x(border ? x + 1 : x),
+      _y(border ? y + 1 : y),
+      _w(border ? w - 2 : w),
       _h(border ? h - 2 : h),
       _cursesWin(0),
       _hasBorder(border) {

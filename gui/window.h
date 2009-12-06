@@ -9,13 +9,14 @@ namespace GUI {
 
 class Window {
 friend class Screen;
-friend class Input;
 public:
 	Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border = false);
 	~Window();
 
-	const unsigned int width() const { return _w; }
-	const unsigned int height() const { return _h; }
+	unsigned int offsetX() const { return _x; }
+	unsigned int offsetY() const { return _y; }
+	unsigned int width() const { return _w; }
+	unsigned int height() const { return _h; }
 
 	void printLine(const char *str, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
 	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
@@ -23,7 +24,7 @@ public:
 
 	void clear();
 private:
-	const unsigned int _w, _h;
+	const unsigned int _x, _y, _w, _h;
 	WINDOW *_cursesWin;
 	bool _hasBorder;
 

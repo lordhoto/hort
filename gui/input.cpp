@@ -17,16 +17,13 @@ const std::string Input::getLine(Window &win, unsigned int x, unsigned int y) {
 
 	int oX, oY;
 	getyx(stdscr, oY, oX);
-	int sX, sY;
-	getbegyx(win._cursesWin, sY, sX);
-
 	Screen &scr = Screen::instance();
 
 	std::string line;
 
 	int input = -1;
 	while (input != kKeyReturn) {
-		scr.setCursor(sX + x, sY + y);
+		scr.setCursor(win, x, y);
 		scr.update();
 		input = poll();
 

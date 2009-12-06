@@ -75,6 +75,12 @@ void Screen::setCursor(unsigned int x, unsigned int y) {
 	_curY = y;
 }
 
+void Screen::setCursor(const Window &win, unsigned int x, unsigned int y) {
+	assert(x < win.width());
+	assert(y < win.height());
+	setCursor(x + win.offsetX(), y + win.offsetY());
+}
+
 void Screen::update() {
 	wnoutrefresh(stdscr);
 
