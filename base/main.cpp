@@ -2,6 +2,8 @@
 #include "gui/window.h"
 #include "gui/input.h"
 
+#include "rnd.h"
+
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
@@ -25,6 +27,8 @@ int main(int argc, char *argv[]) {
 	bool redraw = false;
 
 	scr.update();
+
+	Base::initRNG();
 
 	int input = -1;
 	while (input != kKeyEscape) {
@@ -76,6 +80,14 @@ int main(int argc, char *argv[]) {
 			std::string line = in.getLine(*win1, 1, 0);
 			if (line == "exit") {
 				input = kKeyEscape;
+			} else if (line == "rnd") {
+				win1->clear();
+				int d6 = Base::rollDice(6);
+				char buf[12];
+				snprintf(buf, 12, "%d", d6);
+				win1->printLine(buf, 0, 0);
+				scr.update();
+				in.poll();
 			} else {
 				win1->clear();
 				win1->printLine("Unknown command: ", 0, 0);

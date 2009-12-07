@@ -5,6 +5,7 @@ CXX:=g++
 DEPDIR:=.deps
 
 OBJS := base/main.o \
+		base/rnd.o \
 		gui/screen.o \
 		gui/window.o \
 		gui/input.o
