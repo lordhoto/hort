@@ -8,7 +8,8 @@ OBJS := base/main.o \
 		base/rnd.o \
 		gui/screen.o \
 		gui/window.o \
-		gui/input.o
+		gui/input.o \
+		game/level.o
 
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 
