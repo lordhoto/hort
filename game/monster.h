@@ -21,18 +21,34 @@
 #ifndef GAME_MONSTER_H
 #define GAME_MONSTER_H
 
+#include "monster_types.h"
+
 namespace Game {
 
 class Monster {
 public:
-	Monster() : _symbol('@'), _x(0), _y(0) {}
+	enum Attributes {
+		kAttribWisdom = 0,
+		kAttribDexterity,
+		kAttribAgility,
+		kAttribStrength
+	};
+
+	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, unsigned int x, unsigned int y)
+	    : _type(type), _x(x), _y(y) {
+		_attrib[kAttribWisdom] = wis;
+		_attrib[kAttribDexterity] = dex;
+		_attrib[kAttribAgility] = agi;
+		_attrib[kAttribStrength] = str;
+	}
 
 	/**
-	 * Gets the symbol representing the monster.
+	 * Returns the type of the monster.
 	 *
-	 * @return symbol.
+	 * @return monster type
+	 * @see MonsterType
 	 */
-	char getSymbol() const { return _symbol; }
+	MonsterType getType() const { return _type; }
 
 	/**
 	 * Returns the x coordinate of the monster.
@@ -62,8 +78,9 @@ public:
 	 */
 	void setY(unsigned int y) { _y = y; }
 private:
-	char _symbol;
+	MonsterType _type;
 	unsigned int _x, _y;
+	unsigned char _attrib[4];
 };
 
 } // end of namespace Game

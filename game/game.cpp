@@ -24,7 +24,7 @@
 
 namespace Game {
 
-GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()) {
+GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 0, 0) {
 	_initialized = false;
 	_messageLine = _levelWindow = _playerStats = 0;
 	_curLevel = 0;
@@ -87,7 +87,7 @@ bool GameState::run() {
 				offsetY = _curLevel->height() - _levelWindow->height();
 
 			_curLevel->draw(*_levelWindow, offsetX, offsetY);
-			_levelWindow->printChar(_player.getSymbol(), _player.getX() - offsetX, _player.getY() - offsetY, GUI::kWhiteOnBlack, GUI::kAttribBold);
+			_levelWindow->printChar('@', _player.getX() - offsetX, _player.getY() - offsetY, GUI::kWhiteOnBlack, GUI::kAttribBold);
 			_screen.setCursor(*_levelWindow, _player.getX() - offsetX, _player.getY() - offsetY);
 			_screen.update();
 			redraw = false;
