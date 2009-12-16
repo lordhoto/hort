@@ -20,6 +20,8 @@
 
 #include "game.h"
 
+#include "base/rnd.h"
+
 namespace Game {
 
 GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()) {
@@ -62,6 +64,11 @@ bool GameState::run() {
 	bool redraw = true;
 	int input = -1;
 	int offsetX = 0, offsetY = 0;
+
+	do {
+		_player.setX(Base::rollDice(_curLevel->width()) - 1);
+		_player.setY(Base::rollDice(_curLevel->height()) - 1);
+	} while (_curLevel->tileAt(_player.getX(), _player.getY()) != Level::kTileMeadow);
 
 	while (input != GUI::kKeyEscape) {
 		if (redraw) {
