@@ -18,23 +18,40 @@
  *
  */
 
+#ifndef GAME_GAME_H
+#define GAME_GAME_H
+
+#include "state.h"
+#include "level.h"
+
+#include "gui/window.h"
 #include "gui/screen.h"
 #include "gui/input.h"
 
-#include "game/state.h"
-#include "game/game.h"
+namespace Game {
 
-#include "rnd.h"
+class GameState : public State {
+public:
+	GameState();
+	~GameState();
 
-int main(int argc, char *argv[]) {
-	GUI::Screen::instance();
-	GUI::Input::instance();
-	Base::initRNG();
+	bool initialize();
 
-	Game::StateHandler states;
-	states.addStateToQueue(new Game::GameState());
-	states.process();
+	bool run();
+private:
+	bool _initialized;
 
-	GUI::Screen::destroy();
-	GUI::Input::destroy();
-}
+	GUI::Screen &_screen;
+	GUI::Window *_messageLine;
+	GUI::Window *_levelWindow;
+	GUI::Window *_playerStats;
+
+	GUI::Input &_input;
+
+	Level *_curLevel;
+};
+
+} // end of namespace Game
+
+#endif
+
