@@ -61,12 +61,14 @@ bool GameState::initialize() {
 bool GameState::run() {
 	bool redraw = true;
 	int input = -1;
+	int offsetX = 0, offsetY = 0;
+
 	while (input != GUI::kKeyEscape) {
 		if (redraw) {
-			// Calculate the center
-			int offsetX = _player.getX() - (_levelWindow->width() / 2);
-			int offsetY = _player.getY() - (_levelWindow->height() / 2);
+			offsetX = _player.getX() - (_levelWindow->width() / 2);
+			offsetY = _player.getY() - (_levelWindow->height() / 2);
 
+			// Calculate the center
 			if (offsetX < 0)
 				offsetX = 0;
 			else if ((unsigned int)offsetX > _curLevel->width() - _levelWindow->width())
@@ -125,9 +127,24 @@ bool GameState::run() {
 
 		unsigned int playerX = _player.getX(), playerY = _player.getY();
 		if (playerX + offX < _curLevel->width() && playerY + offY < _curLevel->height()) {
-			if (_curLevel->tileAt(playerX + offX, playerY + offY) == Level::kTileMeadow) {
+			Level::Tile newTile = _curLevel->tileAt(playerX + offX, playerY + offY);
+			switch (newTile) {
+			case Level::kTileWater:
+				_curLevel->draw(*_levelWindow, offsetX, offsetY);
+				_screen.setCursor(*_levelWindow, playerX + offX - offsetX, playerY + offY - offsetY);
+				_messageLine->printLine("You drown... You died -- Press any key to quit --", 0, 0);
+				_screen.update();
+				_input.poll();
+				input = GUI::kKeyEscape;
+				break;
+
+			case Level::kTileMeadow:
 				playerX += offX;
 				playerY += offY;
+				break;
+
+			default:
+				break;
 			}
 		}
 
