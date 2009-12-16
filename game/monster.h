@@ -23,19 +23,21 @@
 
 #include "monster_types.h"
 
+#include <algorithm>
+
 namespace Game {
 
 class Monster {
 public:
-	enum Attributes {
+	enum Attribute {
 		kAttribWisdom = 0,
 		kAttribDexterity,
 		kAttribAgility,
 		kAttribStrength
 	};
 
-	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, unsigned int x, unsigned int y)
-	    : _type(type), _x(x), _y(y) {
+	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, int health, unsigned int x, unsigned int y)
+	    : _type(type), _x(x), _y(y), _curHealth(health), _maxHealth(health) {
 		_attrib[kAttribWisdom] = wis;
 		_attrib[kAttribDexterity] = dex;
 		_attrib[kAttribAgility] = agi;
@@ -49,6 +51,29 @@ public:
 	 * @see MonsterType
 	 */
 	MonsterType getType() const { return _type; }
+
+	/**
+	 * Returns the current hit points.
+	 *
+	 * @return hit points.
+	 */
+	int getHitPoints() const { return _curHealth; }
+
+	/**
+	 * Returns the maximum hit points of the monster.
+	 *
+	 * @return max hit points.
+	 */
+	int getMaxHitPoints() const { return _maxHealth; }
+
+	/**
+	 * Sets the current hit points.
+	 *
+	 * @param hitpoints Set the hitpoints of the object (this can not exceed max. health)
+	 */
+	void setHitPoint(int hitpoints) {
+		_curHealth = std::min(hitpoints, _maxHealth);
+	}
 
 	/**
 	 * Returns the x coordinate of the monster.
@@ -77,9 +102,27 @@ public:
 	 * @param y new y coordinate.
 	 */
 	void setY(unsigned int y) { _y = y; }
+
+	/**
+	 * Queries the given attribute value.
+	 *
+	 * @param attrib The attribute to query.
+	 * @return Monster's attribute value.
+	 */
+	unsigned char getAttribute(Attribute attrib) const { return _attrib[attrib]; }
+
+	/**
+	 * Sets the given attribute.
+	 *
+	 * @param attrib Attribute to change
+	 * @param value New attribute value
+	 */
+	void setAttribute(Attribute attrib, unsigned char value) { _attrib[attrib] = value; }
 private:
 	MonsterType _type;
+
 	unsigned int _x, _y;
+	int _curHealth, _maxHealth;
 	unsigned char _attrib[4];
 };
 
