@@ -18,41 +18,52 @@
  *
  */
 
-#ifndef GAME_GAME_H
-#define GAME_GAME_H
-
-#include "state.h"
-#include "level.h"
-#include "monster.h"
-
-#include "monster.h"
-#include "gui/window.h"
-#include "gui/screen.h"
-#include "gui/input.h"
+#ifndef GAME_MONSTER_H
+#define GAME_MONSTER_H
 
 namespace Game {
 
-class GameState : public State {
+class Monster {
 public:
-	GameState();
-	~GameState();
+	Monster() : _symbol('@'), _x(0), _y(0) {}
 
-	bool initialize();
+	/**
+	 * Gets the symbol representing the monster.
+	 *
+	 * @return symbol.
+	 */
+	char getSymbol() const { return _symbol; }
 
-	bool run();
+	/**
+	 * Returns the x coordinate of the monster.
+	 *
+	 * @return x coordinate.
+	 */
+	unsigned int getX() const { return _x; }
+
+	/**
+	 * Returns the y coordinate of the monster.
+	 *
+	 * @return y coordinate.
+	 */
+	unsigned int getY() const { return _y; }
+
+	/**
+	 * Sets the x coordinate of the monster.
+	 *
+	 * @param x new x coordinate.
+	 */
+	void setX(unsigned int x) { _x = x; }
+
+	/**
+	 * Sets the y coordinate of the monster.
+	 *
+	 * @param y new y coordinate.
+	 */
+	void setY(unsigned int y) { _y = y; }
 private:
-	bool _initialized;
-
-	GUI::Screen &_screen;
-	GUI::Window *_messageLine;
-	GUI::Window *_levelWindow;
-	GUI::Window *_playerStats;
-
-	GUI::Input &_input;
-
-	Level *_curLevel;
-
-	Monster _player;
+	char _symbol;
+	unsigned int _x, _y;
 };
 
 } // end of namespace Game

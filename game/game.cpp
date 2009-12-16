@@ -59,77 +59,82 @@ bool GameState::initialize() {
 }
 
 bool GameState::run() {
-	unsigned int offX = 0, offY = 0;
-
 	bool redraw = true;
 	int input = -1;
 	while (input != GUI::kKeyEscape) {
 		if (redraw) {
-			_curLevel->draw(*_levelWindow, offX, offY);
+			// Calculate the center
+			int offsetX = _player.getX() - (_levelWindow->width() / 2);
+			int offsetY = _player.getY() - (_levelWindow->height() / 2);
+
+			if (offsetX < 0)
+				offsetX = 0;
+			else if ((unsigned int)offsetX > _curLevel->width() - _levelWindow->width())
+				offsetX = _curLevel->width() - _levelWindow->width();
+
+			if (offsetY < 0)
+				offsetY = 0;
+			else if ((unsigned int)offsetY > _curLevel->height() - _levelWindow->height())
+				offsetY = _curLevel->height() - _levelWindow->height();
+
+			_curLevel->draw(*_levelWindow, offsetX, offsetY);
+			_levelWindow->printChar(_player.getSymbol(), _player.getX() - offsetX, _player.getY() - offsetY, GUI::kWhiteOnBlack, GUI::kAttribBold);
+			_screen.setCursor(*_levelWindow, _player.getX() - offsetX, _player.getY() - offsetY);
 			_screen.update();
 			redraw = false;
 		}
 
 		input = _input.poll();
+		int offX = 0, offY = 0;
 		switch (input) {
 		case GUI::kKeyKeypad4:
-			if (offX > 0) {
-				--offX;
-				redraw = true;
-			}
+			--offX;
 			break;
 
 		case GUI::kKeyKeypad6:
-			if (_curLevel->width() - offX > _levelWindow->width()) {
-				++offX;
-				redraw = true;
-			}
+			++offX;
 			break;
 
 		case GUI::kKeyKeypad8:
-			if (offY > 0) {
-				--offY;
-				redraw = true;
-			}
+			--offY;
 			break;
 
 		case GUI::kKeyKeypad2:
-			if (_curLevel->height() - offY > _levelWindow->height()) {
-				++offY;
-				redraw = true;
-			}
+			++offY;
 			break;
 
 		case GUI::kKeyKeypad7:
-			if (offX > 0 && offY > 0) {
-				--offX; --offY;
-				redraw = true;
-			}
+			--offX; --offY;
 			break;
 
 		case GUI::kKeyKeypad9:
-			if (_curLevel->width() - offX > _levelWindow->width() && offY > 0) {
-				++offX; --offY;
-				redraw = true;
-			}
+			++offX; --offY;
 			break;
 
 		case GUI::kKeyKeypad1:
-			if (offX > 0 && _curLevel->height() - offY > _levelWindow->height()) {
-				--offX; ++offY;
-				redraw = true;
-			}
+			--offX; ++offY;
 			break;
 
 		case GUI::kKeyKeypad3:
-			if (_curLevel->width() - offX > _levelWindow->width() && _curLevel->height() - offY > _levelWindow->height()) {
-				++offX; ++offY;
-				redraw = true;
-			}
+			++offX; ++offY;
 			break;
 
 		default:
 			break;
+		}
+
+		unsigned int playerX = _player.getX(), playerY = _player.getY();
+		if (playerX + offX < _curLevel->width() && playerY + offY < _curLevel->height()) {
+			if (_curLevel->tileAt(playerX + offX, playerY + offY) == Level::kTileMeadow) {
+				playerX += offX;
+				playerY += offY;
+			}
+		}
+
+		if (playerX != _player.getX() || playerY != _player.getY()) {
+			_player.setX(playerX);
+			_player.setY(playerY);
+			redraw = true;
 		}
 	}
 
