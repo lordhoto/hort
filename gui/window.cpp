@@ -79,5 +79,5 @@ void Window::refresh() {
 	wnoutrefresh(_cursesWin);
 }
 
-}
+} // end of namespace GUI
 

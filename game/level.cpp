@@ -84,5 +84,5 @@ void Level::printTile(GUI::Window &out, const Tile t, unsigned int x, unsigned i
 	}
 }
 
-}
+} // end of namespace Game
 

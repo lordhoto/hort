@@ -34,17 +34,68 @@ class Screen {
 public:
 	~Screen();
 
+	/**
+	 * Returns the global screen instance.
+	 */
 	static Screen &instance();
+
+	/**
+	 * Destroies the global screen instance.
+	 */
 	static void destroy();
 
+	/**
+	 * Clears all of the screen. This will not erase
+	 * content of the currently added windows! Use
+	 * update to refresh the user's screen.
+	 *
+	 * @see update
+	 */
 	void clear();
 
+	/**
+	 * Adds a window to the screen. This is used to
+	 * allow the screen to redraw the window when
+	 * needed.
+	 *
+	 * @param window
+	 */
 	void add(Window *window);
+
+	/**
+	 * Removes a window from the screen. Note that this
+	 * will not free up the window's memory and this will
+	 * not remove the window from the display. Use clear
+	 * to clear the screen afterwards.
+	 *
+	 * @see clear
+	 * @see update
+	 */
 	void remove(Window *window);
 
+	/**
+	 * Sets the terminal cursor to the specified position.
+	 *
+	 * @param x x coordinate (max 79)
+	 * @param y y coordinate (max 24)
+	 */
 	void setCursor(unsigned int x, unsigned int y);
+
+	/**
+	 * Sets the cursor to a specific postion relative to the window given.
+	 *
+	 * @param win Window to use for positioning.
+	 * @param x x coordinate (max is win.width() - 1)
+	 * @param y y coordinate (max is win.height() - 1)
+	 */
 	void setCursor(const Window &win, unsigned int x, unsigned int y);
 
+	/**
+	 * Updates all window's changed content. This will
+	 * also redraw all windows, when clear had been called.
+	 *
+	 * @see clear
+	 */
 	void update();
 private:
 	Screen();
@@ -57,7 +108,7 @@ private:
 	WindowList _windows;
 };
 
-}
+} // end of namespace GUI
 
 #endif
 

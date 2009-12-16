@@ -37,12 +37,51 @@ public:
 
 	Level();
 
+	/**
+	 * Draws the level in the given window.
+	 *
+	 * Note that oX and oY must not be greater than equal to width and height of the level.
+	 *
+	 * @param out Window to draw into.
+	 * @param oX x coordinate of the level to place in the first column of the window.
+	 * @param oY y coordinate of the level to place in the first line of the window.
+	 */
 	void draw(GUI::Window &out, unsigned int oX, unsigned int oY) const;
+
+	/**
+	 * Draws the level in the given rect of the window.
+	 *
+	 * Note that oX and oY must not be greater than equal to width and height of the level.
+	 *
+	 * @param out Window to draw into.
+	 * @param oX x coordinate of the level to place in the first column of the given rect.
+	 * @param oY y coordinate of the level to place in the first line of the given rect.
+	 * @param x x coordinate of the window to start drawing.
+	 * @param y y coordinate of the window to start drawing.
+	 * @param w width of the draw rect.
+	 * @param h height of the draw rect.
+	 */
 	void draw(GUI::Window &out, unsigned int oX, unsigned int oY, unsigned int x, unsigned int y, unsigned int w, unsigned int h) const;
 
+	/**
+	 * Returns the tile at the given position.
+	 *
+	 * @param x x coordinate of the level (must not exceed width - 1)
+	 * @param y y coordinate of the level (must not exceed height - 1)
+	 * @return Tile type.
+	 */
 	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }
 
+	/**
+	 * Returns the width of the level.
+	 * @return width
+	 */
 	unsigned int width() const { return _w; }
+
+	/**
+	 * Returns the height of the level.
+	 * @return height
+	 */
 	unsigned int height() const { return _h; }
 private:
 	unsigned int _w, _h;
@@ -51,7 +90,7 @@ private:
 	void printTile(GUI::Window &out, const Tile t, unsigned int x, unsigned int y) const;
 };
 
-}
+} // end of namespace Game
 
 #endif
 

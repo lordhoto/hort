@@ -56,6 +56,6 @@ enum Attributes {
 	kAttribDim = A_DIM
 };
 
-}
+} // end of namespace GUI
 
 #endif

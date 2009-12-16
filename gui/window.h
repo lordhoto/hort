@@ -30,18 +30,82 @@ namespace GUI {
 class Window {
 friend class Screen;
 public:
+	/**
+	 * Creates a window with the given postion and size.
+	 * The right most coordinate is (79, y).
+	 * The down most coordinate is (x, 24).
+	 * This results in the max width being 80 and the max height being 24.
+	 *
+	 * @param x The x coordinate of the new window.
+	 * @param y The y cooridnate of the new window.
+	 * @param w The width of the new window.
+	 * @param h The height of the new window.
+	 * @param border Whether the window should have a border (this effictivly reduces the width and height by 2).
+	 */
 	Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border = false);
 	~Window();
 
+	/**
+	 * Returns the x offset of right most column, which is accessable to the user.
+	 * @return x offset in real termincal coordinates.
+	 */
 	unsigned int offsetX() const { return _x; }
+
+	/**
+	 * Returns the y offset of the top most line, which is accessable to the user.
+	 * @return y offset in real terminal coordinates.
+	 */
 	unsigned int offsetY() const { return _y; }
+
+	/**
+	 * Returns the width of the window, excluding the border size.
+	 * @return width
+	 */
 	unsigned int width() const { return _w; }
+
+	/**
+	 * Returns the height of the window, excluding border.
+	 * @return height
+	 */
 	unsigned int height() const { return _h; }
 
+	/**
+	 * Prints a centered string in the window.
+	 *
+	 * @param str The string to print.
+	 * @param color Color of the string.
+	 * @param attrib Output attributes.
+	 * @see GUI::Attributes
+	 */
 	void printLine(const char *str, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
+
+	/**
+	 * Prints a string at the specified position in the window.
+	 *
+	 * @param str The string to print.
+	 * @param x x coordinate of the string.
+	 * @param y y coordinate of the string.
+	 * @param color Color of the string.
+	 * @param attrib Output attributes.
+	 * @see GUI::Attributes
+	 */
 	void printLine(const char *str, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
+
+	/**
+	 * Prints a specific character at user specified position in the window.
+	 *
+	 * @param ch Character to print.
+	 * @param x x coordinate of the character.
+	 * @param y y coordinate of the character.
+	 * @param color Color of the string.
+	 * @param attrib Output attributes.
+	 * @see GUI::Attributes
+	 */
 	void printChar(int ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
 
+	/**
+	 * Clears the window. This will not remove the window border!
+	 */
 	void clear();
 private:
 	const unsigned int _x, _y, _w, _h;

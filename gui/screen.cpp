@@ -116,5 +116,5 @@ void Screen::update() {
 	doupdate();
 }
 
-}
+} // end of namespace GUI
 

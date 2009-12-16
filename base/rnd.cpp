@@ -47,5 +47,5 @@ unsigned int rollDice(unsigned int num, unsigned int pips) {
 	return count;
 }
 
-}
+} // end of namespace Base
 

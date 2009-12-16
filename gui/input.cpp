@@ -74,5 +74,5 @@ void Input::destroy() {
 	_instance = 0;
 }
 
-}
+} // end of namespace GUI
 

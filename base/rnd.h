@@ -23,13 +23,31 @@
 
 namespace Base {
 
+/**
+ * Initializes our simple minded random number god.
+ */
 void initRNG();
 
+/**
+ * Rolls a dice with the given number of pips.
+ * The result will in in [1, pips] and a
+ * natural number.
+ *
+ * @param pips The pips count.
+ * @return The result of the roll.
+ */
 unsigned int rollDice(unsigned int pips);
 
+/**
+ * Rolls a given dice a given number of times.
+ *
+ * @param num How often to roll the dice.
+ * @param pips The pips count.
+ * @retun The accumulated result of all rolls.
+ */
 unsigned int rollDice(unsigned int num, unsigned int pips);
 
-}
+} // end of namespace Base
 
 #endif
 
