@@ -34,7 +34,7 @@ Level::Level() : _map(0), _monsters() {
 			monsterY = Base::rollDice(_map->height()) - 1;
 		} while (!isWalkable(monsterX, monsterY));
 
-		_monsters.push_back(new Monster(kMonsterGnoll, 2, 4, 4, 6, 3, monsterX, monsterY));
+		_monsters.push_back(new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY));
 	}
 }
 
