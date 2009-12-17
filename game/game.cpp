@@ -32,6 +32,7 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 
 GameState::~GameState() {
 	delete _curLevel;
+	delete _gameScreen;
 
 	_screen.remove(_messageLine);
 	delete _messageLine;
@@ -53,6 +54,10 @@ bool GameState::initialize() {
 		_screen.add(_messageLine);
 		_screen.add(_levelWindow);
 		_screen.add(_playerStats);
+
+		_gameScreen = new GameScreen(*_levelWindow);
+		_gameScreen->setLevel(_curLevel);
+		_gameScreen->addObject(&_player, true);
 	}
 
 	_screen.clear();
@@ -61,9 +66,7 @@ bool GameState::initialize() {
 }
 
 bool GameState::run() {
-	bool redraw = true;
 	int input = -1;
-	int offsetX = 0, offsetY = 0;
 
 	do {
 		_player.setX(Base::rollDice(_curLevel->width()) - 1);
@@ -71,27 +74,8 @@ bool GameState::run() {
 	} while (_curLevel->tileAt(_player.getX(), _player.getY()) != Level::kTileMeadow);
 
 	while (input != GUI::kKeyEscape) {
-		if (redraw) {
-			offsetX = _player.getX() - (_levelWindow->width() / 2);
-			offsetY = _player.getY() - (_levelWindow->height() / 2);
-
-			// Calculate the center
-			if (offsetX < 0)
-				offsetX = 0;
-			else if ((unsigned int)offsetX > _curLevel->width() - _levelWindow->width())
-				offsetX = _curLevel->width() - _levelWindow->width();
-
-			if (offsetY < 0)
-				offsetY = 0;
-			else if ((unsigned int)offsetY > _curLevel->height() - _levelWindow->height())
-				offsetY = _curLevel->height() - _levelWindow->height();
-
-			_curLevel->draw(*_levelWindow, offsetX, offsetY);
-			_levelWindow->printChar('@', _player.getX() - offsetX, _player.getY() - offsetY, GUI::kWhiteOnBlack, GUI::kAttribBold);
-			_screen.setCursor(*_levelWindow, _player.getX() - offsetX, _player.getY() - offsetY);
-			_screen.update();
-			redraw = false;
-		}
+		_gameScreen->update();
+		_screen.update();
 
 		input = _input.poll();
 		int offX = 0, offY = 0;
@@ -134,31 +118,16 @@ bool GameState::run() {
 
 		unsigned int playerX = _player.getX(), playerY = _player.getY();
 		if (playerX + offX < _curLevel->width() && playerY + offY < _curLevel->height()) {
-			Level::Tile newTile = _curLevel->tileAt(playerX + offX, playerY + offY);
-			switch (newTile) {
-			case Level::kTileWater:
-				_curLevel->draw(*_levelWindow, offsetX, offsetY);
-				_screen.setCursor(*_levelWindow, playerX + offX - offsetX, playerY + offY - offsetY);
-				_messageLine->printLine("You drown... You died -- Press any key to quit --", 0, 0);
-				_screen.update();
-				_input.poll();
-				input = GUI::kKeyEscape;
-				break;
-
-			case Level::kTileMeadow:
+			if (_curLevel->tileAt(playerX + offX, playerY + offY) == Level::kTileMeadow) {
 				playerX += offX;
 				playerY += offY;
-				break;
-
-			default:
-				break;
 			}
 		}
 
 		if (playerX != _player.getX() || playerY != _player.getY()) {
 			_player.setX(playerX);
 			_player.setY(playerY);
-			redraw = true;
+			_gameScreen->flagForUpdate();
 		}
 	}
 

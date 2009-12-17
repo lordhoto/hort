@@ -24,8 +24,8 @@
 #include "state.h"
 #include "level.h"
 #include "monster.h"
+#include "game_screen.h"
 
-#include "monster.h"
 #include "gui/window.h"
 #include "gui/screen.h"
 #include "gui/input.h"
@@ -50,8 +50,8 @@ private:
 
 	GUI::Input &_input;
 
+	GameScreen *_gameScreen;
 	Level *_curLevel;
-
 	Monster _player;
 };
 

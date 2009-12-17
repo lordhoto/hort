@@ -11,7 +11,8 @@ OBJS := base/main.o \
 		gui/input.o \
 		game/level.o \
 		game/state.o \
-		game/game.o
+		game/game.o \
+		game/game_screen.o
 
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 
