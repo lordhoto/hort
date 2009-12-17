@@ -22,7 +22,7 @@
 #define GAME_GAME_H
 
 #include "state.h"
-#include "level.h"
+#include "map.h"
 #include "monster.h"
 #include "game_screen.h"
 
@@ -45,13 +45,13 @@ private:
 
 	GUI::Screen &_screen;
 	GUI::Window *_messageLine;
-	GUI::Window *_levelWindow;
+	GUI::Window *_mapWindow;
 	GUI::Window *_playerStats;
 
 	GUI::Input &_input;
 
 	GameScreen *_gameScreen;
-	Level *_curLevel;
+	Map *_curMap;
 	Monster _player;
 };
 

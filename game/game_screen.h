@@ -23,7 +23,7 @@
 
 #include "gui/window.h"
 
-#include "level.h"
+#include "map.h"
 #include "monster.h"
 
 #include <list>
@@ -46,14 +46,14 @@ public:
 	void update();
 
 	/**
-	 * Sets the level to draw upon.
+	 * Sets the map to draw upon.
 	 *
 	 * This automatically updates the refresh flag!
 	 * It also clears all object lists.
 	 *
-	 * @param level The level to draw.
+	 * @param map The map to draw.
 	 */
-	void setLevel(const Level *level);
+	void setMap(const Map *map);
 
 	/**
 	 * Adds a monster to the display object list.
@@ -61,7 +61,7 @@ public:
 	 * This automatically updates the refresh flag!
 	 *
 	 * @param monster The monster to draw.
-	 * @param center Whether to center the level around the object.
+	 * @param center Whether to center the map around the object.
 	 */
 	void addObject(const Monster *monster, bool center = false);
 
@@ -75,7 +75,7 @@ private:
 	GUI::Window &_output;
 
 	bool _needRedraw;
-	const Level *_level;
+	const Map *_map;
 
 	typedef std::list<const Monster *> MonsterList;
 	MonsterList _monsters;
@@ -94,7 +94,7 @@ private:
 	static const DrawDesc _monsterDrawDescriptions[];
 	static const size_t _monsterDrawDescriptionsEntries;
 
-	DrawDescVector _levelDrawDescs;
+	DrawDescVector _mapDrawDescs;
 };
 
 } // end of namespace Game

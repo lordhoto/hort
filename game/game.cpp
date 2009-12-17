@@ -26,18 +26,18 @@ namespace Game {
 
 GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, 0, 0) {
 	_initialized = false;
-	_messageLine = _levelWindow = _playerStats = 0;
-	_curLevel = 0;
+	_messageLine = _mapWindow = _playerStats = 0;
+	_curMap = 0;
 }
 
 GameState::~GameState() {
-	delete _curLevel;
+	delete _curMap;
 	delete _gameScreen;
 
 	_screen.remove(_messageLine);
 	delete _messageLine;
-	_screen.remove(_levelWindow);
-	delete _levelWindow;
+	_screen.remove(_mapWindow);
+	delete _mapWindow;
 	_screen.remove(_playerStats);
 	delete _playerStats;
 }
@@ -45,18 +45,18 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level();
+		_curMap = new Map();
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
-		_levelWindow = new GUI::Window(0,  1, 80, 20, false);
+		_mapWindow = new GUI::Window(0,  1, 80, 20, false);
 		_playerStats = new GUI::Window(0, 21, 80,  3, false);
 
 		_screen.add(_messageLine);
-		_screen.add(_levelWindow);
+		_screen.add(_mapWindow);
 		_screen.add(_playerStats);
 
-		_gameScreen = new GameScreen(*_levelWindow);
-		_gameScreen->setLevel(_curLevel);
+		_gameScreen = new GameScreen(*_mapWindow);
+		_gameScreen->setMap(_curMap);
 		_gameScreen->addObject(&_player, true);
 	}
 
@@ -69,9 +69,9 @@ bool GameState::run() {
 	int input = -1;
 
 	do {
-		_player.setX(Base::rollDice(_curLevel->width()) - 1);
-		_player.setY(Base::rollDice(_curLevel->height()) - 1);
-	} while (_curLevel->tileAt(_player.getX(), _player.getY()) != Level::kTileMeadow);
+		_player.setX(Base::rollDice(_curMap->width()) - 1);
+		_player.setY(Base::rollDice(_curMap->height()) - 1);
+	} while (_curMap->tileAt(_player.getX(), _player.getY()) != Map::kTileMeadow);
 
 	while (input != GUI::kKeyEscape) {
 		_gameScreen->update();
@@ -117,8 +117,8 @@ bool GameState::run() {
 		}
 
 		unsigned int playerX = _player.getX(), playerY = _player.getY();
-		if (playerX + offX < _curLevel->width() && playerY + offY < _curLevel->height()) {
-			if (_curLevel->tileAt(playerX + offX, playerY + offY) == Level::kTileMeadow) {
+		if (playerX + offX < _curMap->width() && playerY + offY < _curMap->height()) {
+			if (_curMap->tileAt(playerX + offX, playerY + offY) == Map::kTileMeadow) {
 				playerX += offX;
 				playerY += offY;
 			}

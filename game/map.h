@@ -18,34 +18,49 @@
  *
  */
 
-#include "level.h"
+#ifndef GAME_MAP_H
+#define GAME_MAP_H
 
-#include <cassert>
-#include <algorithm>
-
-#include "base/rnd.h"
+#include <vector>
 
 namespace Game {
 
-Level::Level() : _w(160), _h(48) {
-	_tiles.resize(_w * _h);
-	for (unsigned int i = 0; i < _w * _h; ++i) {
-		switch (Base::rollDice(100)) {
-		case 1:
-			_tiles[i] = kTileWater;
-			break;
+class Map {
+public:
+	enum Tile {
+		kTileMeadow = 0,
+		kTileTree,
+		kTileWater
+	};
 
-		case 2: case 3: case 4:
-		case 5: case 6: case 7:
-			_tiles[i] = kTileTree;
-			break;
+	Map();
 
-		default:
-			_tiles[i] = kTileMeadow;
-			break;
-		}
-	}
-}
+	/**
+	 * Returns the tile at the given position.
+	 *
+	 * @param x x coordinate of the level (must not exceed width - 1)
+	 * @param y y coordinate of the level (must not exceed height - 1)
+	 * @return Tile type.
+	 */
+	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }
+
+	/**
+	 * Returns the width of the map.
+	 * @return width
+	 */
+	unsigned int width() const { return _w; }
+
+	/**
+	 * Returns the height of the map.
+	 * @return height
+	 */
+	unsigned int height() const { return _h; }
+private:
+	unsigned int _w, _h;
+	std::vector<Tile> _tiles;
+};
 
 } // end of namespace Game
+
+#endif
 
