@@ -27,7 +27,7 @@
 #include "monster.h"
 
 #include <list>
-#include <map>
+#include <vector>
 
 namespace Game {
 
@@ -82,20 +82,19 @@ private:
 	const Monster *_centerMonster;
 
 	struct DrawDesc {
+		DrawDesc() {}
+		DrawDesc(int symbol, GUI::ColorPair color, int attribs) : symbol(symbol), color(color), attribs(attribs) {}
+
 		int symbol;
 		GUI::ColorPair color;
 		int attribs;
 	};
+	typedef std::vector<DrawDesc> DrawDescVector;
 
-	typedef std::map<MonsterType, DrawDesc> MonsterDrawDescMap;
-	MonsterDrawDescMap _monsterDrawDesc;
-
-	struct MonsterDrawDesc {
-		MonsterType type;
-		DrawDesc desc;
-	};
-	static const MonsterDrawDesc _monsterDrawDescriptions[];
+	static const DrawDesc _monsterDrawDescriptions[];
 	static const size_t _monsterDrawDescriptionsEntries;
+
+	DrawDescVector _levelDrawDescs;
 };
 
 } // end of namespace Game

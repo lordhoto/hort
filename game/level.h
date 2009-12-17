@@ -21,8 +21,6 @@
 #ifndef GAME_LEVEL_H
 #define GAME_LEVEL_H
 
-#include "gui/window.h"
-
 #include <vector>
 
 namespace Game {
@@ -30,38 +28,12 @@ namespace Game {
 class Level {
 public:
 	enum Tile {
-		kTileMeadow,
+		kTileMeadow = 0,
 		kTileTree,
 		kTileWater
 	};
 
 	Level();
-
-	/**
-	 * Draws the level in the given window.
-	 *
-	 * Note that oX and oY must not be greater than equal to width and height of the level.
-	 *
-	 * @param out Window to draw into.
-	 * @param oX x coordinate of the level to place in the first column of the window.
-	 * @param oY y coordinate of the level to place in the first line of the window.
-	 */
-	void draw(GUI::Window &out, unsigned int oX, unsigned int oY) const;
-
-	/**
-	 * Draws the level in the given rect of the window.
-	 *
-	 * Note that oX and oY must not be greater than equal to width and height of the level.
-	 *
-	 * @param out Window to draw into.
-	 * @param oX x coordinate of the level to place in the first column of the given rect.
-	 * @param oY y coordinate of the level to place in the first line of the given rect.
-	 * @param x x coordinate of the window to start drawing.
-	 * @param y y coordinate of the window to start drawing.
-	 * @param w width of the draw rect.
-	 * @param h height of the draw rect.
-	 */
-	void draw(GUI::Window &out, unsigned int oX, unsigned int oY, unsigned int x, unsigned int y, unsigned int w, unsigned int h) const;
 
 	/**
 	 * Returns the tile at the given position.
@@ -86,8 +58,6 @@ public:
 private:
 	unsigned int _w, _h;
 	std::vector<Tile> _tiles;
-
-	void printTile(GUI::Window &out, const Tile t, unsigned int x, unsigned int y) const;
 };
 
 } // end of namespace Game

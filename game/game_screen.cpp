@@ -26,8 +26,9 @@ namespace Game {
 
 GameScreen::GameScreen(GUI::Window &window)
     : _output(window), _needRedraw(false), _level(0), _monsters(), _centerMonster(0) {
-	for (size_t i = 0; i < _monsterDrawDescriptionsEntries; ++i)
-		_monsterDrawDesc[_monsterDrawDescriptions[i].type] = _monsterDrawDescriptions[i].desc;
+	_levelDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
+	_levelDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
+	_levelDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
 }
 
 void GameScreen::update() {
@@ -51,7 +52,14 @@ void GameScreen::update() {
 		levelOffsetY = std::min<unsigned int>(levelOffsetY, levelHeight - outputHeight);
 	}
 
-	_level->draw(_output, levelOffsetX, levelOffsetY);
+	const unsigned int maxWidth = std::min(outputWidth, levelWidth), maxHeight = std::min(outputHeight, levelHeight);
+	for (unsigned int y = 0; y < maxHeight; ++y) {
+		for (unsigned int x = 0; x < maxWidth; ++x) {
+			const Level::Tile tile = _level->tileAt(x + levelOffsetX, y + levelOffsetY);
+			const DrawDesc &desc = _levelDrawDescs[tile];
+			_output.printChar(desc.symbol, x, y, desc.color, desc.attribs);
+		}
+	}
 
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		const unsigned int monsterX = (*i)->getX(), monsterY = (*i)->getY();
@@ -62,8 +70,8 @@ void GameScreen::update() {
 		    || monsterY >= (unsigned int)levelOffsetY + levelHeight)
 			continue;
 
-		MonsterDrawDescMap::const_iterator drawInfo = _monsterDrawDesc.find((*i)->getType());
-		_output.printChar(drawInfo->second.symbol, monsterX - levelOffsetX, monsterY - levelOffsetY, drawInfo->second.color, drawInfo->second.attribs);
+		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
+		_output.printChar(desc.symbol, monsterX - levelOffsetX, monsterY - levelOffsetY, desc.color, desc.attribs);
 	}
 
 	if (_centerMonster)
@@ -89,8 +97,9 @@ void GameScreen::clearObjects() {
 }
 
 // Static data
-const GameScreen::MonsterDrawDesc GameScreen::_monsterDrawDescriptions[] = {
-	{ kMonsterPlayer, { '@', GUI::kWhiteOnBlack, GUI::kAttribBold } }
+const GameScreen::DrawDesc GameScreen::_monsterDrawDescriptions[] = {
+	DrawDesc('@', GUI::kWhiteOnBlack, GUI::kAttribBold),
+	DrawDesc('G', GUI::kYellowOnBlack, 0)
 };
 
 const size_t GameScreen::_monsterDrawDescriptionsEntries = sizeof(GameScreen::_monsterDrawDescriptions) / sizeof(GameScreen::_monsterDrawDescriptions[0]);
