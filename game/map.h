@@ -36,10 +36,21 @@ public:
 	Map();
 
 	/**
+	 * Checks whether the given map tile is walkable.
+	 * Walkable does not mean that the player will surive
+	 * walking onto the tile though :-).
+	 *
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @return true if walkable, false otherwise
+	 */
+	bool isWalkable(unsigned int x, unsigned int y) const;
+
+	/**
 	 * Returns the tile at the given position.
 	 *
-	 * @param x x coordinate of the level (must not exceed width - 1)
-	 * @param y y coordinate of the level (must not exceed height - 1)
+	 * @param x x coordinate of the tile (must not exceed width - 1)
+	 * @param y y coordinate of the tile (must not exceed height - 1)
 	 * @return Tile type.
 	 */
 	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }

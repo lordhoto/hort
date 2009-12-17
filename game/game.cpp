@@ -27,11 +27,11 @@ namespace Game {
 GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, 0, 0) {
 	_initialized = false;
 	_messageLine = _mapWindow = _playerStats = 0;
-	_curMap = 0;
+	_curLevel = 0;
 }
 
 GameState::~GameState() {
-	delete _curMap;
+	delete _curLevel;
 	delete _gameScreen;
 
 	_screen.remove(_messageLine);
@@ -45,7 +45,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curMap = new Map();
+		_curLevel = new Level();
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 20, false);
@@ -56,8 +56,7 @@ bool GameState::initialize() {
 		_screen.add(_playerStats);
 
 		_gameScreen = new GameScreen(*_mapWindow);
-		_gameScreen->setMap(_curMap);
-		_gameScreen->addObject(&_player, true);
+		_curLevel->assignToScreen(*_gameScreen, _player);
 	}
 
 	_screen.clear();
@@ -69,9 +68,9 @@ bool GameState::run() {
 	int input = -1;
 
 	do {
-		_player.setX(Base::rollDice(_curMap->width()) - 1);
-		_player.setY(Base::rollDice(_curMap->height()) - 1);
-	} while (_curMap->tileAt(_player.getX(), _player.getY()) != Map::kTileMeadow);
+		_player.setX(Base::rollDice(_curLevel->getMap().width()) - 1);
+		_player.setY(Base::rollDice(_curLevel->getMap().height()) - 1);
+	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
 
 	while (input != GUI::kKeyEscape) {
 		_gameScreen->update();
@@ -117,11 +116,9 @@ bool GameState::run() {
 		}
 
 		unsigned int playerX = _player.getX(), playerY = _player.getY();
-		if (playerX + offX < _curMap->width() && playerY + offY < _curMap->height()) {
-			if (_curMap->tileAt(playerX + offX, playerY + offY) == Map::kTileMeadow) {
-				playerX += offX;
-				playerY += offY;
-			}
+		if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
+			playerX += offX;
+			playerY += offY;
 		}
 
 		if (playerX != _player.getX() || playerY != _player.getY()) {

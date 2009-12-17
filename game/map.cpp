@@ -47,5 +47,9 @@ Map::Map() : _w(160), _h(48) {
 	}
 }
 
+bool Map::isWalkable(unsigned int x, unsigned int y) const {
+	return (tileAt(x, y) != kTileTree);
+}
+
 } // end of namespace Game
 

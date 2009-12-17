@@ -18,41 +18,50 @@
  *
  */
 
-#ifndef GAME_GAME_H
-#define GAME_GAME_H
+#ifndef GAME_LEVEL_H
+#define GAME_LEVEL_H
 
-#include "state.h"
-#include "level.h"
+#include "map.h"
 #include "monster.h"
 #include "game_screen.h"
 
-#include "gui/window.h"
-#include "gui/screen.h"
-#include "gui/input.h"
+#include <list>
 
 namespace Game {
 
-class GameState : public State {
+class Level {
 public:
-	GameState();
-	~GameState();
+	Level();
+	~Level();
 
-	bool initialize();
+	/**
+	 * Assigns the level for output at the specific game screen.
+	 *
+	 * @param screen Screen to setup.
+	 * @param player The player monster.
+	 */
+	void assignToScreen(GameScreen &screen, const Monster &player) const;
 
-	bool run();
+	/**
+	 * Returns the map assigned with this level.
+	 *
+	 * @return map
+	 */
+	const Map &getMap() const { return *_map; }
+
+	/**
+	 * Checks whether the given position is walkable
+	 *
+	 * @param x x coordiante.
+	 * @param y y coordinate.
+	 * @return true if walkable, false otherwise
+	 */
+	bool isWalkable(unsigned int x, unsigned int y) const;
 private:
-	bool _initialized;
+	Map *_map;
 
-	GUI::Screen &_screen;
-	GUI::Window *_messageLine;
-	GUI::Window *_mapWindow;
-	GUI::Window *_playerStats;
-
-	GUI::Input &_input;
-
-	GameScreen *_gameScreen;
-	Level *_curLevel;
-	Monster _player;
+	typedef std::list<Monster *> MonsterList;
+	MonsterList _monsters;
 };
 
 } // end of namespace Game
