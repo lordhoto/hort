@@ -18,60 +18,28 @@
  *
  */
 
-#ifndef GAME_GAME_H
-#define GAME_GAME_H
-
-#include "state.h"
-#include "level.h"
-#include "monster.h"
-#include "game_screen.h"
 #include "event.h"
-
-#include "gui/window.h"
-#include "gui/screen.h"
-#include "gui/input.h"
-
-namespace AI {
-class Monster;
-} // end of namespace AI
 
 namespace Game {
 
-class GameState : public State {
-public:
-	GameState();
-	~GameState();
+Event createMoveEvent(const Monster *monster, int offX, int offY) {
+	Event event;
+	event.type = Event::kTypeMove;
+	event.data.move.monster = monster;
+	event.data.move.oldX = monster->getX();
+	event.data.move.oldY = monster->getY();
+	event.data.move.newX = event.data.move.oldX + offX;
+	event.data.move.newY = event.data.move.oldY + offY;
+	return event;
+}
 
-	bool initialize();
-
-	bool run();
-
-	void processEvent(const Event &event);
-
-	const Level &getLevel() const { return *_curLevel; }
-	const Monster &getPlayer() const { return _player; }
-private:
-	bool _initialized;
-
-	GUI::Screen &_screen;
-	GUI::Window *_messageLine;
-	GUI::Window *_mapWindow;
-	GUI::Window *_playerStats;
-
-	GUI::Input &_input;
-
-	GameScreen *_gameScreen;
-	Level *_curLevel;
-	Monster _player;
-
-	AI::Monster *_monsterAI;
-
-	void handleInput(int input);
-
-	Monster *obtainMonster(const Monster *monster);
-};
+Event createAttackEvent(const Monster *monster, const Monster *target) {
+	Event event;
+	event.type = Event::kTypeAttack;
+	event.data.attack.monster = monster;
+	event.data.attack.target = target;
+	return event;
+}
 
 } // end of namespace Game
-
-#endif
 

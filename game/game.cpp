@@ -21,6 +21,9 @@
 #include "game.h"
 
 #include "base/rnd.h"
+#include "ai/monster.h"
+
+#include <cassert>
 
 namespace Game {
 
@@ -33,6 +36,7 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 GameState::~GameState() {
 	delete _curLevel;
 	delete _gameScreen;
+	delete _monsterAI;
 
 	_screen.remove(_messageLine);
 	delete _messageLine;
@@ -57,6 +61,11 @@ bool GameState::initialize() {
 
 		_gameScreen = new GameScreen(*_mapWindow);
 		_curLevel->assignScreen(*_gameScreen, _player);
+
+		_monsterAI = new AI::Monster(*this);
+		const Level::MonsterList &monsters = _curLevel->getMonsters();
+		for (Level::MonsterList::const_iterator i = monsters.begin(); i != monsters.end(); ++i)
+			_monsterAI->addMonster(*i);
 	}
 
 	_screen.clear();
@@ -78,73 +87,103 @@ bool GameState::run() {
 		_messageLine->clear();
 
 		input = _input.poll();
-		int offX = 0, offY = 0;
-		switch (input) {
-		case GUI::kKeyKeypad4:
-			--offX;
-			break;
+		handleInput(input);
 
-		case GUI::kKeyKeypad6:
-			++offX;
-			break;
-
-		case GUI::kKeyKeypad8:
-			--offY;
-			break;
-
-		case GUI::kKeyKeypad2:
-			++offY;
-			break;
-
-		case GUI::kKeyKeypad7:
-			--offX; --offY;
-			break;
-
-		case GUI::kKeyKeypad9:
-			++offX; --offY;
-			break;
-
-		case GUI::kKeyKeypad1:
-			--offX; ++offY;
-			break;
-
-		case GUI::kKeyKeypad3:
-			++offX; ++offY;
-			break;
-
-		default:
-			break;
-		}
-
-		unsigned int playerX = _player.getX(), playerY = _player.getY();
-		Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
-		if (monster) {
-			if (Base::rollDice(20) == 20) {
-				_messageLine->printLine("You fumble", 0, 0);
-			} else {
-				int newHitPoints = monster->getHitPoints() - 1;
-
-				if (newHitPoints <= 0) {
-					_curLevel->removeMonster(monster);
-					_messageLine->printLine("You kill the Gnome!", 0, 0);
-				} else {
-					monster->setHitPoints(newHitPoints);
-					_messageLine->printLine("You hit the Gnome!", 0, 0);
-				}
-			}
-		} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
-			playerX += offX;
-			playerY += offY;
-		}
-
-		if (playerX != _player.getX() || playerY != _player.getY()) {
-			_player.setX(playerX);
-			_player.setY(playerY);
-			_gameScreen->flagForUpdate();
-		}
+		_monsterAI->update();
 	}
 
 	return true;
+}
+
+void GameState::processEvent(const Event &event) {
+	if (event.type == Event::kTypeMove) {
+		Monster *monster = obtainMonster(event.data.move.monster);
+		assert(monster);
+
+		// TODO: add some error checking
+		monster->setX(event.data.move.newX);
+		monster->setY(event.data.move.newY);
+		_gameScreen->flagForUpdate();
+	} else if (event.type == Event::kTypeAttack) {
+		Monster *target = obtainMonster(event.data.attack.target);
+		assert(target);
+
+		int newHitPoints = target->getHitPoints() - 1;
+		target->setHitPoints(newHitPoints);
+
+		if (newHitPoints <= 0) {
+			_monsterAI->remMonster(target);
+			_curLevel->removeMonster(target);
+			_messageLine->printLine("You kill the Gnome!", 0, 0);
+		} else {
+			_messageLine->printLine("You hit the Gnome!", 0, 0);
+		}
+	}
+}
+
+void GameState::handleInput(int input) {
+	int offX = 0, offY = 0;
+	switch (input) {
+	case GUI::kKeyKeypad4:
+		--offX;
+		break;
+
+	case GUI::kKeyKeypad6:
+		++offX;
+		break;
+
+	case GUI::kKeyKeypad8:
+		--offY;
+		break;
+
+	case GUI::kKeyKeypad2:
+		++offY;
+		break;
+
+	case GUI::kKeyKeypad7:
+		--offX; --offY;
+		break;
+
+	case GUI::kKeyKeypad9:
+		++offX; --offY;
+		break;
+
+	case GUI::kKeyKeypad1:
+		--offX; ++offY;
+		break;
+
+	case GUI::kKeyKeypad3:
+		++offX; ++offY;
+		break;
+
+	default:
+		break;
+	}
+
+	unsigned int playerX = _player.getX(), playerY = _player.getY();
+	Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
+	if (monster) {
+		if (Base::rollDice(20) == 20) {
+			_messageLine->printLine("You fumble", 0, 0);
+		} else {
+			processEvent(createAttackEvent(&_player, monster));
+		}
+	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
+		processEvent(createMoveEvent(&_player, offX, offY));
+	}
+}
+
+Monster *GameState::obtainMonster(const Monster *monster) {
+	if (monster == &_player) {
+		return &_player;
+	} else {
+		Level::MonsterList &monsters = _curLevel->getMonsters();
+		Level::MonsterList::iterator i = std::find(monsters.begin(), monsters.end(), monster);
+		if (i != monsters.end())
+			return *i;
+
+		return 0;
+	}
 }
 
 } // end of namespace Game

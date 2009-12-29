@@ -18,58 +18,54 @@
  *
  */
 
-#ifndef GAME_GAME_H
-#define GAME_GAME_H
+#ifndef GAME_EVENT_H
+#define GAME_EVENT_H
 
-#include "state.h"
-#include "level.h"
 #include "monster.h"
-#include "game_screen.h"
-#include "event.h"
-
-#include "gui/window.h"
-#include "gui/screen.h"
-#include "gui/input.h"
-
-namespace AI {
-class Monster;
-} // end of namespace AI
 
 namespace Game {
 
-class GameState : public State {
-public:
-	GameState();
-	~GameState();
+struct Event {
+	enum kType {
+		kTypeMove,
+		kTypeAttack
+	};
 
-	bool initialize();
+	kType type;
 
-	bool run();
+	union {
+		struct Move {
+			const Monster *monster;
 
-	void processEvent(const Event &event);
+			unsigned int oldX, oldY;
+			unsigned int newX, newY;
+		} move;
 
-	const Level &getLevel() const { return *_curLevel; }
-	const Monster &getPlayer() const { return _player; }
-private:
-	bool _initialized;
-
-	GUI::Screen &_screen;
-	GUI::Window *_messageLine;
-	GUI::Window *_mapWindow;
-	GUI::Window *_playerStats;
-
-	GUI::Input &_input;
-
-	GameScreen *_gameScreen;
-	Level *_curLevel;
-	Monster _player;
-
-	AI::Monster *_monsterAI;
-
-	void handleInput(int input);
-
-	Monster *obtainMonster(const Monster *monster);
+		struct Attack {
+			const Monster *monster;
+			const Monster *target;
+		} attack;
+	} data;
 };
+
+/**
+ * Creates an event for the monster's movement.
+ *
+ * @param monster Monster to move.
+ * @param offX X offset to move.
+ * @param offY Y offset to move.
+ * @return Event structure.
+ */
+Event createMoveEvent(const Monster *monster, int offX, int offY);
+
+/**
+ * Creates an attack event.
+ *
+ * @param monster Monster which attacks.
+ * @param target Monster which is attacked.
+ * @return Event structure.
+ */
+Event createAttackEvent(const Monster *monster, const Monster *target);
 
 } // end of namespace Game
 

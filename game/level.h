@@ -79,11 +79,19 @@ public:
 	 * @param monster Monster to remove.
 	 */
 	void removeMonster(Monster *monster);
+
+	typedef std::list<Monster *> MonsterList;
+
+	/**
+	 * Returns a reference to the monster list.
+	 *
+	 * @return monster list.
+	 */
+	MonsterList &getMonsters() { return _monsters; }
 private:
 	Map *_map;
 	GameScreen *_screen;
 
-	typedef std::list<Monster *> MonsterList;
 	MonsterList _monsters;
 };
 
