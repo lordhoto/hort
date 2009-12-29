@@ -81,7 +81,7 @@ bool GameState::run() {
 		_player.setY(Base::rollDice(_curLevel->getMap().height()) - 1);
 	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
 
-	while (input != GUI::kKeyEscape) {
+	while (input != GUI::kKeyEscape && _player.getHitPoints() > 0) {
 		_gameScreen->update();
 		_screen.update();
 		_messageLine->clear();
@@ -111,14 +111,26 @@ void GameState::processEvent(const Event &event) {
 		int newHitPoints = target->getHitPoints() - 1;
 		target->setHitPoints(newHitPoints);
 
+		_messageLine->clear();
 		if (newHitPoints <= 0) {
-			_monsterAI->remMonster(target);
-			_curLevel->removeMonster(target);
-			_messageLine->printLine("You kill the Gnome!", 0, 0);
+			if (target != &_player) {
+				_messageLine->printLine("You kill the Gnome!", 0, 0);
+				_monsterAI->removeMonster(target);
+				_curLevel->removeMonster(target);
+			} else {
+				_messageLine->printLine("You die...", 0, 0);
+				_screen.update();
+				_input.poll();
+			}
 		} else {
-			_messageLine->printLine("You hit the Gnome!", 0, 0);
+			if (target == &_player)
+				_messageLine->printLine("The Gnome hits!", 0, 0);
+			else
+				_messageLine->printLine("You hit the Gnome!", 0, 0);
 		}
 	}
+
+	_monsterAI->processEvent(event);
 }
 
 void GameState::handleInput(int input) {

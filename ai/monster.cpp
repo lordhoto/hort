@@ -24,6 +24,7 @@
 #include "base/rnd.h"
 
 #include <map>
+#include <cmath>
 
 namespace AI {
 
@@ -36,10 +37,9 @@ enum kMonsterFSMStateID {
 };
 
 enum kMonsterFSMInputID {
-	kPlayerEnterSight = 0,
-	kPlayerLeaveSight,
-	kPlayerEnterRange,
-	kPlayerLeaveRange,
+	kPlayerTriggerDist0 = 0,
+	kPlayerTriggerDist1,
+	kPlayerTriggerDist2,
 	kPlayerAttack
 };
 
@@ -50,16 +50,16 @@ struct FSMTransition {
 };
 
 const FSMTransition s_monsterFSMTransitions[] = {
-	{ kMonsterIdle  , kPlayerEnterSight, kMonsterWary   },
-	{ kMonsterIdle  , kPlayerAttack    , kMonsterAttack },
-	{ kMonsterIdle  , kPlayerEnterRange, kMonsterAttack },
+	{ kMonsterIdle  , kPlayerTriggerDist1, kMonsterWary   },
+	{ kMonsterIdle  , kPlayerAttack      , kMonsterAttack },
+	{ kMonsterIdle  , kPlayerTriggerDist2, kMonsterAttack },
 
-	{ kMonsterWary  , kPlayerEnterRange, kMonsterAttack },
-	{ kMonsterWary  , kPlayerAttack    , kMonsterAttack },
-	{ kMonsterWary  , kPlayerLeaveSight, kMonsterIdle   },
+	{ kMonsterWary  , kPlayerTriggerDist2, kMonsterAttack },
+	{ kMonsterWary  , kPlayerAttack      , kMonsterAttack },
+	{ kMonsterWary  , kPlayerTriggerDist0, kMonsterIdle   },
 
-	{ kMonsterAttack, kPlayerLeaveRange, kMonsterWary   },
-	{ kMonsterAttack, kPlayerLeaveSight, kMonsterWary   }
+	{ kMonsterAttack, kPlayerTriggerDist1, kMonsterWary   },
+	{ kMonsterAttack, kPlayerTriggerDist0, kMonsterIdle   }
 };
 
 FSM::FSM *createMonsterFSM() {
@@ -98,11 +98,11 @@ Monster::~Monster() {
 }
 
 void Monster::addMonster(const Game::Monster *monster) {
-	remMonster(monster);
+	removeMonster(monster);
 	_monsters[monster] = kMonsterIdle;
 }
 
-void Monster::remMonster(const Game::Monster *monster) {
+void Monster::removeMonster(const Game::Monster *monster) {
 	_monsters.erase(monster);
 }
 
@@ -153,6 +153,10 @@ void Monster::update() {
 				_game.processEvent(Game::createMoveEvent(i->first, offX, offY));
 			} break;
 
+		case kMonsterAttack:
+			_game.processEvent(Game::createAttackEvent(i->first, &_game.getPlayer()));
+			break;
+
 		default:
 			break;
 		}
@@ -160,6 +164,51 @@ void Monster::update() {
 }
 
 void Monster::processEvent(const Game::Event &event) {
+	if (event.type == Game::Event::kTypeMove) {
+		if (event.data.move.monster == &_game.getPlayer()) {
+			for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
+				_fsm->setState(i->second);
+
+				// Calculate distance
+				int xDist = std::abs((int)(event.data.move.newX - i->first->getX()));
+				int yDist = std::abs((int)(event.data.move.newY - i->first->getY()));
+
+				if (xDist <= 1 && yDist <= 1)
+					_fsm->process(kPlayerTriggerDist2);
+				else if (std::sqrt(xDist*xDist + yDist*yDist) <= 4.0f)
+					_fsm->process(kPlayerTriggerDist1);
+				else
+					_fsm->process(kPlayerTriggerDist0);
+
+				i->second = _fsm->getState();
+			}
+		} else {
+			MonsterMap::iterator i = _monsters.find(event.data.move.monster);
+			if (i != _monsters.end()) {
+				// Calculate distance
+				int xDist = std::abs((int)(event.data.move.newX - _game.getPlayer().getX()));
+				int yDist = std::abs((int)(event.data.move.newY - _game.getPlayer().getY()));
+
+				_fsm->setState(i->second);
+
+				if (xDist <= 1 && yDist <= 1)
+					_fsm->process(kPlayerTriggerDist2);
+				else if (std::sqrt(xDist*xDist + yDist*yDist) <= 4.0f)
+					_fsm->process(kPlayerTriggerDist1);
+				else
+					_fsm->process(kPlayerTriggerDist0);
+
+				i->second = _fsm->getState();
+			}
+		}
+	} else if (event.type == Game::Event::kTypeAttack) {
+		MonsterMap::iterator i = _monsters.find(event.data.attack.target);
+		if (i != _monsters.end()) {
+			_fsm->setState(i->second);
+			_fsm->process(kPlayerAttack);
+			i->second = _fsm->getState();
+		}
+	}
 }
 
 } // end of namespace AI

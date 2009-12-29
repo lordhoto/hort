@@ -47,7 +47,7 @@ public:
 	 *
 	 * @param monster Monster to remove.
 	 */
-	void remMonster(const Game::Monster *monster);
+	void removeMonster(const Game::Monster *monster);
 
 	/**
 	 * Updates all monsters.
