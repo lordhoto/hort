@@ -71,7 +71,7 @@ public:
 	 *
 	 * @param hitpoints Set the hitpoints of the object (this can not exceed max. health)
 	 */
-	void setHitPoint(int hitpoints) {
+	void setHitPoints(int hitpoints) {
 		_curHealth = std::min(hitpoints, _maxHealth);
 	}
 

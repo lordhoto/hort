@@ -40,7 +40,12 @@ public:
 	 * @param screen Screen to setup.
 	 * @param player The player monster.
 	 */
-	void assignToScreen(GameScreen &screen, const Monster &player) const;
+	void assignScreen(GameScreen &screen, const Monster &player);
+
+	/**
+	 * Unassigns the level from the screen associated with it.
+	 */
+	void unassignScreen();
 
 	/**
 	 * Returns the map assigned with this level.
@@ -57,8 +62,26 @@ public:
 	 * @return true if walkable, false otherwise
 	 */
 	bool isWalkable(unsigned int x, unsigned int y) const;
+
+	/**
+	 * Returns a pointer to the monster at the given position or
+	 * 0, when there is no monster.
+	 *
+	 * @param x x coordinate.
+	 * @param y y coordinate.
+	 * @return Pointer to monster.
+	 */
+	Monster *monsterAt(unsigned int x, unsigned int y);
+
+	/**
+	 * Removes the given monster from the level.
+	 *
+	 * @param monster Monster to remove.
+	 */
+	void removeMonster(Monster *monster);
 private:
 	Map *_map;
+	GameScreen *_screen;
 
 	typedef std::list<Monster *> MonsterList;
 	MonsterList _monsters;

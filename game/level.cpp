@@ -24,7 +24,7 @@
 
 namespace Game {
 
-Level::Level() : _map(0), _monsters() {
+Level::Level() : _map(0), _screen(0), _monsters() {
 	_map = new Map();
 
 	for (int i = 0; i < 10; ++i) {
@@ -44,11 +44,18 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::assignToScreen(GameScreen &screen, const Monster &player) const {
+void Level::assignScreen(GameScreen &screen, const Monster &player) {
 	screen.setMap(_map);
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
 		screen.addObject(*i);
 	screen.addObject(&player, true);
+	_screen = &screen;
+}
+
+void Level::unassignScreen() {
+	if (_screen)
+		_screen->setMap(0);
+	_screen = 0;
 }
 
 bool Level::isWalkable(unsigned int x, unsigned int y) const {
@@ -64,6 +71,22 @@ bool Level::isWalkable(unsigned int x, unsigned int y) const {
 	}
 
 	return true;
+}
+
+Monster *Level::monsterAt(unsigned int x, unsigned int y) {
+	for (MonsterList::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
+		if ((*i)->getX() == x && (*i)->getY() == y)
+			return *i;
+	}
+
+	return 0;
+}
+
+void Level::removeMonster(Monster *monster) {
+	_monsters.remove(monster);
+	if (_screen)
+		_screen->remObject(monster);
+	delete monster;
 }
 
 } // end of namespace Game

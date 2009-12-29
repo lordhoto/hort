@@ -56,7 +56,7 @@ bool GameState::initialize() {
 		_screen.add(_playerStats);
 
 		_gameScreen = new GameScreen(*_mapWindow);
-		_curLevel->assignToScreen(*_gameScreen, _player);
+		_curLevel->assignScreen(*_gameScreen, _player);
 	}
 
 	_screen.clear();
@@ -75,6 +75,7 @@ bool GameState::run() {
 	while (input != GUI::kKeyEscape) {
 		_gameScreen->update();
 		_screen.update();
+		_messageLine->clear();
 
 		input = _input.poll();
 		int offX = 0, offY = 0;
@@ -116,7 +117,22 @@ bool GameState::run() {
 		}
 
 		unsigned int playerX = _player.getX(), playerY = _player.getY();
-		if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
+		Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
+		if (monster) {
+			if (Base::rollDice(20) == 20) {
+				_messageLine->printLine("You fumble", 0, 0);
+			} else {
+				int newHitPoints = monster->getHitPoints() - 1;
+
+				if (newHitPoints <= 0) {
+					_curLevel->removeMonster(monster);
+					_messageLine->printLine("You kill the Gnome!", 0, 0);
+				} else {
+					monster->setHitPoints(newHitPoints);
+					_messageLine->printLine("You hit the Gnome!", 0, 0);
+				}
+			}
+		} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
 			playerX += offX;
 			playerY += offY;
 		}

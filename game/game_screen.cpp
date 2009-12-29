@@ -85,9 +85,18 @@ void GameScreen::setMap(const Map *map) {
 }
 
 void GameScreen::addObject(const Monster *monster, bool center) {
+	flagForUpdate();
+
 	_monsters.push_back(monster);
 	if (center)
 		_centerMonster = monster;
+}
+
+void GameScreen::remObject(const Monster *monster) {
+	flagForUpdate();
+	_monsters.remove(monster);
+	if (_centerMonster == monster)
+		_centerMonster = 0;
 }
 
 void GameScreen::clearObjects() {

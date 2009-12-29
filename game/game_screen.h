@@ -66,6 +66,15 @@ public:
 	void addObject(const Monster *monster, bool center = false);
 
 	/**
+	 * Removes a monster from the display object list.
+	 *
+	 * This automatically updates the refresh flag!
+	 *
+	 * @param monster The monster to remove.
+	 */
+	void remObject(const Monster *monster);
+
+	/**
 	 * Clears all object lists.
 	 *
 	 * This automatically updates the refresh flag!
