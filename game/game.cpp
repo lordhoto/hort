@@ -215,8 +215,10 @@ void GameState::printMessages() {
 		line.clear();
 		while (!_messages.empty()) {
 			std::string front = _messages.front();
-			if (line.size() + front.size() > 80 || (_messages.size() > 1 && line.size() + front.size() > 70))
-				break;
+			if (!line.empty() && front.size() < 80) {
+				if (line.size() + front.size() > 80 || (_messages.size() > 1 && line.size() + front.size() > 70))
+					break;
+			}
 
 			_messages.pop_front();
 			if (!line.empty())
@@ -228,9 +230,10 @@ void GameState::printMessages() {
 			line += " -- more --";
 
 		_messageLine->printLine(line.c_str(), 0, 0);
-		_screen.update();
-		if (!_messages.empty())
+		if (!_messages.empty()) {
+			_screen.update();
 			_input.poll();
+		}
 	}
 }
 
