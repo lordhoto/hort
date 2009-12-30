@@ -185,7 +185,7 @@ void GameState::handleInput(int input) {
 	Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
 	if (monster) {
 		if (Base::rollDice(20) == 20) {
-			_messages.push_back("You fumble");
+			_messages.push_back("You fumble.");
 		} else {
 			processEvent(createAttackEvent(&_player, monster));
 		}
