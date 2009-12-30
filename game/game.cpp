@@ -99,6 +99,7 @@ bool GameState::run() {
 		printMessages();
 
 		if (_player.getHitPoints() <= 0) {
+			_screen.update();
 			_input.poll();
 			break;
 		}
