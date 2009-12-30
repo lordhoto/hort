@@ -53,8 +53,8 @@ bool GameState::initialize() {
 		_curLevel = new Level();
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
-		_mapWindow = new GUI::Window(0,  1, 80, 20, false);
-		_playerStats = new GUI::Window(0, 21, 80,  3, false);
+		_mapWindow = new GUI::Window(0,  1, 80, 21, false);
+		_playerStats = new GUI::Window(0, 22, 80,  2, false);
 
 		_screen.add(_messageLine);
 		_screen.add(_mapWindow);
