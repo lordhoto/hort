@@ -81,15 +81,19 @@ bool GameState::run() {
 		_player.setY(Base::rollDice(_curLevel->getMap().height()) - 1);
 	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
 
+	_gameScreen->update();
+	_screen.update();
+
 	while (input != GUI::kKeyEscape && _player.getHitPoints() > 0) {
-		_gameScreen->update();
+		_messages.clear();
 		_screen.update();
-		_messageLine->clear();
 
 		input = _input.poll();
 		handleInput(input);
 
 		_monsterAI->update();
+		_gameScreen->update();
+		printMessages();
 	}
 
 	return true;
@@ -111,22 +115,22 @@ void GameState::processEvent(const Event &event) {
 		int newHitPoints = target->getHitPoints() - 1;
 		target->setHitPoints(newHitPoints);
 
-		_messageLine->clear();
 		if (newHitPoints <= 0) {
 			if (target != &_player) {
-				_messageLine->printLine("You kill the Gnome!", 0, 0);
+				_messages.push_back("You kill the Gnome!");
 				_monsterAI->removeMonster(target);
 				_curLevel->removeMonster(target);
 			} else {
+				_messageLine->clear();
 				_messageLine->printLine("You die...", 0, 0);
 				_screen.update();
 				_input.poll();
 			}
 		} else {
 			if (target == &_player)
-				_messageLine->printLine("The Gnome hits!", 0, 0);
+				_messages.push_back("The Gnome hits!");
 			else
-				_messageLine->printLine("You hit the Gnome!", 0, 0);
+				_messages.push_back("You hit the Gnome!");
 		}
 	}
 
@@ -176,7 +180,7 @@ void GameState::handleInput(int input) {
 	Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
 	if (monster) {
 		if (Base::rollDice(20) == 20) {
-			_messageLine->printLine("You fumble", 0, 0);
+			_messages.push_back("You fumble");
 		} else {
 			processEvent(createAttackEvent(&_player, monster));
 		}
@@ -195,6 +199,33 @@ Monster *GameState::obtainMonster(const Monster *monster) {
 			return *i;
 
 		return 0;
+	}
+}
+
+void GameState::printMessages() {
+	_messageLine->clear();
+
+	std::string line;
+	while (!_messages.empty()) {
+		line.clear();
+		while (!_messages.empty()) {
+			std::string front = _messages.front();
+			if (line.size() + front.size() > 80 || (_messages.size() > 1 && line.size() + front.size() > 70))
+				break;
+
+			_messages.pop_front();
+			if (!line.empty())
+				line += ' ';
+			line += front;
+		}
+
+		if (!_messages.empty())
+			line += " -- more --";
+
+		_messageLine->printLine(line.c_str(), 0, 0);
+		_screen.update();
+		if (!_messages.empty())
+			_input.poll();
 	}
 }
 

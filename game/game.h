@@ -31,6 +31,9 @@
 #include "gui/screen.h"
 #include "gui/input.h"
 
+#include <list>
+#include <string>
+
 namespace AI {
 class Monster;
 } // end of namespace AI
@@ -58,6 +61,9 @@ private:
 	GUI::Window *_mapWindow;
 	GUI::Window *_playerStats;
 
+	typedef std::list<std::string> StringList;
+	StringList _messages;
+
 	GUI::Input &_input;
 
 	GameScreen *_gameScreen;
@@ -67,8 +73,8 @@ private:
 	AI::Monster *_monsterAI;
 
 	void handleInput(int input);
-
 	Monster *obtainMonster(const Monster *monster);
+	void printMessages();
 };
 
 } // end of namespace Game
