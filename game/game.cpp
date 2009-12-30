@@ -53,8 +53,8 @@ bool GameState::initialize() {
 		_curLevel = new Level();
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
-		_mapWindow = new GUI::Window(0,  1, 80, 21, false);
-		_playerStats = new GUI::Window(0, 22, 80,  2, false);
+		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
+		_playerStats = new GUI::Window(0, 23, 80,  1, false);
 
 		_screen.add(_messageLine);
 		_screen.add(_mapWindow);
@@ -241,16 +241,11 @@ void GameState::drawStatsWindow() {
 	line << "Str: " << (int)_player.getAttribute(Monster::kAttribStrength)
 	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
 	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
-	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom);
+	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom)
+	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints();
 
 	_playerStats->clear();
 	_playerStats->printLine(line.str().c_str(), 0, 0);
-
-	line.str("");
-
-	line << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints();
-
-	_playerStats->printLine(line.str().c_str(), 0, 1);
 }
 
 } // end of namespace Game
