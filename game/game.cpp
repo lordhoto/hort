@@ -24,6 +24,7 @@
 #include "ai/monster.h"
 
 #include <cassert>
+#include <sstream>
 
 namespace Game {
 
@@ -82,9 +83,10 @@ bool GameState::run() {
 	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
 
 	_gameScreen->update();
+	drawStatsWindow();
 	_screen.update();
 
-	while (input != GUI::kKeyEscape && _player.getHitPoints() > 0) {
+	while (input != GUI::kKeyEscape) {
 		_messages.clear();
 		_screen.update();
 
@@ -93,7 +95,13 @@ bool GameState::run() {
 
 		_monsterAI->update();
 		_gameScreen->update();
+		drawStatsWindow();
 		printMessages();
+
+		if (_player.getHitPoints() <= 0) {
+			_input.poll();
+			break;
+		}
 	}
 
 	return true;
@@ -121,10 +129,7 @@ void GameState::processEvent(const Event &event) {
 				_monsterAI->removeMonster(target);
 				_curLevel->removeMonster(target);
 			} else {
-				_messageLine->clear();
-				_messageLine->printLine("You die...", 0, 0);
-				_screen.update();
-				_input.poll();
+				_messages.push_back("You die...");
 			}
 		} else {
 			if (target == &_player)
@@ -227,6 +232,25 @@ void GameState::printMessages() {
 		if (!_messages.empty())
 			_input.poll();
 	}
+}
+
+void GameState::drawStatsWindow() {
+	std::stringstream line;
+
+	// Stats line
+	line << "Str: " << (int)_player.getAttribute(Monster::kAttribStrength)
+	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
+	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
+	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom);
+
+	_playerStats->clear();
+	_playerStats->printLine(line.str().c_str(), 0, 0);
+
+	line.str("");
+
+	line << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints();
+
+	_playerStats->printLine(line.str().c_str(), 0, 1);
 }
 
 } // end of namespace Game

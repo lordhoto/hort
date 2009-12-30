@@ -63,6 +63,9 @@ private:
 
 	typedef std::list<std::string> StringList;
 	StringList _messages;
+	void printMessages();
+
+	void drawStatsWindow();
 
 	GUI::Input &_input;
 
@@ -74,7 +77,6 @@ private:
 
 	void handleInput(int input);
 	Monster *obtainMonster(const Monster *monster);
-	void printMessages();
 };
 
 } // end of namespace Game
