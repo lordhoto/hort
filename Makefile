@@ -1,5 +1,5 @@
 CXXFLAGS:=-g -Wall
-CPPFLAGS:=-I./
+CPPFLAGS:=-I.
 LDFLAGS:=-g -lncurses
 CXX:=g++
 DEPDIR:=.deps
