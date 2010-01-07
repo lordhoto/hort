@@ -124,6 +124,11 @@ void GameState::processEvent(const Event &event) {
 		int newHitPoints = target->getHitPoints() - 1;
 		target->setHitPoints(newHitPoints);
 
+		if (target == &_player)
+			_messages.push_back("The Gnome hits!");
+		else
+			_messages.push_back("You hit the Gnome!");
+
 		if (newHitPoints <= 0) {
 			if (target != &_player) {
 				_messages.push_back("You kill the Gnome!");
@@ -132,11 +137,6 @@ void GameState::processEvent(const Event &event) {
 			} else {
 				_messages.push_back("You die...");
 			}
-		} else {
-			if (target == &_player)
-				_messages.push_back("The Gnome hits!");
-			else
-				_messages.push_back("You hit the Gnome!");
 		}
 	}
 
