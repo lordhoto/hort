@@ -146,34 +146,42 @@ void GameState::processEvent(const Event &event) {
 void GameState::handleInput(int input) {
 	int offX = 0, offY = 0;
 	switch (input) {
+	case 'h':
 	case GUI::kKeyKeypad4:
 		--offX;
 		break;
 
+	case 'l':
 	case GUI::kKeyKeypad6:
 		++offX;
 		break;
 
+	case 'k':
 	case GUI::kKeyKeypad8:
 		--offY;
 		break;
 
+	case 'j':
 	case GUI::kKeyKeypad2:
 		++offY;
 		break;
 
+	case 'y': case 'z':
 	case GUI::kKeyKeypad7:
 		--offX; --offY;
 		break;
 
+	case 'u':
 	case GUI::kKeyKeypad9:
 		++offX; --offY;
 		break;
 
+	case 'b':
 	case GUI::kKeyKeypad1:
 		--offX; ++offY;
 		break;
 
+	case 'n':
 	case GUI::kKeyKeypad3:
 		++offX; ++offY;
 		break;
