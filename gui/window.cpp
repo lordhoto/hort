@@ -108,6 +108,7 @@ void Window::clear() {
 	wclear(_cursesWin);
 	if (_hasBorder)
 		wborder(_cursesWin, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+	_needsRefresh = true;
 }
 
 void Window::redraw() {
