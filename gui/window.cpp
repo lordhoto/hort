@@ -60,12 +60,19 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 	pitch = pitch - width;
 	assert(pitch >= 0);
 
+	if (_hasBorder)
+		wmove(_cursesWin, y + 1, x + 1);
+	else
+		wmove(_cursesWin, y, x);
+
 	const unsigned int y2 = y + height;
 	for (; y < y2; ++y) {
-		if (_hasBorder)
-			wmove(_cursesWin, y + 1, x + 1);
-		else
-			wmove(_cursesWin, y, x);
+		if (width != _w) {
+			if (_hasBorder)
+				wmove(_cursesWin, y + 1, x + 1);
+			else
+				wmove(_cursesWin, y, x);
+		}
 
 		for (unsigned int i = 0; i < width; ++i)
 			waddch(_cursesWin, *data++);
