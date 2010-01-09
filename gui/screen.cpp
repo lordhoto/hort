@@ -76,6 +76,7 @@ void Screen::destroy() {
 
 void Screen::clear() {
 	::erase();
+	refresh();
 	_needRedraw = true;
 }
 
@@ -102,8 +103,6 @@ void Screen::setCursor(const Window &win, unsigned int x, unsigned int y) {
 }
 
 void Screen::update() {
-	wnoutrefresh(stdscr);
-
 	if (_needRedraw)
 		std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::redraw));
 	_needRedraw = false;
@@ -111,8 +110,6 @@ void Screen::update() {
 	std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::refresh));
 
 	move(_curY, _curX);
-	wnoutrefresh(stdscr);
-
 	doupdate();
 }
 
