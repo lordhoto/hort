@@ -21,7 +21,7 @@ OBJS := base/main.o \
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 
 hort: $(OBJS)
-	$(CXX) -o hort $(LDFLAGS) $(OBJS)
+	$(CXX) -o hort $(OBJS) $(LDFLAGS)
 
 -include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
 
