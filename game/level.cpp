@@ -46,9 +46,11 @@ Level::~Level() {
 
 void Level::assignScreen(Screen &screen, const Monster &player) {
 	screen.setMap(_map);
+
+	screen.drawMonster(player);
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		screen.addObject(*i);
-	screen.addObject(&player, true);
+		screen.drawMonster(**i);
+
 	_screen = &screen;
 }
 
@@ -84,8 +86,10 @@ Monster *Level::monsterAt(unsigned int x, unsigned int y) {
 
 void Level::removeMonster(Monster *monster) {
 	_monsters.remove(monster);
+
 	if (_screen)
-		_screen->remObject(monster);
+		_screen->undrawMonster(*monster);
+
 	delete monster;
 }
 
