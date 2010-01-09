@@ -132,8 +132,11 @@ void Window::redraw(bool force) {
 	if (_needsRefresh || force) {
 		const int *src = _content;
 
+		move(_rY, _rX);
 		for (unsigned int y = 0; y < _rH; ++y) {
-			move(_rY + y, _rX);
+			if (_rY != 0 || _rX != 0 || _rW != 80)
+				move(_rY + y, _rX);
+
 			for (unsigned int x = 0; x < _rW; ++x)
 				addch(*src++);
 		}

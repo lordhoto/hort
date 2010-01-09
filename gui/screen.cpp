@@ -108,7 +108,12 @@ void Screen::update() {
 	std::for_each(_windows.begin(), _windows.end(), std::bind2nd(std::mem_fun(&Window::redraw), _needRedraw));
 	_needRedraw = false;
 	move(_curY, _curX);
-	//doupdate();
+
+	// According to the ncurses manpage we should need to call refresh
+	// here to update the screen. Somehow that is not needed though,
+	// if any curses implementation requires that, just uncomment this
+	// line.
+	//refresh();
 }
 
 } // end of namespace GUI
