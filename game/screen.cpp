@@ -32,10 +32,6 @@ Screen::Screen(GUI::Window &window)
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
 }
 
-Screen::~Screen() {
-	delete[] _outputMapCache;
-}
-
 void Screen::update() {
 	if (!_needRedraw || !_map)
 		return;
