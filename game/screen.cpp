@@ -21,12 +21,10 @@
 #include "screen.h"
 #include "gui/screen.h"
 
-#include <cassert>
-
 namespace Game {
 
 Screen::Screen(GUI::Window &window)
-    : _output(window), _needRedraw(false), _map(0), _outputMapCache(0), _monsters(), _centerMonster(0) {
+    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerMonster(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
@@ -54,7 +52,13 @@ void Screen::update() {
 	}
 
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
-	_output.putData(0, 0, maxWidth, maxHeight, _outputMapCache + mapOffsetY * mapWidth + mapOffsetX, mapWidth);
+	for (unsigned int y = 0; y < maxHeight; ++y) {
+		for (unsigned int x = 0; x < maxWidth; ++x) {
+			const Map::Tile tile = _map->tileAt(x + mapOffsetX, y + mapOffsetY);
+			const DrawDesc &desc = _mapDrawDescs[tile];
+			_output.printChar(desc.symbol, x, y, desc.color, desc.attribs);
+		}
+	}
 
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		const unsigned int monsterX = (*i)->getX(), monsterY = (*i)->getY();
@@ -74,23 +78,7 @@ void Screen::update() {
 }
 
 void Screen::setMap(const Map *map) {
-	delete[] _outputMapCache;
 	_map = map;
-
-	if (_map) {
-		_outputMapCache = new int[_map->width() * _map->height()];
-		assert(_outputMapCache);
-
-		const unsigned int width = _map->width(), height = _map->height();
-		for (unsigned int y = 0; y < height; ++y) {
-			for (unsigned int x = 0; x < width; ++x) {
-				const Map::Tile tile = _map->tileAt(x, y);
-				const DrawDesc &desc = _mapDrawDescs[tile];
-				_outputMapCache[y * width + x] = GUI::Window::getCharData(desc.symbol, desc.color, desc.attribs);
-			}
-		}
-	}
-
 	flagForUpdate();
 	clearObjects();
 }

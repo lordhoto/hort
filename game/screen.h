@@ -86,8 +86,6 @@ private:
 	bool _needRedraw;
 	const Map *_map;
 
-	int *_outputMapCache;
-
 	typedef std::list<const Monster *> MonsterList;
 	MonsterList _monsters;
 	const Monster *_centerMonster;
