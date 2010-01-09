@@ -44,7 +44,7 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::assignScreen(GameScreen &screen, const Monster &player) {
+void Level::assignScreen(Screen &screen, const Monster &player) {
 	screen.setMap(_map);
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
 		screen.addObject(*i);

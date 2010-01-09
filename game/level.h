@@ -23,7 +23,7 @@
 
 #include "map.h"
 #include "monster.h"
-#include "game_screen.h"
+#include "screen.h"
 
 #include <list>
 
@@ -40,7 +40,7 @@ public:
 	 * @param screen Screen to setup.
 	 * @param player The player monster.
 	 */
-	void assignScreen(GameScreen &screen, const Monster &player);
+	void assignScreen(Screen &screen, const Monster &player);
 
 	/**
 	 * Unassigns the level from the screen associated with it.
@@ -90,7 +90,7 @@ public:
 	MonsterList &getMonsters() { return _monsters; }
 private:
 	Map *_map;
-	GameScreen *_screen;
+	Screen *_screen;
 
 	MonsterList _monsters;
 };

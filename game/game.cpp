@@ -60,7 +60,7 @@ bool GameState::initialize() {
 		_screen.add(_mapWindow);
 		_screen.add(_playerStats);
 
-		_gameScreen = new GameScreen(*_mapWindow);
+		_gameScreen = new Screen(*_mapWindow);
 		_curLevel->assignScreen(*_gameScreen, _player);
 
 		_monsterAI = new AI::Monster(*this);

@@ -31,9 +31,9 @@
 
 namespace Game {
 
-class GameScreen {
+class Screen {
 public:
-	GameScreen(GUI::Window &window);
+	Screen(GUI::Window &window);
 
 	/**
 	 * Tells the game screen some object state changed.

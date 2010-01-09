@@ -12,7 +12,7 @@ OBJS := base/main.o \
 		game/map.o \
 		game/state.o \
 		game/game.o \
-		game/game_screen.o \
+		game/screen.o \
 		game/level.o \
 		game/event.o \
 		ai/fsm.o \

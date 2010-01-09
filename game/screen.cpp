@@ -18,20 +18,19 @@
  *
  */
 
-#include "game_screen.h"
-
+#include "screen.h"
 #include "gui/screen.h"
 
 namespace Game {
 
-GameScreen::GameScreen(GUI::Window &window)
+Screen::Screen(GUI::Window &window)
     : _output(window), _needRedraw(false), _map(0), _monsters(), _centerMonster(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
 }
 
-void GameScreen::update() {
+void Screen::update() {
 	if (!_needRedraw || !_map)
 		return;
 	_needRedraw = false;
@@ -78,13 +77,13 @@ void GameScreen::update() {
 		GUI::Screen::instance().setCursor(_output, _centerMonster->getX() - mapOffsetX, _centerMonster->getY() - mapOffsetY);
 }
 
-void GameScreen::setMap(const Map *map) {
+void Screen::setMap(const Map *map) {
 	_map = map;
 	flagForUpdate();
 	clearObjects();
 }
 
-void GameScreen::addObject(const Monster *monster, bool center) {
+void Screen::addObject(const Monster *monster, bool center) {
 	flagForUpdate();
 
 	_monsters.push_back(monster);
@@ -92,26 +91,26 @@ void GameScreen::addObject(const Monster *monster, bool center) {
 		_centerMonster = monster;
 }
 
-void GameScreen::remObject(const Monster *monster) {
+void Screen::remObject(const Monster *monster) {
 	flagForUpdate();
 	_monsters.remove(monster);
 	if (_centerMonster == monster)
 		_centerMonster = 0;
 }
 
-void GameScreen::clearObjects() {
+void Screen::clearObjects() {
 	flagForUpdate();
 	_monsters.clear();
 	_centerMonster = 0;
 }
 
 // Static data
-const GameScreen::DrawDesc GameScreen::_monsterDrawDescriptions[] = {
+const Screen::DrawDesc Screen::_monsterDrawDescriptions[] = {
 	DrawDesc('@', GUI::kWhiteOnBlack, GUI::kAttribBold),
 	DrawDesc('G', GUI::kYellowOnBlack, 0)
 };
 
-const size_t GameScreen::_monsterDrawDescriptionsEntries = sizeof(GameScreen::_monsterDrawDescriptions) / sizeof(GameScreen::_monsterDrawDescriptions[0]);
+const size_t Screen::_monsterDrawDescriptionsEntries = sizeof(Screen::_monsterDrawDescriptions) / sizeof(Screen::_monsterDrawDescriptions[0]);
 
 } // end of namespace Game
 
