@@ -65,8 +65,8 @@ void Screen::update() {
 
 		if (monsterX < (unsigned int)mapOffsetX
 		    || monsterY < (unsigned int)mapOffsetY
-		    || monsterX >= (unsigned int)mapOffsetX + mapWidth
-		    || monsterY >= (unsigned int)mapOffsetY + mapHeight)
+		    || monsterX >= (unsigned int)mapOffsetX + outputWidth
+		    || monsterY >= (unsigned int)mapOffsetY + outputHeight)
 			continue;
 
 		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
