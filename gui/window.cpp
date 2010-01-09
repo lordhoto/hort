@@ -75,6 +75,9 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 }
 
 void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, int attrib) {
+	if (y >= _h || x >= _w)
+		return;
+
 	if (_hasBorder) {
 		++y;
 		++x;
