@@ -46,6 +46,36 @@ Window::~Window() {
 	_cursesWin = 0;
 }
 
+int Window::getCharData(int ch, ColorPair color, int attrib) {
+	return ch | COLOR_PAIR(color) | attrib; 
+}
+
+void Window::putData(unsigned int x, unsigned int y, unsigned int width,
+                     unsigned int height, const int *data, unsigned int pitch) {
+	if (y >= _h || x >= _w)
+		return;
+	if (y + height > _h || x + width > _w)
+		return;
+
+	pitch = pitch - width;
+	assert(pitch >= 0);
+
+	const unsigned int y2 = y + height;
+	for (; y < y2; ++y) {
+		if (_hasBorder)
+			wmove(_cursesWin, y + 1, x + 1);
+		else
+			wmove(_cursesWin, y, x);
+
+		for (unsigned int i = 0; i < width; ++i)
+			waddch(_cursesWin, *data++);
+
+		data += pitch;
+	}
+
+	_needsRefresh = true;
+}
+
 void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, int attrib) {
 	if (_hasBorder)
 		mvwaddch(_cursesWin, y + 1, x + 1, ch | COLOR_PAIR(color) | attrib);

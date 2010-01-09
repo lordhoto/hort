@@ -97,11 +97,33 @@ public:
 	 * @param ch Character to print.
 	 * @param x x coordinate of the character.
 	 * @param y y coordinate of the character.
-	 * @param color Color of the string.
+	 * @param color Color of the character.
 	 * @param attrib Output attributes.
 	 * @see GUI::Attributes
 	 */
 	void printChar(int ch, unsigned int x, unsigned int y, ColorPair color = kWhiteOnBlack, int attrib = kAttribNormal);
+
+	/**
+	 * Returns the character data for the given character and it's attributes.
+	 *
+	 * @param ch Character.
+	 * @param color Color of the character.
+	 * @param attrib Output attributes.
+	 * @see GUI::Attributes
+	 */
+	static int getCharData(int ch, ColorPair color, int attrib = kAttribNormal);
+
+	/**
+	 * Replaces a given part of the screen with the given data.
+	 *
+	 * @param x x coordinate of the rect
+	 * @param y y coordinate of the rect
+	 * @param w width of the rect (max is width())
+	 * @param h height of the rect (max is height())
+	 * @param data data to put
+	 * @param pitch pitch of the data
+	 */
+	void putData(unsigned int x, unsigned int y, unsigned int width, unsigned int height, const int *data, unsigned int pitch);
 
 	/**
 	 * Clears the window. This will not remove the window border!
