@@ -77,13 +77,10 @@ bool GameState::initialize() {
 bool GameState::run() {
 	int input = -1;
 
-	_gameScreen->undrawMonster(_player);
 	do {
 		_player.setX(Base::rollDice(_curLevel->getMap().width()) - 1);
 		_player.setY(Base::rollDice(_curLevel->getMap().height()) - 1);
 	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
-	_gameScreen->drawMonster(_player);
-	_gameScreen->centerMonster(_player);
 
 	_gameScreen->update();
 	drawStatsWindow();
@@ -97,7 +94,6 @@ bool GameState::run() {
 		handleInput(input);
 
 		_monsterAI->update();
-		_gameScreen->centerMonster(_player);
 		_gameScreen->update();
 		drawStatsWindow();
 		printMessages();
@@ -118,10 +114,9 @@ void GameState::processEvent(const Event &event) {
 		assert(monster);
 
 		// TODO: add some error checking
-		_gameScreen->undrawMonster(*monster);
 		monster->setX(event.data.move.newX);
 		monster->setY(event.data.move.newY);
-		_gameScreen->drawMonster(*monster);
+		_gameScreen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
 		Monster *target = obtainMonster(event.data.attack.target);
 		assert(target);

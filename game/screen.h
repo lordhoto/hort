@@ -48,46 +48,49 @@ public:
 	/**
 	 * Sets the map to draw upon.
 	 *
-	 * This might update the refresh flag!
+	 * This automatically updates the refresh flag!
+	 * It also clears all object lists.
 	 *
 	 * @param map The map to draw.
 	 */
 	void setMap(const Map *map);
 
 	/**
-	 * Centers the screen around the given monster
+	 * Adds a monster to the display object list.
 	 *
-	 * This might update the refresh flag!
-	 *
-	 * @param monster Monster to center.
-	 */
-	void centerMonster(const Monster &monster);
-
-	/**
-	 * Draws a monster.
-	 *
-	 * This might update the refresh flag!
+	 * This automatically updates the refresh flag!
 	 *
 	 * @param monster The monster to draw.
+	 * @param center Whether to center the map around the object.
 	 */
-	void drawMonster(const Monster &monster);
+	void addObject(const Monster *monster, bool center = false);
 
 	/**
-	 * Undraws a monster.
+	 * Removes a monster from the display object list.
 	 *
-	 * This might update the refresh flag!
+	 * This automatically updates the refresh flag!
 	 *
-	 * @param monster The monster to undraw.
+	 * @param monster The monster to remove.
 	 */
-	void undrawMonster(const Monster &monster);
+	void remObject(const Monster *monster);
+
+	/**
+	 * Clears all object lists.
+	 *
+	 * This automatically updates the refresh flag!
+	 */
+	void clearObjects();
 private:
 	GUI::Window &_output;
 
 	bool _needRedraw;
 	const Map *_map;
 
-	int _mapOffsetX, _mapOffsetY;
 	int *_outputMapCache;
+
+	typedef std::list<const Monster *> MonsterList;
+	MonsterList _monsters;
+	const Monster *_centerMonster;
 
 	struct DrawDesc {
 		DrawDesc() {}
