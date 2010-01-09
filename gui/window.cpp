@@ -32,7 +32,8 @@ Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, b
       _w(border ? w - 2 : w),
       _h(border ? h - 2 : h),
       _cursesWin(0),
-      _hasBorder(border) {
+      _hasBorder(border),
+      _needsRefresh(true) {
 	assert(x + w <= 80);
 	assert(y + h <= 24);
 
@@ -50,6 +51,7 @@ void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, 
 		mvwaddch(_cursesWin, y + 1, x + 1, ch | COLOR_PAIR(color) | attrib);
 	else
 		mvwaddch(_cursesWin, y, x, ch | COLOR_PAIR(color) | attrib);
+	_needsRefresh = true;
 }
 
 void Window::printLine(const char *str, ColorPair color, int attrib) {
@@ -73,10 +75,13 @@ void Window::clear() {
 
 void Window::redraw() {
 	redrawwin(_cursesWin);
+	_needsRefresh = true;
 }
 
 void Window::refresh() {
-	wnoutrefresh(_cursesWin);
+	if (_needsRefresh)
+		wnoutrefresh(_cursesWin);
+	_needsRefresh = false;
 }
 
 } // end of namespace GUI

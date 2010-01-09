@@ -112,6 +112,8 @@ private:
 	WINDOW *_cursesWin;
 	bool _hasBorder;
 
+	bool _needsRefresh;
+
 	void refresh();
 	void redraw();
 };
