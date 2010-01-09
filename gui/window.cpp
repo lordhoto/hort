@@ -31,19 +31,20 @@ Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, b
       _y(border ? y + 1 : y),
       _w(border ? w - 2 : w),
       _h(border ? h - 2 : h),
-      _cursesWin(0),
+      _rX(x), _rY(y), _rW(w), _rH(h),
+      _content(0),
       _hasBorder(border),
       _needsRefresh(true) {
 	assert(x + w <= 80);
 	assert(y + h <= 24);
 
-	_cursesWin = newwin(h, w, y, x);
+	_content = new int[_rW * _rH];
+	assert(_content);
 	clear();
 }
 
 Window::~Window() {
-	delwin(_cursesWin);
-	_cursesWin = 0;
+	delete[] _content;
 }
 
 int Window::getCharData(int ch, ColorPair color, int attrib) {
@@ -57,26 +58,16 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 	if (y + height > _h || x + width > _w)
 		return;
 
-	pitch = pitch - width;
-	assert(pitch >= 0);
+	if (_hasBorder) {
+		++y;
+		++x;
+	}
 
-	if (_hasBorder)
-		wmove(_cursesWin, y + 1, x + 1);
-	else
-		wmove(_cursesWin, y, x);
+	int *dst = _content + y * _rW + x;
 
-	const unsigned int y2 = y + height;
-	for (; y < y2; ++y) {
-		if (width != _w) {
-			if (_hasBorder)
-				wmove(_cursesWin, y + 1, x + 1);
-			else
-				wmove(_cursesWin, y, x);
-		}
-
-		for (unsigned int i = 0; i < width; ++i)
-			waddch(_cursesWin, *data++);
-
+	while (height--) {
+		std::memcpy(dst, data, width * sizeof(int));
+		dst += _rW;
 		data += pitch;
 	}
 
@@ -84,10 +75,12 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 }
 
 void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, int attrib) {
-	if (_hasBorder)
-		mvwaddch(_cursesWin, y + 1, x + 1, ch | COLOR_PAIR(color) | attrib);
-	else
-		mvwaddch(_cursesWin, y, x, ch | COLOR_PAIR(color) | attrib);
+	if (_hasBorder) {
+		++y;
+		++x;
+	}
+
+	_content[y * _rW + x] = getCharData(ch, color, attrib);
 	_needsRefresh = true;
 }
 
@@ -105,21 +98,46 @@ void Window::printLine(const char *str, unsigned int x, unsigned int y, ColorPai
 }
 
 void Window::clear() {
-	wclear(_cursesWin);
-	if (_hasBorder)
-		wborder(_cursesWin, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+	int *dst = _content;
+	for (unsigned int y = 0; y < _rH; ++y) {
+		for (unsigned int x = 0; x < _rW; ++x)
+			*dst++ = ' ';
+	}
+
+	if (_hasBorder) {
+		dst[      0] = ACS_ULCORNER;
+		dst[_rW - 1] = ACS_URCORNER;
+		dst[(_rH - 1) * _rW + 0] = ACS_LLCORNER;
+		dst[(_rH - 1) * _rW + _rW - 1] = ACS_LLCORNER;
+
+		int *dst1 = _content + 1, *dst2 = _content + (_rH - 1) * _rW + 1;
+		// Top/Bottom line
+		for (unsigned int i = 0; i < _w; ++i)
+			*dst1++ = *dst2++ = ACS_HLINE;
+
+		// Left/Right line
+		dst1 = _content + 1 * _rW;
+		dst2 = _content + 2 * _rW - 1; 
+
+		for (unsigned int i = 0; i < _h; ++i) {
+			*dst1 = *dst2 = ACS_VLINE;
+			dst1 += _rW;
+			dst2 += _rW;
+		}
+	}
 	_needsRefresh = true;
 }
 
-void Window::redraw() {
-	redrawwin(_cursesWin);
-	_needsRefresh = true;
-}
+void Window::redraw(bool force) {
+	if (_needsRefresh || force) {
+		const int *src = _content;
 
-void Window::refresh() {
-	if (_needsRefresh)
-		wnoutrefresh(_cursesWin);
-	_needsRefresh = false;
+		for (unsigned int y = 0; y < _rH; ++y) {
+			move(_rY + y, _rX);
+			for (unsigned int x = 0; x < _rW; ++x)
+				addch(*src++);
+		}
+	}
 }
 
 } // end of namespace GUI

@@ -83,10 +83,12 @@ void Screen::clear() {
 void Screen::add(Window *window) {
 	remove(window);
 	_windows.push_back(window);
+	_needRedraw = true;
 }
 
 void Screen::remove(Window *window) {
 	_windows.remove(window);
+	_needRedraw = true;
 }
 
 void Screen::setCursor(unsigned int x, unsigned int y) {
@@ -103,14 +105,10 @@ void Screen::setCursor(const Window &win, unsigned int x, unsigned int y) {
 }
 
 void Screen::update() {
-	if (_needRedraw)
-		std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::redraw));
+	std::for_each(_windows.begin(), _windows.end(), std::bind2nd(std::mem_fun(&Window::redraw), _needRedraw));
 	_needRedraw = false;
-
-	std::for_each(_windows.begin(), _windows.end(), std::mem_fun(&Window::refresh));
-
 	move(_curY, _curX);
-	doupdate();
+	//doupdate();
 }
 
 } // end of namespace GUI

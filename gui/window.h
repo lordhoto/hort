@@ -47,7 +47,7 @@ public:
 
 	/**
 	 * Returns the x offset of right most column, which is accessable to the user.
-	 * @return x offset in real termincal coordinates.
+	 * @return x offset in real terminca coordinates.
 	 */
 	unsigned int offsetX() const { return _x; }
 
@@ -126,18 +126,18 @@ public:
 	void putData(unsigned int x, unsigned int y, unsigned int width, unsigned int height, const int *data, unsigned int pitch);
 
 	/**
-	 * Clears the window. This will not remove the window border!
+	 * Clears the window. This will not remove the window's border!
 	 */
 	void clear();
 private:
 	const unsigned int _x, _y, _w, _h;
-	WINDOW *_cursesWin;
+	const unsigned int _rX, _rY, _rW, _rH;
+	int *_content;
+
 	bool _hasBorder;
 
 	bool _needsRefresh;
-
-	void refresh();
-	void redraw();
+	void redraw(bool force);
 };
 
 }
