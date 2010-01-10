@@ -33,6 +33,7 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 	_initialized = false;
 	_messageLine = _mapWindow = _playerStats = 0;
 	_curLevel = 0;
+	_eventDisp = 0;
 }
 
 GameState::~GameState() {
@@ -50,7 +51,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level(_eventDisp);
+		_curLevel = new Level();
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
@@ -61,9 +62,7 @@ bool GameState::initialize() {
 		_screen.add(_playerStats);
 
 		_gameScreen = new Screen(*_mapWindow);
-		_curLevel->assignScreen(*_gameScreen, _player);
-
-		_eventDisp.addHandler(this);
+		_curLevel->makeActive(*_gameScreen, *this, _player);
 	}
 
 	_screen.clear();
@@ -125,6 +124,9 @@ void GameState::processEvent(const Event &event) {
 }
 
 void GameState::handleInput(int input) {
+	if (!_eventDisp)
+		return;
+
 	int offX = 0, offY = 0;
 	switch (input) {
 	case 'h':
@@ -177,10 +179,10 @@ void GameState::handleInput(int input) {
 		if (Base::rollDice(20) == 20) {
 			_messages.push_back("You fumble.");
 		} else {
-			_eventDisp.dispatch(createAttackEvent(kPlayerMonsterID, monster));
+			_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
 		}
 	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
-		_eventDisp.dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
+		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
 	}
 }
 

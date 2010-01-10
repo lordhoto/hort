@@ -33,13 +33,8 @@ namespace AI {
 
 class Monster : public Game::EventHandler {
 public:
-	Monster(const Game::Level &parent);
+	Monster(const Game::Level &parent, Game::EventDispatcher &disp);
 	~Monster();
-
-	/**
-	 * Set the new event dispatcher to use.
-	 */
-	void setEventDispatcher(Game::EventDispatcher *disp) { _eventDisp = disp; }
 
 	/**
 	 * Adds a new monster to the AI.
@@ -69,7 +64,7 @@ public:
 	void processEvent(const Game::Event &event);
 private:
 	const Game::Level &_level;
-	Game::EventDispatcher *_eventDisp;
+	Game::EventDispatcher &_eventDisp;
 	FSM::FSM *_fsm;
 
 	struct MonsterState {

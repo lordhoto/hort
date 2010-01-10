@@ -25,6 +25,7 @@
 #include "monster.h"
 #include "screen.h"
 #include "event.h"
+#include "game.h"
 
 #include <list>
 #include <map>
@@ -37,21 +38,22 @@ namespace Game {
 
 class Level : public EventHandler {
 public:
-	Level(EventDispatcher &eventDisp);
+	Level();
 	~Level();
 
 	/**
-	 * Assigns the level for output at the specific game screen.
+	 * Sets the level as the active game level.
 	 *
 	 * @param screen Screen to setup.
+	 * @param state The state, which takes over the level.
 	 * @param player The player monster.
 	 */
-	void assignScreen(Screen &screen, Monster &player);
+	void makeActive(Screen &screen, GameState &state, Monster &player);
 
 	/**
-	 * Unassigns the level from the screen associated with it.
+	 * Unsets the level as the active game level.
 	 */
-	void unassignScreen();
+	void makeInactive();
 
 	/**
 	 * Returns the map assigned with this level.
@@ -116,6 +118,8 @@ public:
 private:
 	Map *_map;
 	Screen *_screen;
+	GameState *_gameState;
+	EventDispatcher _eventDisp;
 
 	typedef std::map<MonsterID, Monster *> MonsterMap;
 	MonsterMap _monsters;

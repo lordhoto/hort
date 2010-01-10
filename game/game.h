@@ -48,8 +48,9 @@ public:
 
 	void processEvent(const Event &event);
 
-	const Level &getLevel() const { return *_curLevel; }
 	const Monster &getPlayer() const { return _player; }
+
+	void setEventDispatcher(EventDispatcher *disp) { _eventDisp = disp; }
 private:
 	bool _initialized;
 
@@ -58,7 +59,7 @@ private:
 	GUI::Window *_mapWindow;
 	GUI::Window *_playerStats;
 
-	EventDispatcher _eventDisp;
+	EventDispatcher *_eventDisp;
 
 	typedef std::list<std::string> StringList;
 	StringList _messages;

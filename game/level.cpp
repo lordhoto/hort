@@ -27,13 +27,11 @@
 
 namespace Game {
 
-Level::Level(EventDispatcher &eventDisp) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
+Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), _monsterAI(0) {
 	_map = new Map();
 
-	eventDisp.addHandler(this);
-	_monsterAI = new AI::Monster(*this);
-	eventDisp.addHandler(_monsterAI);
-	_monsterAI->setEventDispatcher(&eventDisp);
+	_eventDisp.addHandler(this);
+	_monsterAI = new AI::Monster(*this, _eventDisp);
 
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
@@ -50,6 +48,8 @@ Level::Level(EventDispatcher &eventDisp) : _map(0), _screen(0), _monsters(), _mo
 }
 
 Level::~Level() {
+	makeInactive();
+
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		if (i->first != kPlayerMonsterID)
 			delete i->second;
@@ -57,8 +57,8 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::assignScreen(Screen &screen, Monster &player) {
-	unassignScreen();
+void Level::makeActive(Screen &screen, GameState &state, Monster &player) {
+	makeInactive();
 
 	screen.setMap(_map);
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
@@ -67,13 +67,20 @@ void Level::assignScreen(Screen &screen, Monster &player) {
 	_screen = &screen;
 
 	_monsters[kPlayerMonsterID] = &player;
+
+	_gameState = &state;
+	_gameState->setEventDispatcher(&_eventDisp);
+	_eventDisp.addHandler(_gameState);
 }
 
-void Level::unassignScreen() {
+void Level::makeInactive() {
 	removeMonster(kPlayerMonsterID);
 	if (_screen)
 		_screen->setMap(0);
 	_screen = 0;
+	_eventDisp.removeHandler(_gameState);
+	_gameState->setEventDispatcher(0);
+	_gameState = 0;
 }
 
 bool Level::isWalkable(unsigned int x, unsigned int y) const {
