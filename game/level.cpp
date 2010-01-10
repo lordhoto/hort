@@ -176,10 +176,15 @@ void Level::processEvent(const Event &event) {
 		if (Base::rollDice(20) == 20) {
 			_eventDisp.dispatch(createAttackFailEvent(event.data.attack.monster));
 		} else {
-			int newHitPoints = target->getHitPoints() - 1;
+			int damage = 0;
+
+			if (monster->getType() != kMonsterSquolly)
+				damage = 1;
+
+			int newHitPoints = target->getHitPoints() - damage;
 			target->setHitPoints(newHitPoints);
 
-			_eventDisp.dispatch(createAttackDamageEvent(event.data.attack.monster, event.data.attack.target, !(monster->getType() == kMonsterSquolly)));
+			_eventDisp.dispatch(createAttackDamageEvent(event.data.attack.monster, event.data.attack.target, damage != 0));
 
 			if (newHitPoints <= 0)
 				_eventDisp.dispatch(createDeathEvent(event.data.attack.target, event.data.attack.monster));
