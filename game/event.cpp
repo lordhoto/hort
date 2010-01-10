@@ -20,7 +20,23 @@
 
 #include "event.h"
 
+#include <algorithm>
+#include <functional>
+
 namespace Game {
+
+void EventDispatcher::addHandler(EventHandler *handler) {
+	removeHandler(handler);
+	_handlers.push_back(handler);
+}
+
+void EventDispatcher::removeHandler(EventHandler *handler) {
+	_handlers.remove(handler);
+}
+
+void EventDispatcher::dispatch(const Event &event) {
+	std::for_each(_handlers.begin(), _handlers.end(), std::bind2nd(std::mem_fun(&EventHandler::processEvent), event));
+}
 
 Event createMoveEvent(const MonsterID monster, int offX, int offY) {
 	Event event;

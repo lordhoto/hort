@@ -23,6 +23,8 @@
 
 #include "monster.h"
 
+#include <list>
+
 namespace Game {
 
 struct Event {
@@ -61,6 +63,38 @@ public:
 	 * @param event to process.
 	 */
 	virtual void processEvent(const Event &event) = 0;
+};
+
+/**
+ * A event dispatcher. This object is used to dispatch
+ * events to various event handlers.
+ */
+class EventDispatcher {
+public:
+	/**
+	 * Adds a new event handler to dispatch the events to.
+	 * 
+	 * @param handler Pointer to the handler.
+	 */
+	void addHandler(EventHandler *handler);
+
+	/**
+	 * Removes a handler from the dispatcher.
+	 *
+	 * @param handler Handler to remove.
+	 */
+	void removeHandler(EventHandler *handler);
+
+	/**
+	 * Dispatches the given event.
+	 *
+	 * @param event Event to dispatch accross
+	 *              the setup handlers.
+	 */
+	void dispatch(const Event &event);
+private:
+	typedef std::list<EventHandler *> HandlerList;
+	HandlerList _handlers;
 };
 
 /**
