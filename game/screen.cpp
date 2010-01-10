@@ -85,6 +85,7 @@ void Screen::setMap(const Map *map) {
 
 void Screen::addObject(const Monster *monster, bool center) {
 	flagForUpdate();
+	remObject(monster);
 
 	_monsters.push_back(monster);
 	if (center)
