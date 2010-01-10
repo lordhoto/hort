@@ -34,7 +34,7 @@ Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), 
 	_monsterAI = new AI::Monster(*this, _eventDisp);
 	_eventDisp.addHandler(_monsterAI);
 
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 20; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
 			monsterX = Base::rollDice(_map->width()) - 1;
@@ -42,7 +42,11 @@ Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), 
 		} while (!isWalkable(monsterX, monsterY));
 
 		MonsterID newId = createNewMonsterID();
-		Monster *newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
+		Monster *newMonster = 0;
+		if (Base::rollDice(6) != 1)
+			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
+		else
+			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, monsterX, monsterY);
 		_monsters[newId] = newMonster;
 		_monsterAI->addMonster(newId, newMonster);
 	}
@@ -140,6 +144,16 @@ void Level::removeMonster(const MonsterID monster) {
 }
 
 void Level::update() {
+	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end();) {
+		if (i->second->getHitPoints() <= 0) {
+			MonsterID toRemove = i->first;
+			++i;
+			removeMonster(toRemove);
+		} else {
+			++i;
+		}
+	}
+
 	_monsterAI->update();
 }
 
@@ -160,8 +174,8 @@ void Level::processEvent(const Event &event) {
 		int newHitPoints = target->getHitPoints() - 1;
 		target->setHitPoints(newHitPoints);
 
-		if (newHitPoints <= 0)
-			removeMonster(event.data.attack.target);
+		// Do not remove the monster yet, since some other
+		// objects might still use it in the event queue.
 	}
 }
 

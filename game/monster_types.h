@@ -25,8 +25,16 @@ namespace Game {
 
 enum MonsterType {
 	kMonsterPlayer = 0,
-	kMonsterGnome = 1
+	kMonsterGnome = 1,
+	kMonsterSquolly = 2
 };
+
+/**
+ * Returns the name of the given monster.
+ *
+ * @param type Type of the monster
+ */
+const char *getMonsterName(MonsterType type);
 
 } // end of namespace Game
 

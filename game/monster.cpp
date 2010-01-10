@@ -33,5 +33,20 @@ MonsterID createNewMonsterID() {
 	return g_nextMonsterID++;
 }
 
+namespace {
+
+// TODO: This is better to be replaced by a "map" soon
+const char * const g_monsterNames[] = {
+	"you",
+	"Gnome",
+	"Squolly"
+};
+
+} // end of anonymous namespace
+
+const char *getMonsterName(MonsterType type) {
+	return g_monsterNames[type];
+}
+
 } // end of namespace Game
 

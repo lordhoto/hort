@@ -111,17 +111,26 @@ bool GameState::run() {
 
 void GameState::processEvent(const Event &event) {
 	if (event.type == Event::kTypeAttack) {
+		const Monster *monster = _curLevel->getMonster(event.data.attack.monster);
+		assert(monster);
+		const Monster *target = _curLevel->getMonster(event.data.attack.target);
+		assert(target);
+
+		std::stringstream ss;
+
 		if (event.data.attack.target == kPlayerMonsterID) {
-			if (_player.getHitPoints() <= 0)
-				_messages.push_back("You die...");
+			if (target->getHitPoints() <= 0)
+				ss << "You die...";
 			else
-				_messages.push_back("The Gnome hits you!");
+				ss << "The " << getMonsterName(monster->getType()) << " hits you!";
 		} else {
-			if (_player.getHitPoints() <= 0)
-				_messages.push_back("You kill the Gnome!");
+			if (target->getHitPoints() <= 0)
+				ss << "You kill the " << getMonsterName(target->getType()) << "!";
 			else
-				_messages.push_back("You hit the Gnome!");
+				ss << "You hit the " << getMonsterName(target->getType()) << "!";
 		}
+
+		_messages.push_back(ss.str());
 	}
 }
 
