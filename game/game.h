@@ -58,6 +58,8 @@ private:
 	GUI::Window *_mapWindow;
 	GUI::Window *_playerStats;
 
+	EventDispatcher _eventDisp;
+
 	typedef std::list<std::string> StringList;
 	StringList _messages;
 	void printMessages();

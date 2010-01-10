@@ -50,7 +50,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level(*this);
+		_curLevel = new Level(_eventDisp);
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
@@ -62,6 +62,8 @@ bool GameState::initialize() {
 
 		_gameScreen = new Screen(*_mapWindow);
 		_curLevel->assignScreen(*_gameScreen, _player);
+
+		_eventDisp.addHandler(this);
 	}
 
 	_screen.clear();
@@ -107,38 +109,19 @@ bool GameState::run() {
 }
 
 void GameState::processEvent(const Event &event) {
-	if (event.type == Event::kTypeMove) {
-		Monster *monster = obtainMonster(event.data.move.monster);
-		assert(monster);
-
-		// TODO: add some error checking
-		monster->setX(monster->getX() + event.data.move.offX);
-		monster->setY(monster->getY() + event.data.move.offY);
-
-		_gameScreen->flagForUpdate();
-	} else if (event.type == Event::kTypeAttack) {
-		Monster *target = obtainMonster(event.data.attack.target);
-		assert(target);
-
-		int newHitPoints = target->getHitPoints() - 1;
-		target->setHitPoints(newHitPoints);
-
-		if (target == &_player)
-			_messages.push_back("The Gnome hits!");
-		else
-			_messages.push_back("You hit the Gnome!");
-
-		if (newHitPoints <= 0) {
-			if (target != &_player) {
-				_messages.push_back("You kill the Gnome!");
-				_curLevel->removeMonster(event.data.attack.target);
-			} else {
+	if (event.type == Event::kTypeAttack) {
+		if (event.data.attack.target == kPlayerMonsterID) {
+			if (_player.getHitPoints() <= 0)
 				_messages.push_back("You die...");
-			}
+			else
+				_messages.push_back("The Gnome hits you!");
+		} else {
+			if (_player.getHitPoints() <= 0)
+				_messages.push_back("You kill the Gnome!");
+			else
+				_messages.push_back("You hit the Gnome!");
 		}
 	}
-
-	_curLevel->monsterAI()->processEvent(event);
 }
 
 void GameState::handleInput(int input) {
@@ -194,10 +177,10 @@ void GameState::handleInput(int input) {
 		if (Base::rollDice(20) == 20) {
 			_messages.push_back("You fumble.");
 		} else {
-			processEvent(createAttackEvent(kPlayerMonsterID, monster));
+			_eventDisp.dispatch(createAttackEvent(kPlayerMonsterID, monster));
 		}
 	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
-		processEvent(createMoveEvent(kPlayerMonsterID, offX, offY));
+		_eventDisp.dispatch(createMoveEvent(kPlayerMonsterID, offX, offY));
 	}
 }
 

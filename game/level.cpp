@@ -23,12 +23,17 @@
 #include "base/rnd.h"
 #include "ai/monster.h"
 
+#include <cassert>
+
 namespace Game {
 
-Level::Level(GameState &game) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
+Level::Level(EventDispatcher &eventDisp) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
 	_map = new Map();
 
-	_monsterAI = new AI::Monster(*this, game);
+	eventDisp.addHandler(this);
+	_monsterAI = new AI::Monster(*this);
+	eventDisp.addHandler(_monsterAI);
+	_monsterAI->setEventDispatcher(&eventDisp);
 
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
@@ -114,13 +119,37 @@ void Level::removeMonster(const MonsterID monster) {
 	if (i == _monsters.end())
 		return;
 
-	if (_screen)
-		_screen->remObject(i->second);
 	if (monster != kPlayerMonsterID) {
+		if (_screen)
+			_screen->remObject(i->second);
+
 		delete i->second;
 		_monsterAI->removeMonster(i->first);
 	}
+
 	_monsters.erase(i);
+}
+
+void Level::processEvent(const Event &event) {
+	if (event.type == Event::kTypeMove) {
+		Monster *monster = getMonster(event.data.move.monster);
+		assert(monster);
+
+		// TODO: add some error checking
+		monster->setX(monster->getX() + event.data.move.offX);
+		monster->setY(monster->getY() + event.data.move.offY);
+
+		_screen->flagForUpdate();
+	} else if (event.type == Event::kTypeAttack) {
+		Monster *target = getMonster(event.data.attack.target);
+		assert(target);
+
+		int newHitPoints = target->getHitPoints() - 1;
+		target->setHitPoints(newHitPoints);
+
+		if (newHitPoints <= 0)
+			removeMonster(event.data.attack.target);
+	}
 }
 
 } // end of namespace Game

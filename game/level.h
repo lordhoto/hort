@@ -24,7 +24,7 @@
 #include "map.h"
 #include "monster.h"
 #include "screen.h"
-#include "game.h"
+#include "event.h"
 
 #include <list>
 #include <map>
@@ -35,9 +35,9 @@ class Monster;
 
 namespace Game {
 
-class Level {
+class Level : public EventHandler {
 public:
-	Level(GameState &game);
+	Level(EventDispatcher &eventDisp);
 	~Level();
 
 	/**
@@ -101,6 +101,13 @@ public:
 	 * @param monster Monster to remove.
 	 */
 	void removeMonster(const MonsterID monster);
+
+	/**
+	 * Processes the given event.
+	 *
+	 * @param event Event to process.
+	 */
+	void processEvent(const Event &event);
 
 	AI::Monster *monsterAI() { return _monsterAI; }
 private:
