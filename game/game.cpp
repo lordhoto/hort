@@ -93,7 +93,7 @@ bool GameState::run() {
 		input = _input.poll();
 		handleInput(input);
 
-		_curLevel->monsterAI()->update();
+		_curLevel->update();
 		_gameScreen->update();
 		drawStatsWindow();
 		printMessages();

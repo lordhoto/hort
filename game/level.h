@@ -109,7 +109,10 @@ public:
 	 */
 	void processEvent(const Event &event);
 
-	AI::Monster *monsterAI() { return _monsterAI; }
+	/**
+	 * Updates the level's state.
+	 */
+	void update();
 private:
 	Map *_map;
 	Screen *_screen;

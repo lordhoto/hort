@@ -130,6 +130,10 @@ void Level::removeMonster(const MonsterID monster) {
 	_monsters.erase(i);
 }
 
+void Level::update() {
+	_monsterAI->update();
+}
+
 void Level::processEvent(const Event &event) {
 	if (event.type == Event::kTypeMove) {
 		Monster *monster = getMonster(event.data.move.monster);
