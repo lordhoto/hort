@@ -40,8 +40,9 @@ public:
 	 * Adds a new monster to the AI.
 	 *
 	 * @param monster New monster.
+	 * @param monsterPtr Pointer to the monster.
 	 */
-	void addMonster(const Game::MonsterID monster);
+	void addMonster(const Game::MonsterID monster, const Game::Monster *monsterPtr);
 
 	/**
 	 * Removes a monster from the AI.

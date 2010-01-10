@@ -97,9 +97,9 @@ Monster::~Monster() {
 	_fsm = 0;
 }
 
-void Monster::addMonster(const Game::MonsterID monster) {
+void Monster::addMonster(const Game::MonsterID monster, const Game::Monster *monsterPtr) {
 	removeMonster(monster);
-	_monsters[monster] = MonsterState(kMonsterIdle, _level.getMonster(monster));
+	_monsters[monster] = MonsterState(kMonsterIdle, monsterPtr);
 }
 
 void Monster::removeMonster(const Game::MonsterID monster) {

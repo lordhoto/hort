@@ -41,7 +41,7 @@ Level::Level(GameState &game, Monster &player) : _map(0), _screen(0), _monsters(
 		MonsterID newId = createNewMonsterID();
 		Monster *newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
 		_monsters[newId] = newMonster;
-		_monsterAI->addMonster(newId);
+		_monsterAI->addMonster(newId, newMonster);
 	}
 }
 
