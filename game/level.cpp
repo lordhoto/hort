@@ -136,8 +136,8 @@ void Level::processEvent(const Event &event) {
 		assert(monster);
 
 		// TODO: add some error checking
-		monster->setX(monster->getX() + event.data.move.offX);
-		monster->setY(monster->getY() + event.data.move.offY);
+		monster->setX(monster->getX() + event.data.move.newX);
+		monster->setY(monster->getY() + event.data.move.newY);
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {

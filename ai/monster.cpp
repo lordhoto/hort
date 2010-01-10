@@ -151,7 +151,7 @@ void Monster::update() {
 
 			const Game::Monster *monster = _level.getMonster(i->first);
 			if (offX && offY && _level.isWalkable(monster->getX() + offX, monster->getY() + offY))
-				_eventDisp->dispatch(Game::createMoveEvent(i->first, offX, offY));
+				_eventDisp->dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
 			} break;
 
 		case kMonsterAttack:
@@ -165,17 +165,14 @@ void Monster::update() {
 }
 
 void Monster::processEvent(const Game::Event &event) {
-	if (!_level.getMonster(Game::kPlayerMonsterID))
-		return;
-
 	if (event.type == Game::Event::kTypeMove) {
 		if (event.data.move.monster == Game::kPlayerMonsterID) {
 			for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 				_fsm->setState(i->second.fsmState);
 
 				// Calculate distance
-				int xDist = std::abs((int)(_level.getMonster(Game::kPlayerMonsterID)->getX() - i->second.monster->getX()));
-				int yDist = std::abs((int)(_level.getMonster(Game::kPlayerMonsterID)->getY() - i->second.monster->getY()));
+				int xDist = std::abs((int)(event.data.move.newX - i->second.monster->getX()));
+				int yDist = std::abs((int)(event.data.move.newY - i->second.monster->getY()));
 
 				if (xDist <= 1 && yDist <= 1)
 					_fsm->process(kPlayerTriggerDist2);
@@ -186,7 +183,7 @@ void Monster::processEvent(const Game::Event &event) {
 
 				i->second.fsmState = _fsm->getState();
 			}
-		} else {
+		} else if (_level.getMonster(Game::kPlayerMonsterID)) {
 			MonsterMap::iterator i = _monsters.find(event.data.move.monster);
 			if (i != _monsters.end()) {
 				// Calculate distance

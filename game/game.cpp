@@ -180,7 +180,7 @@ void GameState::handleInput(int input) {
 			_eventDisp.dispatch(createAttackEvent(kPlayerMonsterID, monster));
 		}
 	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
-		_eventDisp.dispatch(createMoveEvent(kPlayerMonsterID, offX, offY));
+		_eventDisp.dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
 	}
 }
 

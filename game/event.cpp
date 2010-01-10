@@ -38,12 +38,14 @@ void EventDispatcher::dispatch(const Event &event) {
 	std::for_each(_handlers.begin(), _handlers.end(), std::bind2nd(std::mem_fun(&EventHandler::processEvent), event));
 }
 
-Event createMoveEvent(const MonsterID monster, int offX, int offY) {
+Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY) {
 	Event event;
 	event.type = Event::kTypeMove;
 	event.data.move.monster = monster;
-	event.data.move.offX = offX;
-	event.data.move.offY = offY;
+	event.data.move.oldX = mP->getX();
+	event.data.move.oldY = mP->getY();
+	event.data.move.newX = mP->getX() + offX;
+	event.data.move.newY = mP->getY() + offY;
 	return event;
 }
 

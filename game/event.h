@@ -39,7 +39,8 @@ struct Event {
 		struct Move {
 			MonsterID monster;
 
-			unsigned int offX, offY;
+			unsigned int newX, newY;
+			unsigned int oldX, oldY;
 		} move;
 
 		struct Attack {
@@ -101,11 +102,12 @@ private:
  * Creates an event for the monster's movement.
  *
  * @param monster Monster to move.
+ * @param mP Pointer to the monster to move.
  * @param offX X offset to move.
  * @param offY Y offset to move.
  * @return Event structure.
  */
-Event createMoveEvent(const MonsterID monster, int offX, int offY);
+Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY);
 
 /**
  * Creates an attack event.
