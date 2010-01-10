@@ -184,6 +184,10 @@ bool GameState::handleInput(int input) {
 	case GUI::kKeyKeypad5:
 		return true;
 
+	case '/':
+		examine();
+		return false;
+
 	default:
 		return false;
 	}
@@ -203,8 +207,92 @@ bool GameState::handleInput(int input) {
 	return true;
 }
 
-Monster *GameState::obtainMonster(const MonsterID monster) {
-	return _curLevel->getMonster(monster);
+void GameState::examine() {
+	unsigned int x = 0, y = 0;
+	_screen.getCursor(x, y);
+	x -= _mapWindow->offsetX();
+	y -= _mapWindow->offsetY();
+
+	int input = 0;
+	while (input != GUI::kKeyEscape) {
+		input = _input.poll();
+		int offX = 0, offY = 0;
+		switch (input) {
+		case 'h':
+		case GUI::kKeyKeypad4:
+			--offX;
+			break;
+
+		case 'l':
+		case GUI::kKeyKeypad6:
+			++offX;
+			break;
+
+		case 'k':
+		case GUI::kKeyKeypad8:
+			--offY;
+			break;
+
+		case 'j':
+		case GUI::kKeyKeypad2:
+			++offY;
+			break;
+
+		case 'y': case 'z':
+		case GUI::kKeyKeypad7:
+			--offX; --offY;
+			break;
+
+		case 'u':
+		case GUI::kKeyKeypad9:
+			++offX; --offY;
+			break;
+
+		case 'b':
+		case GUI::kKeyKeypad1:
+			--offX; ++offY;
+			break;
+
+		case 'n':
+		case GUI::kKeyKeypad3:
+			++offX; ++offY;
+			break;
+
+		case '.':
+		case GUI::kKeyKeypad5: {
+			input = GUI::kKeyEscape;
+
+			x = x + _gameScreen->mapOffsetX();
+			y = y + _gameScreen->mapOffsetY();
+			std::stringstream ss;
+			MonsterID monster = _curLevel->monsterAt(x, y);
+			if (monster != kInvalidMonsterID)
+				ss << "You see here a " << getMonsterName(_curLevel->getMonster(monster)->getType()) << ".";
+			else
+				ss << "This is just a simple " << Map::queryTileName(_curLevel->getMap().tileAt(x, y)) << ".";
+
+			_messages.push_back(ss.str());
+			} break;
+
+		default:
+			break;
+		}
+
+		if (input == GUI::kKeyEscape)
+			break;
+
+		if (x + offX >= 0 && x + offX < _mapWindow->width() && x + offX < _curLevel->getMap().width())
+			x += offX;
+		if (y + offY >= 0 && y + offY < _mapWindow->height() && y + offY < _curLevel->getMap().height())
+			y += offY;
+
+		_screen.setCursor(*_mapWindow, x, y);
+		_screen.update();
+	}
+
+	_screen.setCursor(*_mapWindow, _player.getX() - _gameScreen->mapOffsetX(), _player.getY() - _gameScreen->mapOffsetY());
+	printMessages();
+	_screen.update();
 }
 
 void GameState::printMessages() {

@@ -91,6 +91,11 @@ public:
 	void setCursor(const Window &win, unsigned int x, unsigned int y);
 
 	/**
+	 * Queries the cursor coordinates.
+	 */
+	void getCursor(unsigned int &x, unsigned int &y);
+
+	/**
 	 * Updates all window's changed content. This will
 	 * also redraw all windows, when clear had been called.
 	 *

@@ -104,6 +104,11 @@ void Screen::setCursor(const Window &win, unsigned int x, unsigned int y) {
 	setCursor(x + win.offsetX(), y + win.offsetY());
 }
 
+void Screen::getCursor(unsigned int &x, unsigned int &y) {
+	x = _curX;
+	y = _curY;
+}
+
 void Screen::update() {
 	std::for_each(_windows.begin(), _windows.end(), std::bind2nd(std::mem_fun(&Window::redraw), _needRedraw));
 	_needRedraw = false;

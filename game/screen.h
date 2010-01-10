@@ -80,6 +80,16 @@ public:
 	 * This automatically updates the refresh flag!
 	 */
 	void clearObjects();
+
+	/**
+	 * Queries the current map X offset.
+	 */
+	int mapOffsetX() const { return _mapOffsetX; }
+
+	/**
+	 * Queries the current map Y offset.
+	 */
+	int mapOffsetY() const { return _mapOffsetY; }
 private:
 	GUI::Window &_output;
 
@@ -88,7 +98,9 @@ private:
 
 	typedef std::list<const Monster *> MonsterList;
 	MonsterList _monsters;
+
 	const Monster *_centerMonster;
+	int _mapOffsetX, _mapOffsetY;
 
 	struct DrawDesc {
 		DrawDesc() {}

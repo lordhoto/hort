@@ -74,7 +74,7 @@ private:
 	Monster _player;
 
 	bool handleInput(int input);
-	Monster *obtainMonster(const MonsterID monster);
+	void examine();
 };
 
 } // end of namespace Game

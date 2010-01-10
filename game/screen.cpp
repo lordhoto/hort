@@ -24,7 +24,7 @@
 namespace Game {
 
 Screen::Screen(GUI::Window &window)
-    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerMonster(0) {
+    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerMonster(0), _mapOffsetX(0), _mapOffsetY(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
@@ -38,23 +38,24 @@ void Screen::update() {
 	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
 	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
 
-	int mapOffsetX = 0, mapOffsetY = 0;
+	_mapOffsetX = 0;
+	_mapOffsetY = 0;
 
 	if (_centerMonster) {
-		mapOffsetX = _centerMonster->getX() - outputWidth / 2;
-		mapOffsetY = _centerMonster->getY() - outputHeight / 2;
+		_mapOffsetX = _centerMonster->getX() - outputWidth / 2;
+		_mapOffsetY = _centerMonster->getY() - outputHeight / 2;
 
-		mapOffsetX = std::max(mapOffsetX, 0);
-		mapOffsetX = std::min<unsigned int>(mapOffsetX, mapWidth - outputWidth);
+		_mapOffsetX = std::max(_mapOffsetX, 0);
+		_mapOffsetX = std::min<unsigned int>(_mapOffsetX, mapWidth - outputWidth);
 
-		mapOffsetY = std::max(mapOffsetY, 0);
-		mapOffsetY = std::min<unsigned int>(mapOffsetY, mapHeight - outputHeight);
+		_mapOffsetY = std::max(_mapOffsetY, 0);
+		_mapOffsetY = std::min<unsigned int>(_mapOffsetY, mapHeight - outputHeight);
 	}
 
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
 	for (unsigned int y = 0; y < maxHeight; ++y) {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
-			const Map::Tile tile = _map->tileAt(x + mapOffsetX, y + mapOffsetY);
+			const Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
 			const DrawDesc &desc = _mapDrawDescs[tile];
 			_output.printChar(desc.symbol, x, y, desc.color, desc.attribs);
 		}
@@ -63,18 +64,18 @@ void Screen::update() {
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		const unsigned int monsterX = (*i)->getX(), monsterY = (*i)->getY();
 
-		if (monsterX < (unsigned int)mapOffsetX
-		    || monsterY < (unsigned int)mapOffsetY
-		    || monsterX >= (unsigned int)mapOffsetX + outputWidth
-		    || monsterY >= (unsigned int)mapOffsetY + outputHeight)
+		if (monsterX < (unsigned int)_mapOffsetX
+		    || monsterY < (unsigned int)_mapOffsetY
+		    || monsterX >= (unsigned int)_mapOffsetX + outputWidth
+		    || monsterY >= (unsigned int)_mapOffsetY + outputHeight)
 			continue;
 
 		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
-		_output.printChar(desc.symbol, monsterX - mapOffsetX, monsterY - mapOffsetY, desc.color, desc.attribs);
+		_output.printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
 	}
 
 	if (_centerMonster)
-		GUI::Screen::instance().setCursor(_output, _centerMonster->getX() - mapOffsetX, _centerMonster->getY() - mapOffsetY);
+		GUI::Screen::instance().setCursor(_output, _centerMonster->getX() - _mapOffsetX, _centerMonster->getY() - _mapOffsetY);
 }
 
 void Screen::setMap(const Map *map) {
