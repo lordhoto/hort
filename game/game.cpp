@@ -92,12 +92,12 @@ bool GameState::run() {
 		_screen.update();
 
 		input = _input.poll();
-		handleInput(input);
-
-		_curLevel->update();
-		_gameScreen->update();
-		drawStatsWindow();
-		printMessages();
+		if (handleInput(input)) {
+			_curLevel->update();
+			_gameScreen->update();
+			drawStatsWindow();
+			printMessages();
+		}
 
 		if (_player.getHitPoints() <= 0) {
 			_screen.update();
@@ -134,9 +134,9 @@ void GameState::processEvent(const Event &event) {
 	}
 }
 
-void GameState::handleInput(int input) {
+bool GameState::handleInput(int input) {
 	if (!_eventDisp)
-		return;
+		return false;
 
 	int offX = 0, offY = 0;
 	switch (input) {
@@ -180,8 +180,12 @@ void GameState::handleInput(int input) {
 		++offX; ++offY;
 		break;
 
+	case '.':
+	case GUI::kKeyKeypad5:
+		return true;
+
 	default:
-		return;
+		return false;
 	}
 
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
@@ -195,6 +199,8 @@ void GameState::handleInput(int input) {
 	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
 		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
 	}
+
+	return true;
 }
 
 Monster *GameState::obtainMonster(const MonsterID monster) {

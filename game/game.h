@@ -73,7 +73,7 @@ private:
 	Level *_curLevel;
 	Monster _player;
 
-	void handleInput(int input);
+	bool handleInput(int input);
 	Monster *obtainMonster(const MonsterID monster);
 };
 
