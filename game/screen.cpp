@@ -109,7 +109,7 @@ void Screen::clearObjects() {
 const Screen::DrawDesc Screen::_monsterDrawDescriptions[] = {
 	DrawDesc('@', GUI::kWhiteOnBlack, GUI::kAttribBold),
 	DrawDesc('G', GUI::kYellowOnBlack, 0),
-	DrawDesc('S', GUI::kBlueOnBlack, GUI::kAttribBold)
+	DrawDesc('@', GUI::kBlueOnBlack, GUI::kAttribBold)
 };
 
 const size_t Screen::_monsterDrawDescriptionsEntries = sizeof(Screen::_monsterDrawDescriptions) / sizeof(Screen::_monsterDrawDescriptions[0]);
