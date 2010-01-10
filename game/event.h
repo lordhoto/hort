@@ -48,6 +48,22 @@ struct Event {
 };
 
 /**
+ * A class capable of handling events.
+ */
+class EventHandler {
+public:
+	virtual ~EventHandler() {}
+
+	/**
+	 * Process the event in the manner the EventHandler
+	 * sees fitting.
+	 *
+	 * @param event to process.
+	 */
+	virtual void processEvent(const Event &event) = 0;
+};
+
+/**
  * Creates an event for the monster's movement.
  *
  * @param monster Monster to move.

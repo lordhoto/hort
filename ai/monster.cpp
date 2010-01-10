@@ -88,7 +88,7 @@ FSM::FSM *createMonsterFSM() {
 
 } // end of anonymous namespace
 
-Monster::Monster(Game::GameState &game) : _player(game.getPlayer()), _game(game) {
+Monster::Monster(Game::GameState &game) : _player(game.getPlayer()), _game(game), _events(game) {
 	_fsm = createMonsterFSM();
 }
 
@@ -151,11 +151,11 @@ void Monster::update() {
 
 			const Game::Monster *monster = _game.getLevel().getMonster(i->first);
 			if (offX && offY && _game.getLevel().isWalkable(monster->getX() + offX, monster->getY() + offY))
-				_game.processEvent(Game::createMoveEvent(i->first, offX, offY));
+				_events.processEvent(Game::createMoveEvent(i->first, offX, offY));
 			} break;
 
 		case kMonsterAttack:
-			_game.processEvent(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
+			_events.processEvent(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
 			break;
 
 		default:

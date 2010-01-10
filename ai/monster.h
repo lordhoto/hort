@@ -23,6 +23,7 @@
 
 #include "fsm.h"
 #include "game/game.h"
+#include "game/monster.h"
 #include "game/event.h"
 
 #include <map>
@@ -30,7 +31,7 @@
 
 namespace AI {
 
-class Monster {
+class Monster : public Game::EventHandler {
 public:
 	Monster(Game::GameState &game);
 	~Monster();
@@ -63,6 +64,7 @@ public:
 private:
 	const Game::Monster &_player;
 	Game::GameState &_game;
+	Game::EventHandler &_events;
 	FSM::FSM *_fsm;
 
 	struct MonsterState {

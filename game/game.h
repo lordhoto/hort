@@ -40,7 +40,7 @@ class Monster;
 
 namespace Game {
 
-class GameState : public State {
+class GameState : public State, public EventHandler {
 public:
 	GameState();
 	~GameState();
