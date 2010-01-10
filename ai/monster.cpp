@@ -156,7 +156,7 @@ void Monster::update() {
 			} break;
 
 		case kMonsterAttack:
-			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID, i->second.monster->getType() == Game::kMonsterSquolly));
+			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
 			break;
 
 		default:

@@ -49,12 +49,35 @@ Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int 
 	return event;
 }
 
-Event createAttackEvent(const MonsterID monster, const MonsterID target, bool fumble) {
+Event createAttackEvent(const MonsterID monster, const MonsterID target) {
 	Event event;
 	event.type = Event::kTypeAttack;
 	event.data.attack.monster = monster;
 	event.data.attack.target = target;
-	event.data.attack.fumble = fumble;
+	return event;
+}
+
+Event createAttackDamageEvent(const MonsterID monster, const MonsterID target, bool didDmg) {
+	Event event;
+	event.type = Event::kTypeAttackDamage;
+	event.data.attackDamage.monster = monster;
+	event.data.attackDamage.target = target;
+	event.data.attackDamage.didDmg = didDmg;
+	return event;
+}
+
+Event createAttackFailEvent(const MonsterID monster) {
+	Event event;
+	event.type = Event::kTypeAttackFail;
+	event.data.attackFail.monster = monster;
+	return event;
+}
+
+Event createDeathEvent(const MonsterID monster, const MonsterID killer) {
+	Event event;
+	event.type = Event::kTypeDeath;
+	event.data.death.monster = monster;
+	event.data.death.killer = killer;
 	return event;
 }
 

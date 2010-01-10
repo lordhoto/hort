@@ -29,9 +29,33 @@ namespace Game {
 
 struct Event {
 	enum kType {
+		/**
+		 * Indicates that a monster moves.
+		 */
 		kTypeMove,
+
+		/**
+		 * Indicates that a monster *tries*
+		 * to attack another monster.
+		 */
 		kTypeAttack,
-		kTypeDamage
+
+		/**
+		 * Indicates that a monster successfully
+		 * attacked another monster.
+		 */
+		kTypeAttackDamage,
+
+		/**
+		 * Indicates that a monster attack
+		 * failed.
+		 */
+		kTypeAttackFail,
+
+		/**
+		 * Indicates that a monster dies.
+		 */
+		kTypeDeath
 	};
 
 	kType type;
@@ -47,8 +71,23 @@ struct Event {
 		struct Attack {
 			MonsterID monster;
 			MonsterID target;
-			bool fumble;
 		} attack;
+
+		struct AttackDamage {
+			MonsterID monster;
+			MonsterID target;
+
+			bool didDmg;
+		} attackDamage;
+
+		struct AttackFail {
+			MonsterID monster;
+		} attackFail;
+
+		struct Death {
+			MonsterID monster;
+			MonsterID killer; // This might be kInvalidMonsterID!
+		} death;
 	} data;
 };
 
@@ -116,10 +155,36 @@ Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int 
  *
  * @param monster Monster which attacks.
  * @param target Monster which is attacked.
- * @param fumble Whether the monster fumbles.
  * @return Event structure.
  */
-Event createAttackEvent(const MonsterID monster, const MonsterID target, bool fumble);
+Event createAttackEvent(const MonsterID monster, const MonsterID target);
+
+/**
+ * Creates an attack damage event.
+ *
+ * @param monster Monster which attacks.
+ * @param target Monster which is attacked.
+ * @param didDmg Whether the attack caused any damage.
+ * @return Event structure.
+ */
+Event createAttackDamageEvent(const MonsterID monster, const MonsterID target, bool didDmg);
+
+/**
+ * Creates an attack fail event.
+ *
+ * @param monster Monster which failed to attack.
+ * @return Event sturcture.
+ */
+Event createAttackFailEvent(const MonsterID monster);
+
+/**
+ * Creates a death event.
+ *
+ * @param monster Monster which dies.
+ * @param killer (Optional) killer monster.
+ * @return Event structure.
+ */
+Event createDeathEvent(const MonsterID monster, const MonsterID killer = kInvalidMonsterID);
 
 } // end of namespace Game
 

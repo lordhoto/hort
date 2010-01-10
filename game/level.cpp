@@ -168,14 +168,22 @@ void Level::processEvent(const Event &event) {
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
-		if (event.data.attack.fumble)
-			return;
-
+		const Monster *monster = getMonster(event.data.attack.monster);
+		assert(monster);
 		Monster *target = getMonster(event.data.attack.target);
 		assert(target);
 
-		int newHitPoints = target->getHitPoints() - 1;
-		target->setHitPoints(newHitPoints);
+		if (Base::rollDice(20) == 20) {
+			_eventDisp.dispatch(createAttackFailEvent(event.data.attack.monster));
+		} else {
+			int newHitPoints = target->getHitPoints() - 1;
+			target->setHitPoints(newHitPoints);
+
+			_eventDisp.dispatch(createAttackDamageEvent(event.data.attack.monster, event.data.attack.target, !(monster->getType() == kMonsterSquolly)));
+
+			if (newHitPoints <= 0)
+				_eventDisp.dispatch(createDeathEvent(event.data.attack.target, event.data.attack.monster));
+		}
 
 		// Do not remove the monster yet, since some other
 		// objects might still use it in the event queue.

@@ -110,31 +110,59 @@ bool GameState::run() {
 }
 
 void GameState::processEvent(const Event &event) {
-	if (event.type == Event::kTypeAttack) {
-		const Monster *monster = _curLevel->getMonster(event.data.attack.monster);
+	if (event.type == Event::kTypeAttackDamage) {
+		const Monster *monster = _curLevel->getMonster(event.data.attackDamage.monster);
 		assert(monster);
-		const Monster *target = _curLevel->getMonster(event.data.attack.target);
+		const Monster *target = _curLevel->getMonster(event.data.attackDamage.target);
 		assert(target);
 
 		std::stringstream ss;
 
-		if (event.data.attack.target == kPlayerMonsterID) {
-			if (target->getHitPoints() <= 0)
-				ss << "You die...";
-			else if (event.data.attack.fumble)
-				ss << "The " << getMonsterName(monster->getType()) << " fumbles!";
-			else
-				ss << "The " << getMonsterName(monster->getType()) << " hits you!";
-		} else {
-			if (target->getHitPoints() <= 0)
-				ss << "You kill the " << getMonsterName(target->getType()) << "!";
-			else if (event.data.attack.fumble)
-				ss << "You fumble!";
-			else
-				ss << "You hit the " << getMonsterName(target->getType()) << "!";
-		}
+		if (event.data.attackDamage.target == kPlayerMonsterID)
+			ss << "The " << getMonsterName(monster->getType()) << " hits you!";
+		else
+			ss << "You hit the " << getMonsterName(target->getType()) << "!";
+
+		if (!event.data.attackDamage.didDmg)
+			ss << " Somehow the attack does not cause any damage.";
 
 		_messages.push_back(ss.str());
+	} else if (event.type == Event::kTypeAttackFail) {
+		const Monster *monster = _curLevel->getMonster(event.data.attackFail.monster);
+		assert(monster);
+
+		std::stringstream ss;
+
+		if (event.data.attackFail.monster == kPlayerMonsterID)
+			ss << "You miss!";
+		else
+			ss << "The " << getMonsterName(monster->getType()) << " misses!";
+
+		_messages.push_back(ss.str());
+	} else if (event.type == Event::kTypeDeath) {
+		if (event.data.death.monster == kPlayerMonsterID) {
+			_messages.push_back("You die...");
+		} else {
+			const Monster *monster = _curLevel->getMonster(event.data.death.monster);
+			assert(monster);
+
+			std::stringstream ss;
+			if (event.data.death.killer == kPlayerMonsterID) {
+				ss << "You kill the " << getMonsterName(monster->getType()) << "!";
+			} else {
+				ss << "The " << getMonsterName(monster->getType());
+
+				if (event.data.death.killer == kInvalidMonsterID) {
+					ss << " dies!";
+				} else {
+					const Monster *killer = _curLevel->getMonster(event.data.death.killer);
+					assert(killer);
+					ss << " is killed by the " << getMonsterName(killer->getType()) << "!";
+				}
+			}
+
+			_messages.push_back(ss.str());
+		}
 	}
 }
 
@@ -199,7 +227,7 @@ bool GameState::handleInput(int input) {
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
 	MonsterID monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
-		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster, Base::rollDice(20) == 20));
+		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
 	else if (_curLevel->isWalkable(playerX + offX, playerY + offY))
 		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
 
