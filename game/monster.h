@@ -31,6 +31,8 @@ typedef unsigned int MonsterID;
 extern const MonsterID kPlayerMonsterID;
 extern const MonsterID kInvalidMonsterID;
 
+MonsterID createNewMonsterID();
+
 class Monster {
 public:
 	enum Attribute {

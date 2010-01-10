@@ -25,5 +25,13 @@ namespace Game {
 const MonsterID kPlayerMonsterID = 0;
 const MonsterID kInvalidMonsterID = 0xFFFFFFFF;
 
+namespace {
+MonsterID g_nextMonsterID = kPlayerMonsterID + 1;
+} // end of anonymous namespace
+
+MonsterID createNewMonsterID() {
+	return g_nextMonsterID++;
+}
+
 } // end of namespace Game
 

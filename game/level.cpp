@@ -27,7 +27,6 @@ namespace Game {
 Level::Level() : _map(0), _screen(0), _monsters() {
 	_map = new Map();
 
-	MonsterID id = kPlayerMonsterID + 1;
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
@@ -35,7 +34,7 @@ Level::Level() : _map(0), _screen(0), _monsters() {
 			monsterY = Base::rollDice(_map->height()) - 1;
 		} while (!isWalkable(monsterX, monsterY));
 
-		_monsters[id++] = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
+		_monsters[createNewMonsterID()] = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
 	}
 }
 
