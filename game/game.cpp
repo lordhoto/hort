@@ -185,7 +185,7 @@ void GameState::handleInput(int input) {
 		break;
 
 	default:
-		break;
+		return;
 	}
 
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
