@@ -74,10 +74,12 @@ bool GameState::run() {
 	int input = -1;
 
 	int playerX = 0, playerY = 0;
+
 	do {
 		playerX = _curLevel->getMap().width() - 1;
 		playerY = _curLevel->getMap().height() - 1;
 	} while (!_curLevel->isWalkable(playerX, playerY));
+
 	_player.setX(playerX);
 	_player.setY(playerY);
 

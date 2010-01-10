@@ -32,6 +32,7 @@ Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), 
 
 	_eventDisp.addHandler(this);
 	_monsterAI = new AI::Monster(*this, _eventDisp);
+	_eventDisp.addHandler(_monsterAI);
 
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
@@ -79,7 +80,8 @@ void Level::makeInactive() {
 		_screen->setMap(0);
 	_screen = 0;
 	_eventDisp.removeHandler(_gameState);
-	_gameState->setEventDispatcher(0);
+	if (_gameState)
+		_gameState->setEventDispatcher(0);
 	_gameState = 0;
 }
 
@@ -147,8 +149,8 @@ void Level::processEvent(const Event &event) {
 		assert(monster);
 
 		// TODO: add some error checking
-		monster->setX(monster->getX() + event.data.move.newX);
-		monster->setY(monster->getY() + event.data.move.newY);
+		monster->setX(event.data.move.newX);
+		monster->setY(event.data.move.newY);
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {

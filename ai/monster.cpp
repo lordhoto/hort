@@ -187,8 +187,8 @@ void Monster::processEvent(const Game::Event &event) {
 			MonsterMap::iterator i = _monsters.find(event.data.move.monster);
 			if (i != _monsters.end()) {
 				// Calculate distance
-				int xDist = std::abs((int)(i->second.monster->getX() - _level.getMonster(Game::kPlayerMonsterID)->getX()));
-				int yDist = std::abs((int)(i->second.monster->getY() - _level.getMonster(Game::kPlayerMonsterID)->getY()));
+				int xDist = std::abs((int)(event.data.move.newX - _level.getMonster(Game::kPlayerMonsterID)->getX()));
+				int yDist = std::abs((int)(event.data.move.newY - _level.getMonster(Game::kPlayerMonsterID)->getY()));
 
 				_fsm->setState(i->second.fsmState);
 
