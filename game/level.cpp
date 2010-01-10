@@ -25,10 +25,9 @@
 
 namespace Game {
 
-Level::Level(GameState &game, Monster &player) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
+Level::Level(GameState &game) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
 	_map = new Map();
 
-	_monsters[kPlayerMonsterID] = &player;
 	_monsterAI = new AI::Monster(*this, game);
 
 	for (int i = 0; i < 10; ++i) {
@@ -53,15 +52,20 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::assignScreen(Screen &screen, const Monster &player) {
+void Level::assignScreen(Screen &screen, Monster &player) {
+	unassignScreen();
+
 	screen.setMap(_map);
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
 		screen.addObject(i->second);
 	screen.addObject(&player, true);
 	_screen = &screen;
+
+	_monsters[kPlayerMonsterID] = &player;
 }
 
 void Level::unassignScreen() {
+	removeMonster(kPlayerMonsterID);
 	if (_screen)
 		_screen->setMap(0);
 	_screen = 0;
@@ -112,8 +116,10 @@ void Level::removeMonster(const MonsterID monster) {
 
 	if (_screen)
 		_screen->remObject(i->second);
-	delete i->second;
-	_monsterAI->removeMonster(i->first);
+	if (monster != kPlayerMonsterID) {
+		delete i->second;
+		_monsterAI->removeMonster(i->first);
+	}
 	_monsters.erase(i);
 }
 

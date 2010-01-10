@@ -50,7 +50,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level(*this, _player);
+		_curLevel = new Level(*this);
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 22, false);

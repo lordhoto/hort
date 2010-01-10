@@ -37,7 +37,7 @@ namespace Game {
 
 class Level {
 public:
-	Level(GameState &game, Monster &player);
+	Level(GameState &game);
 	~Level();
 
 	/**
@@ -46,7 +46,7 @@ public:
 	 * @param screen Screen to setup.
 	 * @param player The player monster.
 	 */
-	void assignScreen(Screen &screen, const Monster &player);
+	void assignScreen(Screen &screen, Monster &player);
 
 	/**
 	 * Unassigns the level from the screen associated with it.
