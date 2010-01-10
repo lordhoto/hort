@@ -64,9 +64,9 @@ bool GameState::initialize() {
 		_curLevel->assignScreen(*_gameScreen, _player);
 
 		_monsterAI = new AI::Monster(*this);
-		const Level::MonsterList &monsters = _curLevel->getMonsters();
-		for (Level::MonsterList::const_iterator i = monsters.begin(); i != monsters.end(); ++i)
-			_monsterAI->addMonster(*i);
+		const Level::MonsterMap &monsters = _curLevel->getMonsters();
+		for (Level::MonsterMap::const_iterator i = monsters.begin(); i != monsters.end(); ++i)
+			_monsterAI->addMonster(i->first);
 	}
 
 	_screen.clear();
@@ -114,8 +114,9 @@ void GameState::processEvent(const Event &event) {
 		assert(monster);
 
 		// TODO: add some error checking
-		monster->setX(event.data.move.newX);
-		monster->setY(event.data.move.newY);
+		monster->setX(monster->getX() + event.data.move.offX);
+		monster->setY(monster->getY() + event.data.move.offY);
+
 		_gameScreen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
 		Monster *target = obtainMonster(event.data.attack.target);
@@ -132,8 +133,8 @@ void GameState::processEvent(const Event &event) {
 		if (newHitPoints <= 0) {
 			if (target != &_player) {
 				_messages.push_back("You kill the Gnome!");
-				_monsterAI->removeMonster(target);
-				_curLevel->removeMonster(target);
+				_monsterAI->removeMonster(event.data.attack.target);
+				_curLevel->removeMonster(event.data.attack.target);
 			} else {
 				_messages.push_back("You die...");
 			}
@@ -191,29 +192,23 @@ void GameState::handleInput(int input) {
 	}
 
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
-	Monster *monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
-	if (monster) {
+	MonsterID monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
+	if (monster != kInvalidMonsterID) {
 		if (Base::rollDice(20) == 20) {
 			_messages.push_back("You fumble.");
 		} else {
-			processEvent(createAttackEvent(&_player, monster));
+			processEvent(createAttackEvent(kPlayerMonsterID, monster));
 		}
 	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
-		processEvent(createMoveEvent(&_player, offX, offY));
+		processEvent(createMoveEvent(kPlayerMonsterID, offX, offY));
 	}
 }
 
-Monster *GameState::obtainMonster(const Monster *monster) {
-	if (monster == &_player) {
+Monster *GameState::obtainMonster(const MonsterID monster) {
+	if (monster == kPlayerMonsterID)
 		return &_player;
-	} else {
-		Level::MonsterList &monsters = _curLevel->getMonsters();
-		Level::MonsterList::iterator i = std::find(monsters.begin(), monsters.end(), monster);
-		if (i != monsters.end())
-			return *i;
-
-		return 0;
-	}
+	else
+		return _curLevel->getMonster(monster);
 }
 
 void GameState::printMessages() {

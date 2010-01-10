@@ -76,7 +76,7 @@ private:
 	AI::Monster *_monsterAI;
 
 	void handleInput(int input);
-	Monster *obtainMonster(const Monster *monster);
+	Monster *obtainMonster(const MonsterID monster);
 };
 
 } // end of namespace Game

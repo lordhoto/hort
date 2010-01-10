@@ -26,6 +26,7 @@
 #include "screen.h"
 
 #include <list>
+#include <map>
 
 namespace Game {
 
@@ -69,30 +70,45 @@ public:
 	 *
 	 * @param x x coordinate.
 	 * @param y y coordinate.
-	 * @return Pointer to monster.
+	 * @return Monster's ID.
 	 */
-	Monster *monsterAt(unsigned int x, unsigned int y);
+	MonsterID monsterAt(unsigned int x, unsigned int y) const;
+
+	/**
+	 * Tries to access the monster with the given id.
+	 *
+	 * @param monster id
+	 * @return Pointer to the monster
+	 */
+	Monster *getMonster(const MonsterID monster);
+
+	/**
+	 * Tries to access the monster with the given id.
+	 *
+	 * @param monster id
+	 * @return Pointer to the monster
+	 */
+	const Monster *getMonster(const MonsterID monster) const;
 
 	/**
 	 * Removes the given monster from the level.
 	 *
 	 * @param monster Monster to remove.
 	 */
-	void removeMonster(Monster *monster);
+	void removeMonster(const MonsterID monster);
 
-	typedef std::list<Monster *> MonsterList;
-
+	typedef std::map<MonsterID, Monster *> MonsterMap;
 	/**
-	 * Returns a reference to the monster list.
+	 * Queries the monster map of the level.
 	 *
-	 * @return monster list.
+	 * @return reference to the monster map.
 	 */
-	MonsterList &getMonsters() { return _monsters; }
+	const MonsterMap &getMonsters() const { return _monsters; }
 private:
 	Map *_map;
 	Screen *_screen;
 
-	MonsterList _monsters;
+	MonsterMap _monsters;
 };
 
 } // end of namespace Game

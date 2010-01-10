@@ -27,6 +27,10 @@
 
 namespace Game {
 
+typedef unsigned int MonsterID;
+extern const MonsterID kPlayerMonsterID;
+extern const MonsterID kInvalidMonsterID;
+
 class Monster {
 public:
 	enum Attribute {

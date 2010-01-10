@@ -40,14 +40,14 @@ public:
 	 *
 	 * @param monster New monster.
 	 */
-	void addMonster(const Game::Monster *monster);
+	void addMonster(const Game::MonsterID monster);
 
 	/**
 	 * Removes a monster from the AI.
 	 *
 	 * @param monster Monster to remove.
 	 */
-	void removeMonster(const Game::Monster *monster);
+	void removeMonster(const Game::MonsterID monster);
 
 	/**
 	 * Updates all monsters.
@@ -65,7 +65,15 @@ private:
 	Game::GameState &_game;
 	FSM::FSM *_fsm;
 
-	typedef std::map<const Game::Monster *, FSM::StateID> MonsterMap;
+	struct MonsterState {
+		FSM::StateID fsmState;
+		const Game::Monster *monster;
+
+		MonsterState() : fsmState(FSM::kInvalidStateID), monster(0) {}
+		MonsterState(FSM::StateID f, const Game::Monster *m) : fsmState(f), monster(m) {}
+	};
+
+	typedef std::map<const Game::MonsterID, MonsterState> MonsterMap;
 	MonsterMap _monsters;
 };
 

@@ -27,6 +27,7 @@ namespace Game {
 Level::Level() : _map(0), _screen(0), _monsters() {
 	_map = new Map();
 
+	MonsterID id = kPlayerMonsterID + 1;
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
@@ -34,20 +35,20 @@ Level::Level() : _map(0), _screen(0), _monsters() {
 			monsterY = Base::rollDice(_map->height()) - 1;
 		} while (!isWalkable(monsterX, monsterY));
 
-		_monsters.push_back(new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY));
+		_monsters[id++] = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
 	}
 }
 
 Level::~Level() {
-	for (MonsterList::iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		delete *i;
+	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i)
+		delete i->second;
 	delete _map;
 }
 
 void Level::assignScreen(Screen &screen, const Monster &player) {
 	screen.setMap(_map);
-	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		screen.addObject(*i);
+	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
+		screen.addObject(i->second);
 	screen.addObject(&player, true);
 	_screen = &screen;
 }
@@ -65,28 +66,46 @@ bool Level::isWalkable(unsigned int x, unsigned int y) const {
 	if (!_map->isWalkable(x, y))
 		return false;
 
-	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if ((*i)->getX() == x && (*i)->getY() == y)
-			return false;
-	}
+	if (monsterAt(x, y) != kInvalidMonsterID)
+		return false;
 
 	return true;
 }
 
-Monster *Level::monsterAt(unsigned int x, unsigned int y) {
-	for (MonsterList::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if ((*i)->getX() == x && (*i)->getY() == y)
-			return *i;
+MonsterID Level::monsterAt(unsigned int x, unsigned int y) const {
+	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
+		if (i->second->getX() == x && i->second->getY() == y)
+			return i->first;
 	}
 
-	return 0;
+	return kInvalidMonsterID;
 }
 
-void Level::removeMonster(Monster *monster) {
-	_monsters.remove(monster);
+Monster *Level::getMonster(const MonsterID monster) {
+	MonsterMap::iterator i = _monsters.find(monster);
+	if (i == _monsters.end())
+		return 0;
+	else
+		return i->second;
+}
+
+const Monster *Level::getMonster(const MonsterID monster) const {
+	MonsterMap::const_iterator i = _monsters.find(monster);
+	if (i == _monsters.end())
+		return 0;
+	else
+		return i->second;
+}
+
+void Level::removeMonster(const MonsterID monster) {
+	MonsterMap::iterator i = _monsters.find(monster);
+	if (i == _monsters.end())
+		return;
+
 	if (_screen)
-		_screen->remObject(monster);
-	delete monster;
+		_screen->remObject(i->second);
+	delete i->second;
+	_monsters.erase(i);
 }
 
 } // end of namespace Game

@@ -18,26 +18,12 @@
  *
  */
 
-#include "event.h"
+#include "monster.h"
 
 namespace Game {
 
-Event createMoveEvent(const MonsterID monster, int offX, int offY) {
-	Event event;
-	event.type = Event::kTypeMove;
-	event.data.move.monster = monster;
-	event.data.move.offX = offX;
-	event.data.move.offY = offY;
-	return event;
-}
-
-Event createAttackEvent(const MonsterID monster, const MonsterID target) {
-	Event event;
-	event.type = Event::kTypeAttack;
-	event.data.attack.monster = monster;
-	event.data.attack.target = target;
-	return event;
-}
+const MonsterID kPlayerMonsterID = 0;
+const MonsterID kInvalidMonsterID = 0xFFFFFFFF;
 
 } // end of namespace Game
 

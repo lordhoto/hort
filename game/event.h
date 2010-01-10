@@ -35,15 +35,14 @@ struct Event {
 
 	union {
 		struct Move {
-			const Monster *monster;
+			MonsterID monster;
 
-			unsigned int oldX, oldY;
-			unsigned int newX, newY;
+			unsigned int offX, offY;
 		} move;
 
 		struct Attack {
-			const Monster *monster;
-			const Monster *target;
+			MonsterID monster;
+			MonsterID target;
 		} attack;
 	} data;
 };
@@ -56,7 +55,7 @@ struct Event {
  * @param offY Y offset to move.
  * @return Event structure.
  */
-Event createMoveEvent(const Monster *monster, int offX, int offY);
+Event createMoveEvent(const MonsterID monster, int offX, int offY);
 
 /**
  * Creates an attack event.
@@ -65,7 +64,7 @@ Event createMoveEvent(const Monster *monster, int offX, int offY);
  * @param target Monster which is attacked.
  * @return Event structure.
  */
-Event createAttackEvent(const Monster *monster, const Monster *target);
+Event createAttackEvent(const MonsterID monster, const MonsterID target);
 
 } // end of namespace Game
 
