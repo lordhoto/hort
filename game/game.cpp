@@ -76,8 +76,8 @@ bool GameState::run() {
 	int playerX = 0, playerY = 0;
 
 	do {
-		playerX = _curLevel->getMap().width() - 1;
-		playerY = _curLevel->getMap().height() - 1;
+		playerX = Base::rollDice(_curLevel->getMap().width()) - 1;
+		playerY = Base::rollDice(_curLevel->getMap().height()) - 1;
 	} while (!_curLevel->isWalkable(playerX, playerY));
 
 	_player.setX(playerX);
