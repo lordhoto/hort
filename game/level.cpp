@@ -21,11 +21,15 @@
 #include "level.h"
 
 #include "base/rnd.h"
+#include "ai/monster.h"
 
 namespace Game {
 
-Level::Level() : _map(0), _screen(0), _monsters() {
+Level::Level(GameState &game, Monster &player) : _map(0), _screen(0), _monsters(), _monsterAI(0) {
 	_map = new Map();
+
+	_monsters[kPlayerMonsterID] = &player;
+	_monsterAI = new AI::Monster(*this, game);
 
 	for (int i = 0; i < 10; ++i) {
 		int monsterX = 0, monsterY = 0;
@@ -34,13 +38,18 @@ Level::Level() : _map(0), _screen(0), _monsters() {
 			monsterY = Base::rollDice(_map->height()) - 1;
 		} while (!isWalkable(monsterX, monsterY));
 
-		_monsters[createNewMonsterID()] = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
+		MonsterID newId = createNewMonsterID();
+		Monster *newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
+		_monsters[newId] = newMonster;
+		_monsterAI->addMonster(newId);
 	}
 }
 
 Level::~Level() {
-	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		delete i->second;
+	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
+		if (i->first != kPlayerMonsterID)
+			delete i->second;
+	}
 	delete _map;
 }
 
@@ -104,6 +113,7 @@ void Level::removeMonster(const MonsterID monster) {
 	if (_screen)
 		_screen->remObject(i->second);
 	delete i->second;
+	_monsterAI->removeMonster(i->first);
 	_monsters.erase(i);
 }
 

@@ -88,7 +88,7 @@ FSM::FSM *createMonsterFSM() {
 
 } // end of anonymous namespace
 
-Monster::Monster(Game::GameState &game) : _player(game.getPlayer()), _game(game), _events(game) {
+Monster::Monster(const Game::Level &parent, Game::EventHandler &handler) : _level(parent), _events(handler) {
 	_fsm = createMonsterFSM();
 }
 
@@ -99,7 +99,7 @@ Monster::~Monster() {
 
 void Monster::addMonster(const Game::MonsterID monster) {
 	removeMonster(monster);
-	_monsters[monster] = MonsterState(kMonsterIdle, _game.getLevel().getMonster(monster));
+	_monsters[monster] = MonsterState(kMonsterIdle, _level.getMonster(monster));
 }
 
 void Monster::removeMonster(const Game::MonsterID monster) {
@@ -149,8 +149,8 @@ void Monster::update() {
 				break;
 			}
 
-			const Game::Monster *monster = _game.getLevel().getMonster(i->first);
-			if (offX && offY && _game.getLevel().isWalkable(monster->getX() + offX, monster->getY() + offY))
+			const Game::Monster *monster = _level.getMonster(i->first);
+			if (offX && offY && _level.isWalkable(monster->getX() + offX, monster->getY() + offY))
 				_events.processEvent(Game::createMoveEvent(i->first, offX, offY));
 			} break;
 
@@ -171,8 +171,8 @@ void Monster::processEvent(const Game::Event &event) {
 				_fsm->setState(i->second.fsmState);
 
 				// Calculate distance
-				int xDist = std::abs((int)(_player.getX() - i->second.monster->getX()));
-				int yDist = std::abs((int)(_player.getY() - i->second.monster->getY()));
+				int xDist = std::abs((int)(_level.getMonster(Game::kPlayerMonsterID)->getX() - i->second.monster->getX()));
+				int yDist = std::abs((int)(_level.getMonster(Game::kPlayerMonsterID)->getY() - i->second.monster->getY()));
 
 				if (xDist <= 1 && yDist <= 1)
 					_fsm->process(kPlayerTriggerDist2);
@@ -187,8 +187,8 @@ void Monster::processEvent(const Game::Event &event) {
 			MonsterMap::iterator i = _monsters.find(event.data.move.monster);
 			if (i != _monsters.end()) {
 				// Calculate distance
-				int xDist = std::abs((int)(i->second.monster->getX() - _game.getPlayer().getX()));
-				int yDist = std::abs((int)(i->second.monster->getY() - _game.getPlayer().getY()));
+				int xDist = std::abs((int)(i->second.monster->getX() - _level.getMonster(Game::kPlayerMonsterID)->getX()));
+				int yDist = std::abs((int)(i->second.monster->getY() - _level.getMonster(Game::kPlayerMonsterID)->getY()));
 
 				_fsm->setState(i->second.fsmState);
 

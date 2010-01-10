@@ -24,15 +24,20 @@
 #include "map.h"
 #include "monster.h"
 #include "screen.h"
+#include "game.h"
 
 #include <list>
 #include <map>
+
+namespace AI {
+class Monster;
+} // end of namespace AI
 
 namespace Game {
 
 class Level {
 public:
-	Level();
+	Level(GameState &game, Monster &player);
 	~Level();
 
 	/**
@@ -97,18 +102,15 @@ public:
 	 */
 	void removeMonster(const MonsterID monster);
 
-	typedef std::map<MonsterID, Monster *> MonsterMap;
-	/**
-	 * Queries the monster map of the level.
-	 *
-	 * @return reference to the monster map.
-	 */
-	const MonsterMap &getMonsters() const { return _monsters; }
+	AI::Monster *monsterAI() { return _monsterAI; }
 private:
 	Map *_map;
 	Screen *_screen;
 
+	typedef std::map<MonsterID, Monster *> MonsterMap;
 	MonsterMap _monsters;
+
+	AI::Monster *_monsterAI;
 };
 
 } // end of namespace Game

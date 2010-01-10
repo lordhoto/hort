@@ -18,6 +18,7 @@
  *
  */
 
+#include "level.h"
 #include "game.h"
 
 #include "base/rnd.h"
@@ -37,7 +38,6 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 GameState::~GameState() {
 	delete _curLevel;
 	delete _gameScreen;
-	delete _monsterAI;
 
 	_screen.remove(_messageLine);
 	delete _messageLine;
@@ -50,7 +50,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level();
+		_curLevel = new Level(*this, _player);
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
@@ -62,11 +62,6 @@ bool GameState::initialize() {
 
 		_gameScreen = new Screen(*_mapWindow);
 		_curLevel->assignScreen(*_gameScreen, _player);
-
-		_monsterAI = new AI::Monster(*this);
-		const Level::MonsterMap &monsters = _curLevel->getMonsters();
-		for (Level::MonsterMap::const_iterator i = monsters.begin(); i != monsters.end(); ++i)
-			_monsterAI->addMonster(i->first);
 	}
 
 	_screen.clear();
@@ -77,10 +72,13 @@ bool GameState::initialize() {
 bool GameState::run() {
 	int input = -1;
 
+	int playerX = 0, playerY = 0;
 	do {
-		_player.setX(Base::rollDice(_curLevel->getMap().width()) - 1);
-		_player.setY(Base::rollDice(_curLevel->getMap().height()) - 1);
-	} while (!_curLevel->isWalkable(_player.getX(), _player.getY()));
+		playerX = _curLevel->getMap().width() - 1;
+		playerY = _curLevel->getMap().height() - 1;
+	} while (!_curLevel->isWalkable(playerX, playerY));
+	_player.setX(playerX);
+	_player.setY(playerY);
 
 	_gameScreen->update();
 	drawStatsWindow();
@@ -93,7 +91,7 @@ bool GameState::run() {
 		input = _input.poll();
 		handleInput(input);
 
-		_monsterAI->update();
+		_curLevel->monsterAI()->update();
 		_gameScreen->update();
 		drawStatsWindow();
 		printMessages();
@@ -133,7 +131,6 @@ void GameState::processEvent(const Event &event) {
 		if (newHitPoints <= 0) {
 			if (target != &_player) {
 				_messages.push_back("You kill the Gnome!");
-				_monsterAI->removeMonster(event.data.attack.target);
 				_curLevel->removeMonster(event.data.attack.target);
 			} else {
 				_messages.push_back("You die...");
@@ -141,7 +138,7 @@ void GameState::processEvent(const Event &event) {
 		}
 	}
 
-	_monsterAI->processEvent(event);
+	_curLevel->monsterAI()->processEvent(event);
 }
 
 void GameState::handleInput(int input) {
@@ -193,7 +190,7 @@ void GameState::handleInput(int input) {
 
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
 	MonsterID monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
-	if (monster != kInvalidMonsterID) {
+	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID) {
 		if (Base::rollDice(20) == 20) {
 			_messages.push_back("You fumble.");
 		} else {
@@ -205,10 +202,7 @@ void GameState::handleInput(int input) {
 }
 
 Monster *GameState::obtainMonster(const MonsterID monster) {
-	if (monster == kPlayerMonsterID)
-		return &_player;
-	else
-		return _curLevel->getMonster(monster);
+	return _curLevel->getMonster(monster);
 }
 
 void GameState::printMessages() {

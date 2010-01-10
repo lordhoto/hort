@@ -22,7 +22,6 @@
 #define GAME_GAME_H
 
 #include "state.h"
-#include "level.h"
 #include "monster.h"
 #include "screen.h"
 #include "event.h"
@@ -34,11 +33,9 @@
 #include <list>
 #include <string>
 
-namespace AI {
-class Monster;
-} // end of namespace AI
-
 namespace Game {
+
+class Level;
 
 class GameState : public State, public EventHandler {
 public:
@@ -72,8 +69,6 @@ private:
 	Screen *_gameScreen;
 	Level *_curLevel;
 	Monster _player;
-
-	AI::Monster *_monsterAI;
 
 	void handleInput(int input);
 	Monster *obtainMonster(const MonsterID monster);

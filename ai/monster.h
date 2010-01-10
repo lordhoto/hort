@@ -22,7 +22,7 @@
 #define AI_MONSTER_H
 
 #include "fsm.h"
-#include "game/game.h"
+#include "game/level.h"
 #include "game/monster.h"
 #include "game/event.h"
 
@@ -33,7 +33,7 @@ namespace AI {
 
 class Monster : public Game::EventHandler {
 public:
-	Monster(Game::GameState &game);
+	Monster(const Game::Level &parent, Game::EventHandler &handler);
 	~Monster();
 
 	/**
@@ -62,8 +62,7 @@ public:
 	 */
 	void processEvent(const Game::Event &event);
 private:
-	const Game::Monster &_player;
-	Game::GameState &_game;
+	const Game::Level &_level;
 	Game::EventHandler &_events;
 	FSM::FSM *_fsm;
 
