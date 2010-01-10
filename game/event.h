@@ -30,7 +30,8 @@ namespace Game {
 struct Event {
 	enum kType {
 		kTypeMove,
-		kTypeAttack
+		kTypeAttack,
+		kTypeDamage
 	};
 
 	kType type;
@@ -46,6 +47,7 @@ struct Event {
 		struct Attack {
 			MonsterID monster;
 			MonsterID target;
+			bool fumble;
 		} attack;
 	} data;
 };
@@ -114,9 +116,10 @@ Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int 
  *
  * @param monster Monster which attacks.
  * @param target Monster which is attacked.
+ * @param fumble Whether the monster fumbles.
  * @return Event structure.
  */
-Event createAttackEvent(const MonsterID monster, const MonsterID target);
+Event createAttackEvent(const MonsterID monster, const MonsterID target, bool fumble);
 
 } // end of namespace Game
 

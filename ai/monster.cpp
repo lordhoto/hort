@@ -22,6 +22,7 @@
 #include "fsm.h"
 
 #include "base/rnd.h"
+#include "game/monster_types.h"
 
 #include <map>
 #include <cmath>
@@ -155,7 +156,7 @@ void Monster::update() {
 			} break;
 
 		case kMonsterAttack:
-			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
+			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID, i->second.monster->getType() == Game::kMonsterSquolly));
 			break;
 
 		default:

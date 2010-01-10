@@ -121,11 +121,15 @@ void GameState::processEvent(const Event &event) {
 		if (event.data.attack.target == kPlayerMonsterID) {
 			if (target->getHitPoints() <= 0)
 				ss << "You die...";
+			else if (event.data.attack.fumble)
+				ss << "The " << getMonsterName(monster->getType()) << " fumbles!";
 			else
 				ss << "The " << getMonsterName(monster->getType()) << " hits you!";
 		} else {
 			if (target->getHitPoints() <= 0)
 				ss << "You kill the " << getMonsterName(target->getType()) << "!";
+			else if (event.data.attack.fumble)
+				ss << "You fumble!";
 			else
 				ss << "You hit the " << getMonsterName(target->getType()) << "!";
 		}
@@ -194,15 +198,10 @@ bool GameState::handleInput(int input) {
 
 	unsigned int playerX = _player.getX(), playerY = _player.getY();
 	MonsterID monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
-	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID) {
-		if (Base::rollDice(20) == 20) {
-			_messages.push_back("You fumble.");
-		} else {
-			_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
-		}
-	} else if (_curLevel->isWalkable(playerX + offX, playerY + offY)) {
+	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
+		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster, Base::rollDice(20) == 20));
+	else if (_curLevel->isWalkable(playerX + offX, playerY + offY))
 		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
-	}
 
 	return true;
 }

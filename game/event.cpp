@@ -49,11 +49,12 @@ Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int 
 	return event;
 }
 
-Event createAttackEvent(const MonsterID monster, const MonsterID target) {
+Event createAttackEvent(const MonsterID monster, const MonsterID target, bool fumble) {
 	Event event;
 	event.type = Event::kTypeAttack;
 	event.data.attack.monster = monster;
 	event.data.attack.target = target;
+	event.data.attack.fumble = fumble;
 	return event;
 }
 

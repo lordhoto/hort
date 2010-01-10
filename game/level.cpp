@@ -168,6 +168,9 @@ void Level::processEvent(const Event &event) {
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
+		if (event.data.attack.fumble)
+			return;
+
 		Monster *target = getMonster(event.data.attack.target);
 		assert(target);
 
