@@ -51,5 +51,15 @@ bool Map::isWalkable(unsigned int x, unsigned int y) const {
 	return (tileAt(x, y) != kTileTree);
 }
 
+const char *Map::queryTileName(Tile t) {
+	static const char *tileNames[] = {
+		"meadow",
+		"tree",
+		"water"
+	};
+
+	return tileNames[t];
+}
+
 } // end of namespace Game
 

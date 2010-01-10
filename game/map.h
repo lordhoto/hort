@@ -56,6 +56,14 @@ public:
 	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }
 
 	/**
+	 * Returns a name of the given tile type.
+	 *
+	 * @param tile Tile to query the name for.
+	 * @return Name of the tile.
+	 */
+	static const char *queryTileName(Tile t);
+
+	/**
 	 * Returns the width of the map.
 	 * @return width
 	 */
