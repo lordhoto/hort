@@ -20,6 +20,8 @@
 
 #include "monster.h"
 
+#include <cassert>
+
 namespace Game {
 
 const MonsterID kPlayerMonsterID = 0;
@@ -35,17 +37,24 @@ MonsterID createNewMonsterID() {
 
 namespace {
 
-// TODO: This is better to be replaced by a "map" soon
-const char * const g_monsterNames[] = {
-	"you",
-	"Gnome",
-	"Squolly"
+struct MonsterName {
+	MonsterType type;
+	const char *name;
+} g_monsterNames[] = {
+	{ kMonsterPlayer, "Player" },
+	{ kMonsterGnome, "Gnome" },
+	{ kMonsterSquolly, "Squolly" }
 };
 
 } // end of anonymous namespace
 
 const char *getMonsterName(MonsterType type) {
-	return g_monsterNames[type];
+	for (size_t i = 0; i < sizeof(g_monsterNames)/sizeof(g_monsterNames[0]); ++i) {
+		if (g_monsterNames[i].type == type)
+			return g_monsterNames[i].name;
+	}
+
+	assert(0);
 }
 
 } // end of namespace Game
