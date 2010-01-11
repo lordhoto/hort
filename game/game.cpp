@@ -89,12 +89,11 @@ bool GameState::run() {
 	_screen.update();
 
 	while (input != GUI::kKeyEscape) {
-		_screen.update();
+		drawStatsWindow();
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
 			printMessages();
 			_screen.update();
-			_messages.clear();
 
 			input = _input.poll();
 			if (!handleInput(input))
@@ -103,11 +102,11 @@ bool GameState::run() {
 
 		_curLevel->update();
 		_gameScreen->update();
-		drawStatsWindow();
 
 		++_tickCounter;
 
 		if (_player.getHitPoints() <= 0) {
+			printMessages();
 			_screen.update();
 			_input.poll();
 			break;
@@ -368,7 +367,8 @@ void GameState::drawStatsWindow() {
 	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
 	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
 	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom)
-	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints();
+	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
+	     << " | T: " << _tickCounter / kTicksPerTurn;
 
 	_playerStats->clear();
 	_playerStats->printLine(line.str().c_str(), 0, 0);
