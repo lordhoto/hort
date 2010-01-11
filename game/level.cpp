@@ -44,9 +44,9 @@ Level::Level(GameState &gs) : _map(0), _screen(0), _gameState(gs), _eventDisp(),
 		MonsterID newId = createNewMonsterID();
 		Monster *newMonster = 0;
 		if (Base::rollDice(6) != 1)
-			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, 7, monsterX, monsterY);
+			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, kTicksPerTurn, monsterX, monsterY);
 		else
-			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, kTicksPerTurn, monsterX, monsterY);
+			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, 7, monsterX, monsterY);
 		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
 	}
