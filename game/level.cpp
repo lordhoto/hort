@@ -34,7 +34,7 @@ Level::Level(GameState &gs) : _map(0), _screen(0), _gameState(gs), _eventDisp(),
 	_monsterAI = new AI::Monster(*this, _eventDisp);
 	_eventDisp.addHandler(_monsterAI);
 
-	for (int i = 0; i < 20; ++i) {
+	for (int i = 0; i < 80; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
 			monsterX = Base::rollDice(_map->width()) - 1;
