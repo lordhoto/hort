@@ -156,6 +156,8 @@ void Monster::update() {
 			const Game::Monster *monster = _level.getMonster(i->first);
 			if (offX && offY && _level.isWalkable(monster->getX() + offX, monster->getY() + offY))
 				_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
+			else
+				_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kNoReason));
 			} break;
 
 		case kMonsterWary:
