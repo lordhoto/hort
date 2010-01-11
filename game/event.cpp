@@ -35,7 +35,8 @@ void EventDispatcher::removeHandler(EventHandler *handler) {
 }
 
 void EventDispatcher::dispatch(const Event &event) {
-	std::for_each(_handlers.begin(), _handlers.end(), std::bind2nd(std::mem_fun(&EventHandler::processEvent), event));
+	for (HandlerList::iterator i = _handlers.begin(); i != _handlers.end(); ++i)
+		(*i)->processEvent(event);
 }
 
 Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY) {
