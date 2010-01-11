@@ -109,6 +109,9 @@ void Monster::removeMonster(const Game::MonsterID monster) {
 
 void Monster::update() {
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
+		if (!_level.isAllowedToAct(i->first))
+			continue;
+
 		// TODO: Proper implementation of this :-D
 		switch (i->second.fsmState) {
 		case kMonsterIdle: {

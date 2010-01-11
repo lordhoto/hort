@@ -26,6 +26,7 @@
 #include "screen.h"
 #include "event.h"
 #include "game.h"
+#include "defs.h"
 
 #include <list>
 #include <map>
@@ -38,17 +39,16 @@ namespace Game {
 
 class Level : public EventHandler {
 public:
-	Level();
+	Level(GameState &gs);
 	~Level();
 
 	/**
 	 * Sets the level as the active game level.
 	 *
 	 * @param screen Screen to setup.
-	 * @param state The state, which takes over the level.
 	 * @param player The player monster.
 	 */
-	void makeActive(Screen &screen, GameState &state, Monster &player);
+	void makeActive(Screen &screen, Monster &player);
 
 	/**
 	 * Unsets the level as the active game level.
@@ -98,6 +98,15 @@ public:
 	const Monster *getMonster(const MonsterID monster) const;
 
 	/**
+	 * Checks whether the given monster is free to make
+	 * an action this tick.
+	 *
+	 * @param monster id
+	 * @return true, when it is free to make an action, false otherwise.
+	 */
+	bool isAllowedToAct(const MonsterID monster) const;
+
+	/**
 	 * Removes the given monster from the level.
 	 *
 	 * @param monster Monster to remove.
@@ -118,10 +127,20 @@ public:
 private:
 	Map *_map;
 	Screen *_screen;
-	GameState *_gameState;
+	GameState &_gameState;
 	EventDispatcher _eventDisp;
 
-	typedef std::map<MonsterID, Monster *> MonsterMap;
+	struct MonsterEntry {
+		Monster *monster;
+		TickCount nextAction;
+
+		MonsterEntry() : monster(0), nextAction(0) {}
+		MonsterEntry(Monster *m, TickCount curTick) : monster(m), nextAction(curTick) {}
+	};
+
+	void updateNextActionTick(MonsterID monster);
+
+	typedef std::map<MonsterID, MonsterEntry> MonsterMap;
 	MonsterMap _monsters;
 
 	AI::Monster *_monsterAI;

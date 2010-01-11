@@ -124,6 +124,17 @@ public:
 	 * @param value New attribute value
 	 */
 	void setAttribute(Attribute attrib, unsigned char value) { _attrib[attrib] = value; }
+
+	/**
+	 * Queries the speed of the monster.
+	 *
+	 * The "speed" of a monster is how many
+	 * ticks are processed before it receives
+	 * another action.
+	 *
+	 * @return speed in ticks.
+	 */
+	unsigned char getSpeed() const { return 10; }
 private:
 	MonsterType _type;
 

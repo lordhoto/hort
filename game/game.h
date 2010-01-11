@@ -25,6 +25,7 @@
 #include "monster.h"
 #include "screen.h"
 #include "event.h"
+#include "defs.h"
 
 #include "gui/window.h"
 #include "gui/screen.h"
@@ -51,6 +52,8 @@ public:
 	const Monster &getPlayer() const { return _player; }
 
 	void setEventDispatcher(EventDispatcher *disp) { _eventDisp = disp; }
+
+	TickCount getCurrentTick() const { return _tickCounter; }
 private:
 	bool _initialized;
 
@@ -64,6 +67,8 @@ private:
 	typedef std::list<std::string> StringList;
 	StringList _messages;
 	void printMessages();
+
+	TickCount _tickCounter;
 
 	void drawStatsWindow();
 

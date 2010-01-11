@@ -34,6 +34,7 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 	_messageLine = _mapWindow = _playerStats = 0;
 	_curLevel = 0;
 	_eventDisp = 0;
+	_tickCounter = 0;
 }
 
 GameState::~GameState() {
@@ -51,7 +52,7 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
-		_curLevel = new Level();
+		_curLevel = new Level(*this);
 
 		_messageLine = new GUI::Window(0,  0, 80,  1, false);
 		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
@@ -62,7 +63,7 @@ bool GameState::initialize() {
 		_screen.add(_playerStats);
 
 		_gameScreen = new Screen(*_mapWindow);
-		_curLevel->makeActive(*_gameScreen, *this, _player);
+		_curLevel->makeActive(*_gameScreen, _player);
 	}
 
 	_screen.clear();
@@ -88,16 +89,23 @@ bool GameState::run() {
 	_screen.update();
 
 	while (input != GUI::kKeyEscape) {
-		_messages.clear();
 		_screen.update();
 
-		input = _input.poll();
-		if (handleInput(input)) {
-			_curLevel->update();
-			_gameScreen->update();
-			drawStatsWindow();
+		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
 			printMessages();
+			_screen.update();
+			_messages.clear();
+
+			input = _input.poll();
+			if (!handleInput(input))
+				continue;
 		}
+
+		_curLevel->update();
+		_gameScreen->update();
+		drawStatsWindow();
+
+		++_tickCounter;
 
 		if (_player.getHitPoints() <= 0) {
 			_screen.update();

@@ -27,7 +27,7 @@
 
 namespace Game {
 
-Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), _monsterAI(0) {
+Level::Level(GameState &gs) : _map(0), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
 	_map = new Map();
 
 	_eventDisp.addHandler(this);
@@ -47,7 +47,7 @@ Level::Level() : _map(0), _screen(0), _gameState(0), _eventDisp(), _monsters(), 
 			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, monsterX, monsterY);
 		else
 			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, monsterX, monsterY);
-		_monsters[newId] = newMonster;
+		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
 	}
 }
@@ -57,25 +57,24 @@ Level::~Level() {
 
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		if (i->first != kPlayerMonsterID)
-			delete i->second;
+			delete i->second.monster;
 	}
 	delete _map;
 }
 
-void Level::makeActive(Screen &screen, GameState &state, Monster &player) {
+void Level::makeActive(Screen &screen, Monster &player) {
 	makeInactive();
 
 	screen.setMap(_map);
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		screen.addObject(i->second);
+		screen.addObject(i->second.monster);
 	screen.addObject(&player, true);
 	_screen = &screen;
 
-	_monsters[kPlayerMonsterID] = &player;
+	_gameState.setEventDispatcher(&_eventDisp);
+	_eventDisp.addHandler(&_gameState);
 
-	_gameState = &state;
-	_gameState->setEventDispatcher(&_eventDisp);
-	_eventDisp.addHandler(_gameState);
+	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
 }
 
 void Level::makeInactive() {
@@ -83,10 +82,8 @@ void Level::makeInactive() {
 	if (_screen)
 		_screen->setMap(0);
 	_screen = 0;
-	_eventDisp.removeHandler(_gameState);
-	if (_gameState)
-		_gameState->setEventDispatcher(0);
-	_gameState = 0;
+	_eventDisp.removeHandler(&_gameState);
+	_gameState.setEventDispatcher(0);
 }
 
 bool Level::isWalkable(unsigned int x, unsigned int y) const {
@@ -104,7 +101,7 @@ bool Level::isWalkable(unsigned int x, unsigned int y) const {
 
 MonsterID Level::monsterAt(unsigned int x, unsigned int y) const {
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (i->second->getX() == x && i->second->getY() == y)
+		if (i->second.monster->getX() == x && i->second.monster->getY() == y)
 			return i->first;
 	}
 
@@ -116,7 +113,7 @@ Monster *Level::getMonster(const MonsterID monster) {
 	if (i == _monsters.end())
 		return 0;
 	else
-		return i->second;
+		return i->second.monster;
 }
 
 const Monster *Level::getMonster(const MonsterID monster) const {
@@ -124,7 +121,15 @@ const Monster *Level::getMonster(const MonsterID monster) const {
 	if (i == _monsters.end())
 		return 0;
 	else
-		return i->second;
+		return i->second.monster;
+}
+
+bool Level::isAllowedToAct(const MonsterID monster) const {
+	MonsterMap::const_iterator i = _monsters.find(monster);
+	if (i == _monsters.end())
+		return false;
+	else
+		return (i->second.nextAction <= _gameState.getCurrentTick());
 }
 
 void Level::removeMonster(const MonsterID monster) {
@@ -134,9 +139,9 @@ void Level::removeMonster(const MonsterID monster) {
 
 	if (monster != kPlayerMonsterID) {
 		if (_screen)
-			_screen->remObject(i->second);
+			_screen->remObject(i->second.monster);
 
-		delete i->second;
+		delete i->second.monster;
 		_monsterAI->removeMonster(i->first);
 	}
 
@@ -145,7 +150,7 @@ void Level::removeMonster(const MonsterID monster) {
 
 void Level::update() {
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end();) {
-		if (i->second->getHitPoints() <= 0) {
+		if (i->second.monster->getHitPoints() <= 0) {
 			MonsterID toRemove = i->first;
 			++i;
 			removeMonster(toRemove);
@@ -159,6 +164,9 @@ void Level::update() {
 
 void Level::processEvent(const Event &event) {
 	if (event.type == Event::kTypeMove) {
+		assert(isAllowedToAct(event.data.move.monster));
+		updateNextActionTick(event.data.move.monster);
+
 		Monster *monster = getMonster(event.data.move.monster);
 		assert(monster);
 
@@ -168,6 +176,9 @@ void Level::processEvent(const Event &event) {
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
+		assert(isAllowedToAct(event.data.attack.monster));
+		updateNextActionTick(event.data.attack.monster);
+
 		const Monster *monster = getMonster(event.data.attack.monster);
 		assert(monster);
 		Monster *target = getMonster(event.data.attack.target);
@@ -193,6 +204,12 @@ void Level::processEvent(const Event &event) {
 		// Do not remove the monster yet, since some other
 		// objects might still use it in the event queue.
 	}
+}
+
+void Level::updateNextActionTick(MonsterID monster) {
+	MonsterMap::iterator i = _monsters.find(monster);
+	if (i != _monsters.end())
+		i->second.nextAction = _gameState.getCurrentTick() + i->second.monster->getSpeed();
 }
 
 } // end of namespace Game
