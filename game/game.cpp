@@ -30,7 +30,7 @@
 
 namespace Game {
 
-GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, 0, 0) {
+GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
 	_initialized = false;
 	_messageLine = _mapWindow = _playerStats = 0;
 	_curLevel = 0;

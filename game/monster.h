@@ -42,8 +42,8 @@ public:
 		kAttribStrength
 	};
 
-	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, int health, unsigned int x, unsigned int y)
-	    : _type(type), _x(x), _y(y), _curHealth(health), _maxHealth(health) {
+	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, int health, unsigned char speed, unsigned int x, unsigned int y)
+	    : _type(type), _x(x), _y(y), _curHealth(health), _maxHealth(health), _speed(speed) {
 		_attrib[kAttribWisdom] = wis;
 		_attrib[kAttribDexterity] = dex;
 		_attrib[kAttribAgility] = agi;
@@ -134,13 +134,14 @@ public:
 	 *
 	 * @return speed in ticks.
 	 */
-	unsigned char getSpeed() const { return 10; }
+	unsigned char getSpeed() const { return _speed; }
 private:
 	MonsterType _type;
 
 	unsigned int _x, _y;
 	int _curHealth, _maxHealth;
 	unsigned char _attrib[4];
+	unsigned char _speed;
 };
 
 } // end of namespace Game
