@@ -133,9 +133,11 @@ private:
 	struct MonsterEntry {
 		Monster *monster;
 		TickCount nextAction;
+		TickCount nextRegeneration;
 
-		MonsterEntry() : monster(0), nextAction(0) {}
-		MonsterEntry(Monster *m, TickCount curTick) : monster(m), nextAction(curTick) {}
+		MonsterEntry() : monster(0), nextAction(0), nextRegeneration(0) {}
+		// TODO: Handle "nextRegeneration" properly
+		MonsterEntry(Monster *m, TickCount curTick) : monster(m), nextAction(curTick), nextRegeneration(curTick) {}
 	};
 
 	void updateNextActionTick(MonsterID monster, bool oneTickOnly = false);
