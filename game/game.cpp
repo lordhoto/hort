@@ -178,7 +178,7 @@ void GameState::processEvent(const Event &event) {
 			static const char * const messages[] = {
 				"You seem bored.",
 				"You yawn.",
-				"You nearly fall alseep."
+				"You nearly fall asleep."
 			};
 
 			if (Base::rollDice(10) == 10)
