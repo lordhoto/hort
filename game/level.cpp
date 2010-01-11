@@ -203,13 +203,16 @@ void Level::processEvent(const Event &event) {
 
 		// Do not remove the monster yet, since some other
 		// objects might still use it in the event queue.
+	} else if (event.type == Event::kTypeIdle) {
+		assert(isAllowedToAct(event.data.idle.monster));
+		updateNextActionTick(event.data.idle.monster, (event.data.idle.reason == Event::Idle::kWary));
 	}
 }
 
-void Level::updateNextActionTick(MonsterID monster) {
+void Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {
 	MonsterMap::iterator i = _monsters.find(monster);
 	if (i != _monsters.end())
-		i->second.nextAction = _gameState.getCurrentTick() + i->second.monster->getSpeed();
+		i->second.nextAction = _gameState.getCurrentTick() + (oneTickOnly ? 1 : i->second.monster->getSpeed());
 }
 
 } // end of namespace Game

@@ -26,6 +26,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <cmath>
 
 namespace Game {
 
@@ -35,6 +36,7 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 	_curLevel = 0;
 	_eventDisp = 0;
 	_tickCounter = 0;
+	_nextWarning = 0;
 }
 
 GameState::~GameState() {
@@ -170,6 +172,58 @@ void GameState::processEvent(const Event &event) {
 
 			_messages.push_back(ss.str());
 		}
+	} else if (event.type == Event::kTypeIdle) {
+		if (event.data.idle.monster == kPlayerMonsterID) {
+			// TODO: This should definitly not be stored over here
+			static const char * const messages[] = {
+				"You seem bored.",
+				"You yawn.",
+				"You nearly fall alseep."
+			};
+
+			if (Base::rollDice(10) == 10)
+				_messages.push_back(messages[Base::rollDice(3) - 1]);
+		} else {
+			const Monster *monster = _curLevel->getMonster(event.data.idle.monster);
+			assert(monster);
+
+			// Calculate distance
+			// TODO: Use a real in view test later on here.
+			int xDist = std::abs((int)(monster->getX() - _player.getX()));
+			int yDist = std::abs((int)(monster->getY() - _player.getY()));
+			if (Base::rollDice(20) == 20 && std::sqrt(xDist*xDist + yDist*yDist) <= 10.0f) {
+				std::stringstream ss;
+				bool processMessage = true;
+
+				ss << "The " << getMonsterName(monster->getType()) << " ";
+				switch (event.data.idle.reason) {
+				case Event::Idle::kNoReason:
+					ss << "seems unsure what to do next.";
+					break;
+
+				case Event::Idle::kWary: {
+					// TODO: This should definitly not be stored over here
+					static const char * const messages[] = {
+						"seems to be watching you.",
+						"makes you nervous.",
+						"seems to be aware of your presence."
+					};
+
+					ss << messages[Base::rollDice(3) - 1];
+
+					if (_nextWarning <= _tickCounter)
+						// TODO: How often the player has the chance to catch this
+						// messages should be dependant on his wisdom.
+						_nextWarning = _tickCounter + 3 * kTicksPerTurn;
+					else
+						processMessage = false;
+					} break;
+				}
+
+				if (processMessage)
+					_messages.push_back(ss.str());
+			}
+		}
 	}
 }
 
@@ -221,6 +275,7 @@ bool GameState::handleInput(int input) {
 
 	case '.':
 	case GUI::kKeyKeypad5:
+		_eventDisp->dispatch(createIdleEvent(kPlayerMonsterID, Event::Idle::kNoReason));
 		return true;
 
 	case '/':

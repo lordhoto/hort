@@ -69,6 +69,7 @@ private:
 	void printMessages();
 
 	TickCount _tickCounter;
+	TickCount _nextWarning;
 
 	void drawStatsWindow();
 

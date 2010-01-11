@@ -158,6 +158,10 @@ void Monster::update() {
 				_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
 			} break;
 
+		case kMonsterWary:
+			_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+			break;
+
 		case kMonsterAttack:
 			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
 			break;

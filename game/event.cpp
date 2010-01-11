@@ -82,5 +82,13 @@ Event createDeathEvent(const MonsterID monster, const MonsterID killer) {
 	return event;
 }
 
+Event createIdleEvent(const MonsterID monster, Event::Idle::kReason reason) {
+	Event event;
+	event.type = Event::kTypeIdle;
+	event.data.idle.monster = monster;
+	event.data.idle.reason = reason;
+	return event;
+}
+
 } // end of namespace Game
 
