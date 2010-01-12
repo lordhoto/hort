@@ -108,6 +108,7 @@ bool GameState::run() {
 		++_tickCounter;
 
 		if (_player.getHitPoints() <= 0) {
+			_messages.push_back("You die...");
 			printMessages();
 			_screen.update();
 			_input.poll();
@@ -161,9 +162,21 @@ void GameState::processEvent(const Event &event) {
 			return;
 
 		if (event.data.death.monster == kPlayerMonsterID) {
-			if (event.data.death.cause == Event::Death::kDrowned)
+			switch (event.data.death.cause) {
+			case Event::Death::kDrowned:
 				_messages.push_back("You drown.");
-			_messages.push_back("You die...");
+				break;
+
+			case Event::Death::kKilled: {
+				const Monster *killer = _curLevel->getMonster(event.data.death.killer);
+				assert(killer);
+
+				std::stringstream ss;
+				ss << "The " << getMonsterName(killer->getType()) << " kills you!";
+				_messages.push_back(ss.str());
+				} break;
+			}
+			
 		} else {
 			std::stringstream ss;
 			if (event.data.death.killer == kPlayerMonsterID) {
