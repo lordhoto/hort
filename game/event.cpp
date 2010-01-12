@@ -74,15 +74,16 @@ Event createAttackFailEvent(const MonsterID monster) {
 	return event;
 }
 
-Event createDeathEvent(const MonsterID monster, const MonsterID killer) {
+Event createDeathEvent(const MonsterID monster, Event::Death::Cause cause, const MonsterID killer) {
 	Event event;
 	event.type = Event::kTypeDeath;
 	event.data.death.monster = monster;
 	event.data.death.killer = killer;
+	event.data.death.cause = cause;
 	return event;
 }
 
-Event createIdleEvent(const MonsterID monster, Event::Idle::kReason reason) {
+Event createIdleEvent(const MonsterID monster, Event::Idle::Reason reason) {
 	Event event;
 	event.type = Event::kTypeIdle;
 	event.data.idle.monster = monster;

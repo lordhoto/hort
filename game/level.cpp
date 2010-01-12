@@ -186,6 +186,11 @@ void Level::processEvent(const Event &event) {
 		monster->setX(event.data.move.newX);
 		monster->setY(event.data.move.newY);
 
+		if (_map->tileAt(event.data.move.newX, event.data.move.newY) == Map::kTileWater) {
+			monster->setHitPoints(0);
+			_eventDisp.dispatch(createDeathEvent(event.data.move.monster, Event::Death::kDrowned));
+		}
+
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
 		assert(isAllowedToAct(event.data.attack.monster));
@@ -210,7 +215,7 @@ void Level::processEvent(const Event &event) {
 			_eventDisp.dispatch(createAttackDamageEvent(event.data.attack.monster, event.data.attack.target, damage != 0));
 
 			if (newHitPoints <= 0)
-				_eventDisp.dispatch(createDeathEvent(event.data.attack.target, event.data.attack.monster));
+				_eventDisp.dispatch(createDeathEvent(event.data.attack.target, Event::Death::kKilled, event.data.attack.monster));
 		}
 
 		// Do not remove the monster yet, since some other

@@ -149,24 +149,39 @@ void GameState::processEvent(const Event &event) {
 
 		_messages.push_back(ss.str());
 	} else if (event.type == Event::kTypeDeath) {
+		const Monster *monster = _curLevel->getMonster(event.data.death.monster);
+		assert(monster);
+
+		// Calculate distance
+		// TODO: Use a real in view test later on here.
+		int xDist = std::abs((int)(monster->getX() - _player.getX()));
+		int yDist = std::abs((int)(monster->getY() - _player.getY()));
+
+		if (std::sqrt(xDist*xDist + yDist*yDist) >= 10.0f)
+			return;
+
 		if (event.data.death.monster == kPlayerMonsterID) {
+			if (event.data.death.cause == Event::Death::kDrowned)
+				_messages.push_back("You drown.");
 			_messages.push_back("You die...");
 		} else {
-			const Monster *monster = _curLevel->getMonster(event.data.death.monster);
-			assert(monster);
-
 			std::stringstream ss;
 			if (event.data.death.killer == kPlayerMonsterID) {
 				ss << "You kill the " << getMonsterName(monster->getType()) << "!";
 			} else {
 				ss << "The " << getMonsterName(monster->getType());
 
-				if (event.data.death.killer == kInvalidMonsterID) {
-					ss << " dies!";
-				} else {
+				switch (event.data.death.cause) {
+				case Event::Death::kKilled: {
 					const Monster *killer = _curLevel->getMonster(event.data.death.killer);
 					assert(killer);
+
 					ss << " is killed by the " << getMonsterName(killer->getType()) << "!";
+					} break;
+
+				case Event::Death::kDrowned:
+					ss << " drowned.";
+					break;
 				}
 			}
 

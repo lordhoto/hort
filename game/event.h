@@ -68,10 +68,20 @@ struct Event {
 	struct Idle {
 		MonsterID monster;
 
-		enum kReason {
+		enum Reason {
 			kNoReason,
 			kWary
 		} reason;
+	};
+
+	struct Death {
+		MonsterID monster;
+		MonsterID killer; // This might be kInvalidMonsterID!
+
+		enum Cause {
+			kKilled,
+			kDrowned
+		} cause;
 	};
 
 	union {
@@ -98,10 +108,7 @@ struct Event {
 			MonsterID monster;
 		} attackFail;
 
-		struct Death {
-			MonsterID monster;
-			MonsterID killer; // This might be kInvalidMonsterID!
-		} death;
+		Death death;
 
 		Idle idle;
 	} data;
@@ -197,10 +204,11 @@ Event createAttackFailEvent(const MonsterID monster);
  * Creates a death event.
  *
  * @param monster Monster which dies.
+ * @param cause The cause of the death.
  * @param killer (Optional) killer monster.
  * @return Event structure.
  */
-Event createDeathEvent(const MonsterID monster, const MonsterID killer = kInvalidMonsterID);
+Event createDeathEvent(const MonsterID monster, Event::Death::Cause cause, const MonsterID killer = kInvalidMonsterID);
 
 /**
  * Creates an idle event.
@@ -209,7 +217,7 @@ Event createDeathEvent(const MonsterID monster, const MonsterID killer = kInvali
  * @param reason The reason why it idles.
  * @return Event sturcture.
  */
-Event createIdleEvent(const MonsterID monster, Event::Idle::kReason reason);
+Event createIdleEvent(const MonsterID monster, Event::Idle::Reason reason);
 
 } // end of namespace Game
 
