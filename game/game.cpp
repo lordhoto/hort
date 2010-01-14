@@ -331,15 +331,13 @@ bool GameState::handleInput(int input) {
 }
 
 void GameState::examine() {
-	unsigned int x = 0, y = 0;
-	_screen.getCursor(x, y);
-	x -= _mapWindow->offsetX();
-	y -= _mapWindow->offsetY();
+	unsigned int x = _player.getX(), y = _player.getY();
 
 	int input = 0;
 	while (input != GUI::kKeyEscape) {
 		input = _input.poll();
 		int offX = 0, offY = 0;
+
 		switch (input) {
 		case 'h':
 		case GUI::kKeyKeypad4:
@@ -385,8 +383,6 @@ void GameState::examine() {
 		case GUI::kKeyKeypad5: {
 			input = GUI::kKeyEscape;
 
-			x = x + _gameScreen->mapOffsetX();
-			y = y + _gameScreen->mapOffsetY();
 			std::stringstream ss;
 			MonsterID monster = _curLevel->monsterAt(x, y);
 			if (monster != kInvalidMonsterID)
@@ -404,17 +400,19 @@ void GameState::examine() {
 		if (input == GUI::kKeyEscape)
 			break;
 
-		if (x + offX >= 0 && x + offX < _mapWindow->width() && x + offX < _curLevel->getMap().width())
+		if (x + offX >= 0 && x + offX < _curLevel->getMap().width()
+		    && y + offY >= 0 && y + offY < _curLevel->getMap().height()) {
 			x += offX;
-		if (y + offY >= 0 && y + offY < _mapWindow->height() && y + offY < _curLevel->getMap().height())
 			y += offY;
+		}
 
-		_screen.setCursor(*_mapWindow, x, y);
+		_gameScreen->setCenter(x, y);
+		_gameScreen->update();
 		_screen.update();
 	}
 
-	_screen.setCursor(*_mapWindow, _player.getX() - _gameScreen->mapOffsetX(), _player.getY() - _gameScreen->mapOffsetY());
-	printMessages();
+	_gameScreen->setCenter(_player.getX(), _player.getY());
+	_gameScreen->update();
 	_screen.update();
 }
 
