@@ -86,6 +86,7 @@ bool GameState::run() {
 	_player.setX(playerX);
 	_player.setY(playerY);
 
+	_gameScreen->setCenter(playerX, playerY);
 	_gameScreen->update();
 	drawStatsWindow();
 	_screen.update();
@@ -252,6 +253,9 @@ void GameState::processEvent(const Event &event) {
 					_messages.push_back(ss.str());
 			}
 		}
+	} else if (event.type == Event::kTypeMove) {
+		if (event.data.move.monster == kPlayerMonsterID)
+			_gameScreen->setCenter(_player.getX(), _player.getY());
 	}
 }
 

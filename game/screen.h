@@ -56,14 +56,21 @@ public:
 	void setMap(const Map *map);
 
 	/**
+	 * Sets the position, which should be centered.
+	 *
+	 * @param x x position (in map coordinates).
+	 * @param y y position (in map coordinates).
+	 */
+	void setCenter(unsigned int x, unsigned int y);
+
+	/**
 	 * Adds a monster to the display object list.
 	 *
 	 * This automatically updates the refresh flag!
 	 *
 	 * @param monster The monster to draw.
-	 * @param center Whether to center the map around the object.
 	 */
-	void addObject(const Monster *monster, bool center = false);
+	void addObject(const Monster *monster);
 
 	/**
 	 * Removes a monster from the display object list.
@@ -99,7 +106,7 @@ private:
 	typedef std::list<const Monster *> MonsterList;
 	MonsterList _monsters;
 
-	const Monster *_centerMonster;
+	unsigned int _centerX, _centerY;
 	int _mapOffsetX, _mapOffsetY;
 
 	struct DrawDesc {

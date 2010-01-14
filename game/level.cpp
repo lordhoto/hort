@@ -68,7 +68,7 @@ void Level::makeActive(Screen &screen, Monster &player) {
 	screen.setMap(_map);
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
 		screen.addObject(i->second.monster);
-	screen.addObject(&player, true);
+	screen.addObject(&player);
 	_screen = &screen;
 
 	_gameState.setEventDispatcher(&_eventDisp);

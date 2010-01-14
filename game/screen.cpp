@@ -21,10 +21,12 @@
 #include "screen.h"
 #include "gui/screen.h"
 
+#include <cassert>
+
 namespace Game {
 
 Screen::Screen(GUI::Window &window)
-    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerMonster(0), _mapOffsetX(0), _mapOffsetY(0) {
+    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
@@ -37,20 +39,6 @@ void Screen::update() {
 
 	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
 	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
-
-	_mapOffsetX = 0;
-	_mapOffsetY = 0;
-
-	if (_centerMonster) {
-		_mapOffsetX = _centerMonster->getX() - outputWidth / 2;
-		_mapOffsetY = _centerMonster->getY() - outputHeight / 2;
-
-		_mapOffsetX = std::max(_mapOffsetX, 0);
-		_mapOffsetX = std::min<unsigned int>(_mapOffsetX, mapWidth - outputWidth);
-
-		_mapOffsetY = std::max(_mapOffsetY, 0);
-		_mapOffsetY = std::min<unsigned int>(_mapOffsetY, mapHeight - outputHeight);
-	}
 
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
 	for (unsigned int y = 0; y < maxHeight; ++y) {
@@ -74,8 +62,29 @@ void Screen::update() {
 		_output.printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
 	}
 
-	if (_centerMonster)
-		GUI::Screen::instance().setCursor(_output, _centerMonster->getX() - _mapOffsetX, _centerMonster->getY() - _mapOffsetY);
+	GUI::Screen::instance().setCursor(_output, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
+}
+
+void Screen::setCenter(unsigned int x, unsigned int y) {
+	assert(x < _map->width());
+	assert(y < _map->height());
+
+	_centerX = x;
+	_centerY = y;
+
+	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
+	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
+
+	_mapOffsetX = _centerX - outputWidth / 2;
+	_mapOffsetY = _centerY - outputHeight / 2;
+
+	_mapOffsetX = std::max(_mapOffsetX, 0);
+	_mapOffsetX = std::min<int>(_mapOffsetX, mapWidth - outputWidth);
+	_mapOffsetX = std::max(_mapOffsetX, 0);
+
+	_mapOffsetY = std::max(_mapOffsetY, 0);
+	_mapOffsetY = std::min<int>(_mapOffsetY, mapHeight - outputHeight);
+	_mapOffsetY = std::max(_mapOffsetY, 0);
 }
 
 void Screen::setMap(const Map *map) {
@@ -84,26 +93,21 @@ void Screen::setMap(const Map *map) {
 	clearObjects();
 }
 
-void Screen::addObject(const Monster *monster, bool center) {
+void Screen::addObject(const Monster *monster) {
 	flagForUpdate();
 	remObject(monster);
 
 	_monsters.push_back(monster);
-	if (center)
-		_centerMonster = monster;
 }
 
 void Screen::remObject(const Monster *monster) {
 	flagForUpdate();
 	_monsters.remove(monster);
-	if (_centerMonster == monster)
-		_centerMonster = 0;
 }
 
 void Screen::clearObjects() {
 	flagForUpdate();
 	_monsters.clear();
-	_centerMonster = 0;
 }
 
 // Static data
