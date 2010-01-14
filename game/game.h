@@ -23,11 +23,11 @@
 
 #include "state.h"
 #include "monster.h"
-#include "screen.h"
 #include "event.h"
 #include "defs.h"
 
 #include "gui/intern/input.h"
+#include "gui/screen.h"
 
 #include <list>
 #include <string>

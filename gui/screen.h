@@ -21,12 +21,12 @@
 #ifndef GAME_GAME_SCREEN_H
 #define GAME_GAME_SCREEN_H
 
-#include "map.h"
-#include "monster.h"
+#include "intern/screen.h"
+#include "intern/window.h"
+#include "intern/input.h"
 
-#include "gui/intern/screen.h"
-#include "gui/intern/window.h"
-#include "gui/intern/input.h"
+#include "game/map.h"
+#include "game/monster.h"
 
 #include <list>
 #include <vector>

@@ -23,10 +23,11 @@
 
 #include "map.h"
 #include "monster.h"
-#include "screen.h"
 #include "event.h"
 #include "game.h"
 #include "defs.h"
+
+#include "gui/screen.h"
 
 #include <list>
 #include <map>

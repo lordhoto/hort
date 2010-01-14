@@ -9,10 +9,10 @@ OBJS := base/main.o \
 		gui/intern/screen.o \
 		gui/intern/window.o \
 		gui/intern/input.o \
+		gui/screen.o \
 		game/map.o \
 		game/state.o \
 		game/game.o \
-		game/screen.o \
 		game/level.o \
 		game/event.o \
 		game/monster.o \
