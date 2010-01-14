@@ -131,16 +131,21 @@ void Screen::clearObjects() {
 }
 
 int Screen::getInput() {
-	int input = _input.poll();
+	int input = 0;
 
-	if (input == Intern::kNotifyResize) {
-		createOutputWindows();
-		setCenter(_centerX, _centerY);
-		update();
-		return 0;
-	} else {
-		return input;
-	}
+	do {
+		input = _input.poll();
+
+		if (input == Intern::kNotifyResize) {
+			createOutputWindows();
+			setCenter(_centerX, _centerY);
+			update();
+
+			input = 0;
+		}
+	} while (!input);
+
+	return input;
 }
 
 void Screen::createOutputWindows() {

@@ -114,7 +114,7 @@ public:
 	 * pressed is not known.
 	 *
 	 * @see Keys
-	 * @return User's input, might be 0 to indicate an internal event.
+	 * @return User's input.
 	 */
 	int getInput();
 private:

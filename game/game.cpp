@@ -80,10 +80,7 @@ bool GameState::run() {
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
 			_gameScreen->update(true);
 
-			input = 0;
-			while ((input = _gameScreen->getInput()) == 0)
-				;
-
+			input = _gameScreen->getInput();
 			if (!handleInput(input))
 				continue;
 		}
