@@ -74,7 +74,7 @@ bool GameState::run() {
 	_gameScreen->update();
 	_screen.update();
 
-	while (input != GUI::kKeyEscape && input != GUI::kNotifyResize) {
+	while (input != GUI::kKeyEscape) {
 		_gameScreen->setTurn(_tickCounter / kTicksPerTurn);
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
@@ -82,8 +82,12 @@ bool GameState::run() {
 			_screen.update();
 
 			input = _input.poll();
-			if (!handleInput(input))
+			if (input == GUI::kNotifyResize) {
+				_gameScreen->sizeChanged();
 				continue;
+			} else if (!handleInput(input)) {
+				continue;
+			}
 		}
 
 		_curLevel->update();

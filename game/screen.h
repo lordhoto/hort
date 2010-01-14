@@ -105,6 +105,11 @@ public:
 	 * @param turn Current turn.
 	 */
 	void setTurn(unsigned int turn);
+
+	/**
+	 * Notifies the screen of a size change.
+	 */
+	void sizeChanged();
 private:
 	GUI::Screen &_screen;
 	GUI::Input &_input;

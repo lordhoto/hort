@@ -92,8 +92,8 @@ void Screen::remove(Window *window) {
 }
 
 void Screen::setCursor(unsigned int x, unsigned int y) {
-	assert(x <= 79);
-	assert(y <= 23);
+	assert(x < width());
+	assert(y < height());
 	_curX = x;
 	_curY = y;
 }

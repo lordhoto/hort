@@ -130,6 +130,12 @@ void Screen::clearObjects() {
 	_monsters.clear();
 }
 
+void Screen::sizeChanged() {
+	createOutputWindows();
+	setCenter(_centerX, _centerY);
+	update();
+}
+
 void Screen::createOutputWindows() {
 	_screen.remove(_messageLine);
 	delete _messageLine;
@@ -137,6 +143,8 @@ void Screen::createOutputWindows() {
 	delete _mapWindow;
 	_screen.remove(_playerStats);
 	delete _playerStats;
+
+	assert(_screen.width() >= 80 && _screen.height() >= 24);
 
 	_messageLine = new GUI::Window(0, 0, _screen.width(), 1, false);
 	assert(_messageLine);
