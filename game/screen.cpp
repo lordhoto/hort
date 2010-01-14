@@ -52,10 +52,9 @@ void Screen::update() {
 	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		const unsigned int monsterX = (*i)->getX(), monsterY = (*i)->getY();
 
-		if (monsterX < (unsigned int)_mapOffsetX
-		    || monsterY < (unsigned int)_mapOffsetY
-		    || monsterX >= (unsigned int)_mapOffsetX + outputWidth
-		    || monsterY >= (unsigned int)_mapOffsetY + outputHeight)
+		if (monsterX < _mapOffsetX || monsterY < _mapOffsetY
+		    || monsterX >= _mapOffsetX + outputWidth
+		    || monsterY >= _mapOffsetY + outputHeight)
 			continue;
 
 		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
@@ -75,16 +74,16 @@ void Screen::setCenter(unsigned int x, unsigned int y) {
 	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
 	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
 
-	_mapOffsetX = _centerX - outputWidth / 2;
-	_mapOffsetY = _centerY - outputHeight / 2;
+	int offsetX = _centerX - outputWidth / 2;
+	int offsetY = _centerY - outputHeight / 2;
 
-	_mapOffsetX = std::max(_mapOffsetX, 0);
-	_mapOffsetX = std::min<int>(_mapOffsetX, mapWidth - outputWidth);
-	_mapOffsetX = std::max(_mapOffsetX, 0);
+	offsetX = std::max(offsetX, 0);
+	offsetX = std::min(offsetX, (int)mapWidth - (int)outputWidth);
+	_mapOffsetX = std::max(offsetX, 0);
 
-	_mapOffsetY = std::max(_mapOffsetY, 0);
-	_mapOffsetY = std::min<int>(_mapOffsetY, mapHeight - outputHeight);
-	_mapOffsetY = std::max(_mapOffsetY, 0);
+	offsetY = std::max(offsetY, 0);
+	offsetY = std::min(offsetY, (int)mapHeight - (int)outputHeight);
+	_mapOffsetY = std::max(offsetY, 0);
 }
 
 void Screen::setMap(const Map *map) {

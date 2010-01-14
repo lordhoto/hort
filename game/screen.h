@@ -107,7 +107,7 @@ private:
 	MonsterList _monsters;
 
 	unsigned int _centerX, _centerY;
-	int _mapOffsetX, _mapOffsetY;
+	unsigned int _mapOffsetX, _mapOffsetY;
 
 	struct DrawDesc {
 		DrawDesc() {}
