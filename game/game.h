@@ -58,20 +58,10 @@ private:
 	bool _initialized;
 
 	GUI::Screen &_screen;
-	GUI::Window *_messageLine;
-	GUI::Window *_mapWindow;
-	GUI::Window *_playerStats;
-
 	EventDispatcher *_eventDisp;
-
-	typedef std::list<std::string> StringList;
-	StringList _messages;
-	void printMessages();
 
 	TickCount _tickCounter;
 	TickCount _nextWarning;
-
-	void drawStatsWindow();
 
 	GUI::Input &_input;
 

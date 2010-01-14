@@ -21,19 +21,23 @@
 #ifndef GAME_GAME_SCREEN_H
 #define GAME_GAME_SCREEN_H
 
-#include "gui/window.h"
-
 #include "map.h"
 #include "monster.h"
 
+#include "gui/screen.h"
+#include "gui/window.h"
+#include "gui/input.h"
+
 #include <list>
 #include <vector>
+#include <string>
 
 namespace Game {
 
 class Screen {
 public:
-	Screen(GUI::Window &window);
+	Screen(const Monster &player);
+	~Screen();
 
 	/**
 	 * Tells the game screen some object state changed.
@@ -43,7 +47,7 @@ public:
 	/**
 	 * Updates the game screen (when needed).
 	 */
-	void update();
+	void update(bool drawMsg = false);
 
 	/**
 	 * Sets the map to draw upon.
@@ -89,6 +93,20 @@ public:
 	void clearObjects();
 
 	/**
+	 * Adds a message to the message window.
+	 *
+	 * @param str Message to add.
+	 */
+	void addToMsgWindow(const std::string &str);
+
+	/**
+	 * Sets the current turn.
+	 *
+	 * @param turn Current turn.
+	 */
+	void setTurn(unsigned int turn);
+
+	/**
 	 * Queries the current map X offset.
 	 */
 	int mapOffsetX() const { return _mapOffsetX; }
@@ -98,7 +116,22 @@ public:
 	 */
 	int mapOffsetY() const { return _mapOffsetY; }
 private:
-	GUI::Window &_output;
+	GUI::Screen &_screen;
+	GUI::Input &_input;
+
+	GUI::Window *_messageLine;
+	GUI::Window *_mapWindow;
+	GUI::Window *_playerStats;
+
+	void createOutputWindows();
+
+	typedef std::list<std::string> StringList;
+	StringList _messages;
+	void printMessages();
+
+	unsigned int _turn;
+	const Monster &_player;
+	void drawStatsWindow();
 
 	bool _needRedraw;
 	const Map *_map;

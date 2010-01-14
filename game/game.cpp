@@ -32,7 +32,6 @@ namespace Game {
 
 GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
 	_initialized = false;
-	_messageLine = _mapWindow = _playerStats = 0;
 	_curLevel = 0;
 	_eventDisp = 0;
 	_tickCounter = 0;
@@ -42,13 +41,6 @@ GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::in
 GameState::~GameState() {
 	delete _curLevel;
 	delete _gameScreen;
-
-	_screen.remove(_messageLine);
-	delete _messageLine;
-	_screen.remove(_mapWindow);
-	delete _mapWindow;
-	_screen.remove(_playerStats);
-	delete _playerStats;
 }
 
 bool GameState::initialize() {
@@ -56,15 +48,7 @@ bool GameState::initialize() {
 		_initialized = true;
 		_curLevel = new Level(*this);
 
-		_messageLine = new GUI::Window(0,  0, 80,  1, false);
-		_mapWindow = new GUI::Window(0,  1, 80, 22, false);
-		_playerStats = new GUI::Window(0, 23, 80,  1, false);
-
-		_screen.add(_messageLine);
-		_screen.add(_mapWindow);
-		_screen.add(_playerStats);
-
-		_gameScreen = new Screen(*_mapWindow);
+		_gameScreen = new Screen(_player);
 		_curLevel->makeActive(*_gameScreen, _player);
 	}
 
@@ -88,14 +72,13 @@ bool GameState::run() {
 
 	_gameScreen->setCenter(playerX, playerY);
 	_gameScreen->update();
-	drawStatsWindow();
 	_screen.update();
 
 	while (input != GUI::kKeyEscape && input != GUI::kNotifyResize) {
-		drawStatsWindow();
+		_gameScreen->setTurn(_tickCounter / kTicksPerTurn);
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
-			printMessages();
+			_gameScreen->update(true);
 			_screen.update();
 
 			input = _input.poll();
@@ -109,8 +92,8 @@ bool GameState::run() {
 		++_tickCounter;
 
 		if (_player.getHitPoints() <= 0) {
-			_messages.push_back("You die...");
-			printMessages();
+			_gameScreen->addToMsgWindow("You die...");
+			_gameScreen->update();
 			_screen.update();
 			_input.poll();
 			break;
@@ -137,7 +120,7 @@ void GameState::processEvent(const Event &event) {
 		if (!event.data.attackDamage.didDmg)
 			ss << " Somehow the attack does not cause any damage.";
 
-		_messages.push_back(ss.str());
+		_gameScreen->addToMsgWindow(ss.str());
 	} else if (event.type == Event::kTypeAttackFail) {
 		const Monster *monster = _curLevel->getMonster(event.data.attackFail.monster);
 		assert(monster);
@@ -149,7 +132,7 @@ void GameState::processEvent(const Event &event) {
 		else
 			ss << "The " << getMonsterName(monster->getType()) << " misses!";
 
-		_messages.push_back(ss.str());
+		_gameScreen->addToMsgWindow(ss.str());
 	} else if (event.type == Event::kTypeDeath) {
 		const Monster *monster = _curLevel->getMonster(event.data.death.monster);
 		assert(monster);
@@ -165,7 +148,7 @@ void GameState::processEvent(const Event &event) {
 		if (event.data.death.monster == kPlayerMonsterID) {
 			switch (event.data.death.cause) {
 			case Event::Death::kDrowned:
-				_messages.push_back("You drown.");
+				_gameScreen->addToMsgWindow("You drown.");
 				break;
 
 			case Event::Death::kKilled: {
@@ -174,7 +157,7 @@ void GameState::processEvent(const Event &event) {
 
 				std::stringstream ss;
 				ss << "The " << getMonsterName(killer->getType()) << " kills you!";
-				_messages.push_back(ss.str());
+				_gameScreen->addToMsgWindow(ss.str());
 				} break;
 			}
 			
@@ -199,7 +182,7 @@ void GameState::processEvent(const Event &event) {
 				}
 			}
 
-			_messages.push_back(ss.str());
+			_gameScreen->addToMsgWindow(ss.str());
 		}
 	} else if (event.type == Event::kTypeIdle) {
 		if (event.data.idle.monster == kPlayerMonsterID) {
@@ -211,7 +194,7 @@ void GameState::processEvent(const Event &event) {
 			};
 
 			if (Base::rollDice(10) == 10)
-				_messages.push_back(messages[Base::rollDice(3) - 1]);
+				_gameScreen->addToMsgWindow(messages[Base::rollDice(3) - 1]);
 		} else {
 			const Monster *monster = _curLevel->getMonster(event.data.idle.monster);
 			assert(monster);
@@ -250,7 +233,7 @@ void GameState::processEvent(const Event &event) {
 				}
 
 				if (processMessage)
-					_messages.push_back(ss.str());
+					_gameScreen->addToMsgWindow(ss.str());
 			}
 		}
 	} else if (event.type == Event::kTypeMove) {
@@ -390,7 +373,7 @@ void GameState::examine() {
 			else
 				ss << "This is just a simple " << Map::queryTileName(_curLevel->getMap().tileAt(x, y)) << ".";
 
-			_messages.push_back(ss.str());
+			_gameScreen->addToMsgWindow(ss.str());
 			} break;
 
 		default:
@@ -414,51 +397,6 @@ void GameState::examine() {
 	_gameScreen->setCenter(_player.getX(), _player.getY());
 	_gameScreen->update();
 	_screen.update();
-}
-
-void GameState::printMessages() {
-	_messageLine->clear();
-
-	std::string line;
-	while (!_messages.empty()) {
-		line.clear();
-		while (!_messages.empty()) {
-			std::string front = _messages.front();
-			if (!line.empty() && front.size() < 80) {
-				if (line.size() + front.size() > 80 || (_messages.size() > 1 && line.size() + front.size() > 70))
-					break;
-			}
-
-			_messages.pop_front();
-			if (!line.empty())
-				line += ' ';
-			line += front;
-		}
-
-		if (!_messages.empty())
-			line += " -- more --";
-
-		_messageLine->printLine(line.c_str(), 0, 0);
-		if (!_messages.empty()) {
-			_screen.update();
-			_input.poll();
-		}
-	}
-}
-
-void GameState::drawStatsWindow() {
-	std::stringstream line;
-
-	// Stats line
-	line << "Str: " << (int)_player.getAttribute(Monster::kAttribStrength)
-	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
-	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
-	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom)
-	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
-	     << " | T: " << _tickCounter / kTicksPerTurn;
-
-	_playerStats->clear();
-	_playerStats->printLine(line.str().c_str(), 0, 0);
 }
 
 } // end of namespace Game

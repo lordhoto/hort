@@ -22,22 +22,41 @@
 #include "gui/screen.h"
 
 #include <cassert>
+#include <sstream>
 
 namespace Game {
 
-Screen::Screen(GUI::Window &window)
-    : _output(window), _needRedraw(false), _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
+Screen::Screen(const Monster &player)
+    : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _messageLine(0), _mapWindow(0),
+      _playerStats(0), _messages(), _turn(0), _player(player), _needRedraw(false), _map(0), _monsters(),
+      _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
+
+	createOutputWindows();
 }
 
-void Screen::update() {
+Screen::~Screen() {
+	_screen.remove(_messageLine);
+	delete _messageLine;
+	_screen.remove(_mapWindow);
+	delete _mapWindow;
+	_screen.remove(_playerStats);
+	delete _playerStats;
+}
+
+void Screen::update(bool drawMsg) {
 	if (!_needRedraw || !_map)
 		return;
 	_needRedraw = false;
 
-	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
+	drawStatsWindow();
+
+	if (drawMsg)
+		printMessages();
+
+	const unsigned int outputWidth = _mapWindow->width(), outputHeight = _mapWindow->height();
 	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
 
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
@@ -45,7 +64,7 @@ void Screen::update() {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
 			const Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
 			const DrawDesc &desc = _mapDrawDescs[tile];
-			_output.printChar(desc.symbol, x, y, desc.color, desc.attribs);
+			_mapWindow->printChar(desc.symbol, x, y, desc.color, desc.attribs);
 		}
 	}
 
@@ -58,10 +77,10 @@ void Screen::update() {
 			continue;
 
 		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
-		_output.printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
+		_mapWindow->printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
 	}
 
-	GUI::Screen::instance().setCursor(_output, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
+	GUI::Screen::instance().setCursor(*_mapWindow, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
 }
 
 void Screen::setCenter(unsigned int x, unsigned int y) {
@@ -71,7 +90,7 @@ void Screen::setCenter(unsigned int x, unsigned int y) {
 	_centerX = x;
 	_centerY = y;
 
-	const unsigned int outputWidth = _output.width(), outputHeight = _output.height();
+	const unsigned int outputWidth = _mapWindow->width(), outputHeight = _mapWindow->height();
 	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
 
 	int offsetX = _centerX - outputWidth / 2;
@@ -109,6 +128,87 @@ void Screen::remObject(const Monster *monster) {
 void Screen::clearObjects() {
 	flagForUpdate();
 	_monsters.clear();
+}
+
+void Screen::createOutputWindows() {
+	_screen.remove(_messageLine);
+	delete _messageLine;
+	_screen.remove(_mapWindow);
+	delete _mapWindow;
+	_screen.remove(_playerStats);
+	delete _playerStats;
+
+	_messageLine = new GUI::Window(0, 0, _screen.width(), 1, false);
+	assert(_messageLine);
+
+	_mapWindow = new GUI::Window(0, 1, _screen.width(), _screen.height() - 2, false);
+	assert(_mapWindow);
+
+	_playerStats = new GUI::Window(0, _screen.height() - 1, _screen.width(), 1, false);
+	assert(_playerStats);
+
+	_screen.add(_messageLine);
+	_screen.add(_mapWindow);
+	_screen.add(_playerStats);
+
+	_needRedraw = true;
+}
+
+void Screen::addToMsgWindow(const std::string &str) {
+	_messages.push_back(str);
+	_needRedraw = true;
+}
+
+void Screen::printMessages() {
+	_messageLine->clear();
+
+	std::string line;
+	while (!_messages.empty()) {
+		line.clear();
+		while (!_messages.empty()) {
+			std::string front = _messages.front();
+			if (!line.empty() && front.size() < _messageLine->width()) {
+				if (line.size() + front.size() > _messageLine->width() || (_messages.size() > 1 && line.size() + front.size() > _messageLine->width() - 10))
+					break;
+			}
+
+			_messages.pop_front();
+			if (!line.empty())
+				line += ' ';
+			line += front;
+		}
+
+		if (!_messages.empty())
+			line += " -- more --";
+
+		_messageLine->printLine(line.c_str(), 0, 0);
+		if (!_messages.empty()) {
+			_screen.update();
+			_input.poll();
+		}
+	}
+}
+
+void Screen::setTurn(unsigned int turn) {
+	if (_turn != turn) {
+		_turn = turn;
+		_needRedraw = true;
+	}
+}
+
+void Screen::drawStatsWindow() {
+	std::stringstream line;
+
+	// Stats line
+	line << "Str: " << (int)_player.getAttribute(Monster::kAttribStrength)
+	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
+	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
+	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom)
+	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
+	     << " | T: " << _turn;
+
+	_playerStats->clear();
+	_playerStats->printLine(line.str().c_str(), 0, 0);
 }
 
 // Static data
