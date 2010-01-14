@@ -29,6 +29,7 @@ namespace Intern {
 Input *Input::_instance = 0;
 
 int Input::poll() {
+	refresh();
 	return wgetch(stdscr);
 }
 
