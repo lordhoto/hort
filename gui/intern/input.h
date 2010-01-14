@@ -32,7 +32,8 @@ namespace GUI {
 namespace Intern {
 
 enum Notifications {
-	kNotifyResize = KEY_RESIZE
+	kNotifyResize = KEY_RESIZE,
+	kNotifyError = ERR
 };
 
 class Input {

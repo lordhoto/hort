@@ -142,6 +142,8 @@ int Screen::getInput() {
 			update();
 
 			input = 0;
+		} else if (input == Intern::kNotifyError) {
+			input = 0;
 		}
 	} while (!input);
 
