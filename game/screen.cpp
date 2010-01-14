@@ -81,6 +81,8 @@ void Screen::update(bool drawMsg) {
 	}
 
 	GUI::Screen::instance().setCursor(*_mapWindow, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
+
+	_screen.update();
 }
 
 void Screen::setCenter(unsigned int x, unsigned int y) {

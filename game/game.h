@@ -28,7 +28,6 @@
 #include "defs.h"
 
 #include "gui/window.h"
-#include "gui/screen.h"
 #include "gui/input.h"
 
 #include <list>
@@ -57,7 +56,6 @@ public:
 private:
 	bool _initialized;
 
-	GUI::Screen &_screen;
 	EventDispatcher *_eventDisp;
 
 	TickCount _tickCounter;

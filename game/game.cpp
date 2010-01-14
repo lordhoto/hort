@@ -22,6 +22,7 @@
 #include "game.h"
 
 #include "base/rnd.h"
+#include "gui/screen.h"
 #include "ai/monster.h"
 
 #include <cassert>
@@ -30,7 +31,7 @@
 
 namespace Game {
 
-GameState::GameState() : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
+GameState::GameState() : _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
 	_initialized = false;
 	_curLevel = 0;
 	_eventDisp = 0;
@@ -52,7 +53,7 @@ bool GameState::initialize() {
 		_curLevel->makeActive(*_gameScreen, _player);
 	}
 
-	_screen.clear();
+	GUI::Screen::instance().clear();
 
 	return true;
 }
@@ -72,14 +73,12 @@ bool GameState::run() {
 
 	_gameScreen->setCenter(playerX, playerY);
 	_gameScreen->update();
-	_screen.update();
 
 	while (input != GUI::kKeyEscape) {
 		_gameScreen->setTurn(_tickCounter / kTicksPerTurn);
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
 			_gameScreen->update(true);
-			_screen.update();
 
 			input = _input.poll();
 			if (input == GUI::kNotifyResize) {
@@ -98,7 +97,6 @@ bool GameState::run() {
 		if (_player.getHitPoints() <= 0) {
 			_gameScreen->addToMsgWindow("You die...");
 			_gameScreen->update();
-			_screen.update();
 			_input.poll();
 			break;
 		}
@@ -395,12 +393,10 @@ void GameState::examine() {
 
 		_gameScreen->setCenter(x, y);
 		_gameScreen->update();
-		_screen.update();
 	}
 
 	_gameScreen->setCenter(_player.getX(), _player.getY());
 	_gameScreen->update();
-	_screen.update();
 }
 
 } // end of namespace Game
