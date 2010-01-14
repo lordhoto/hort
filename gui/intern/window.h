@@ -21,7 +21,7 @@
 #ifndef GUI_WINDOW_H
 #define GUI_WINDOW_H
 
-#include "defs.h"
+#include "gui/defs.h"
 
 #include <ncurses.h>
 

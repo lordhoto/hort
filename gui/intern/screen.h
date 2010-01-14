@@ -21,8 +21,9 @@
 #ifndef GUI_SCREEN_H
 #define GUI_SCREEN_H
 
-#include "defs.h"
 #include "window.h"
+
+#include "gui/defs.h"
 
 #include <list>
 
