@@ -26,7 +26,6 @@
 #include "event.h"
 #include "defs.h"
 
-#include "gui/intern/input.h"
 #include "gui/screen.h"
 
 #include <list>
@@ -59,8 +58,6 @@ private:
 
 	TickCount _tickCounter;
 	TickCount _nextWarning;
-
-	GUI::Intern::Input &_input;
 
 	GUI::Screen *_gameScreen;
 	Level *_curLevel;

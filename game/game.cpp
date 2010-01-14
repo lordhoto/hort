@@ -22,8 +22,10 @@
 #include "game.h"
 
 #include "base/rnd.h"
-#include "gui/intern/screen.h"
+
 #include "ai/monster.h"
+
+#include "gui/defs.h"
 
 #include <cassert>
 #include <sstream>
@@ -31,7 +33,7 @@
 
 namespace Game {
 
-GameState::GameState() : _input(GUI::Intern::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
+GameState::GameState() : _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
 	_initialized = false;
 	_curLevel = 0;
 	_eventDisp = 0;
@@ -78,13 +80,12 @@ bool GameState::run() {
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
 			_gameScreen->update(true);
 
-			input = _input.poll();
-			if (input == GUI::Intern::kNotifyResize) {
-				_gameScreen->sizeChanged();
+			input = 0;
+			while ((input = _gameScreen->getInput()) == 0)
+				;
+
+			if (!handleInput(input))
 				continue;
-			} else if (!handleInput(input)) {
-				continue;
-			}
 		}
 
 		_curLevel->update();
@@ -95,7 +96,7 @@ bool GameState::run() {
 		if (_player.getHitPoints() <= 0) {
 			_gameScreen->addToMsgWindow("You die...");
 			_gameScreen->update();
-			_input.poll();
+			_gameScreen->getInput();
 			break;
 		}
 	}
@@ -318,7 +319,7 @@ void GameState::examine() {
 
 	int input = 0;
 	while (input != GUI::kKeyEscape) {
-		input = _input.poll();
+		input = _gameScreen->getInput();
 		int offX = 0, offY = 0;
 
 		switch (input) {

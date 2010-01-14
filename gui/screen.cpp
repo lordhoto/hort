@@ -130,10 +130,17 @@ void Screen::clearObjects() {
 	_monsters.clear();
 }
 
-void Screen::sizeChanged() {
-	createOutputWindows();
-	setCenter(_centerX, _centerY);
-	update();
+int Screen::getInput() {
+	int input = _input.poll();
+
+	if (input == Intern::kNotifyResize) {
+		createOutputWindows();
+		setCenter(_centerX, _centerY);
+		update();
+		return 0;
+	} else {
+		return input;
+	}
 }
 
 void Screen::createOutputWindows() {

@@ -107,9 +107,16 @@ public:
 	void setTurn(unsigned int turn);
 
 	/**
-	 * Notifies the screen of a size change.
+	 * Waits for the user to enter any key.
+	 *
+	 * This is either the ASCII representation of the key, one of 
+	 * values defined via Keys or an unknown value in case the key
+	 * pressed is not known.
+	 *
+	 * @see Keys
+	 * @return User's input, might be 0 to indicate an internal event.
 	 */
-	void sizeChanged();
+	int getInput();
 private:
 	GUI::Intern::Screen &_screen;
 	GUI::Intern::Input &_input;
