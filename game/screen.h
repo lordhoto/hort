@@ -24,9 +24,9 @@
 #include "map.h"
 #include "monster.h"
 
-#include "gui/screen.h"
-#include "gui/window.h"
-#include "gui/input.h"
+#include "gui/intern/screen.h"
+#include "gui/intern/window.h"
+#include "gui/intern/input.h"
 
 #include <list>
 #include <vector>

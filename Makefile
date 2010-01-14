@@ -6,9 +6,9 @@ DEPDIR:=.deps
 
 OBJS := base/main.o \
 		base/rnd.o \
-		gui/screen.o \
-		gui/window.o \
-		gui/input.o \
+		gui/intern/screen.o \
+		gui/intern/window.o \
+		gui/intern/input.o \
 		game/map.o \
 		game/state.o \
 		game/game.o \

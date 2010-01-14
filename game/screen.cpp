@@ -19,7 +19,6 @@
  */
 
 #include "screen.h"
-#include "gui/screen.h"
 
 #include <cassert>
 #include <sstream>

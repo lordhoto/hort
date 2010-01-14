@@ -22,7 +22,7 @@
 #include "game.h"
 
 #include "base/rnd.h"
-#include "gui/screen.h"
+#include "gui/intern/screen.h"
 #include "ai/monster.h"
 
 #include <cassert>

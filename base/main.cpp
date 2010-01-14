@@ -18,8 +18,8 @@
  *
  */
 
-#include "gui/screen.h"
-#include "gui/input.h"
+#include "gui/intern/screen.h"
+#include "gui/intern/input.h"
 
 #include "game/state.h"
 #include "game/game.h"

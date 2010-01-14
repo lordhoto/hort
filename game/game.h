@@ -27,8 +27,7 @@
 #include "event.h"
 #include "defs.h"
 
-#include "gui/window.h"
-#include "gui/input.h"
+#include "gui/intern/input.h"
 
 #include <list>
 #include <string>
