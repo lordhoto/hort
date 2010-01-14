@@ -32,9 +32,9 @@ friend class Screen;
 public:
 	/**
 	 * Creates a window with the given postion and size.
-	 * The right most coordinate is (79, y).
-	 * The down most coordinate is (x, 24).
-	 * This results in the max width being 80 and the max height being 24.
+	 * The right most coordinate is (Screen::width() - 1, y).
+	 * The down most coordinate is (x, Screen::height() - 1).
+	 * This results in the max width being Screen::width() and the max height being Screen::height().
 	 *
 	 * @param x The x coordinate of the new window.
 	 * @param y The y cooridnate of the new window.

@@ -19,6 +19,7 @@
  */
 
 #include "window.h"
+#include "screen.h"
 
 #include <cassert>
 #include <cstring>
@@ -35,8 +36,10 @@ Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, b
       _content(0),
       _hasBorder(border),
       _needsRefresh(true) {
-	assert(x + w <= 80);
-	assert(y + h <= 24);
+	Screen &screen = Screen::instance();
+
+	assert(x + w <= screen.width());
+	assert(y + h <= screen.height());
 
 	_content = new int[_rW * _rH];
 	assert(_content);
