@@ -84,6 +84,8 @@ void Screen::setCenter(unsigned int x, unsigned int y) {
 	offsetY = std::max(offsetY, 0);
 	offsetY = std::min(offsetY, (int)mapHeight - (int)outputHeight);
 	_mapOffsetY = std::max(offsetY, 0);
+
+	_needRedraw = true;
 }
 
 void Screen::setMap(const Map *map) {
