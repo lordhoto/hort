@@ -105,16 +105,6 @@ public:
 	 * @param turn Current turn.
 	 */
 	void setTurn(unsigned int turn);
-
-	/**
-	 * Queries the current map X offset.
-	 */
-	int mapOffsetX() const { return _mapOffsetX; }
-
-	/**
-	 * Queries the current map Y offset.
-	 */
-	int mapOffsetY() const { return _mapOffsetY; }
 private:
 	GUI::Screen &_screen;
 	GUI::Input &_input;
