@@ -18,14 +18,15 @@
  *
  */
 
-#ifndef GUI_WINDOW_H
-#define GUI_WINDOW_H
+#ifndef GUI_INTERN_WINDOW_H
+#define GUI_INTERN_WINDOW_H
 
 #include "gui/defs.h"
 
 #include <ncurses.h>
 
 namespace GUI {
+namespace Intern {
 
 class Window {
 friend class Screen;
@@ -140,7 +141,8 @@ private:
 	void redraw(bool force);
 };
 
-}
+} // end of namespace Intern
+} // end of namespace Game
 
 #endif
 

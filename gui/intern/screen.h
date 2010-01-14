@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GUI_SCREEN_H
-#define GUI_SCREEN_H
+#ifndef GUI_INTERN_SCREEN_H
+#define GUI_INTERN_SCREEN_H
 
 #include "window.h"
 
@@ -28,6 +28,7 @@
 #include <list>
 
 namespace GUI {
+namespace Intern {
 
 class Window;
 
@@ -128,6 +129,7 @@ private:
 	WindowList _windows;
 };
 
+} // end of namespace Intern
 } // end of namespace GUI
 
 #endif

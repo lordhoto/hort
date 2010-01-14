@@ -26,6 +26,7 @@
 #include <algorithm>
 
 namespace GUI {
+namespace Intern {
 
 Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, bool border)
     : _x(border ? x + 1 : x),
@@ -149,5 +150,6 @@ void Window::redraw(bool force) {
 	}
 }
 
+} // end of namespace Intern
 } // end of namespace GUI
 

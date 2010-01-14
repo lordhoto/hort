@@ -29,21 +29,21 @@
 #include <cstdio>
 
 int main(int argc, char *argv[]) {
-	GUI::Screen::instance();
+	GUI::Intern::Screen::instance();
 
-	if (GUI::Screen::instance().width() < 80 || GUI::Screen::instance().height() < 24) {
-		GUI::Screen::destroy();
+	if (GUI::Intern::Screen::instance().width() < 80 || GUI::Intern::Screen::instance().height() < 24) {
+		GUI::Intern::Screen::destroy();
 		std::fprintf(stderr, "ERROR: Terminal size must be at least 80x24\n");
 		return -1;
 	}
 
-	GUI::Input::instance();
+	GUI::Intern::Input::instance();
 	Base::initRNG();
 
 	Game::StateHandler states;
 	states.addStateToQueue(new Game::GameState());
 	states.process();
 
-	GUI::Screen::destroy();
-	GUI::Input::destroy();
+	GUI::Intern::Screen::destroy();
+	GUI::Intern::Input::destroy();
 }

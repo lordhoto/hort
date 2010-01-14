@@ -31,7 +31,7 @@
 
 namespace Game {
 
-GameState::GameState() : _input(GUI::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
+GameState::GameState() : _input(GUI::Intern::Input::instance()), _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
 	_initialized = false;
 	_curLevel = 0;
 	_eventDisp = 0;
@@ -52,8 +52,6 @@ bool GameState::initialize() {
 		_gameScreen = new Screen(_player);
 		_curLevel->makeActive(*_gameScreen, _player);
 	}
-
-	GUI::Screen::instance().clear();
 
 	return true;
 }
@@ -81,7 +79,7 @@ bool GameState::run() {
 			_gameScreen->update(true);
 
 			input = _input.poll();
-			if (input == GUI::kNotifyResize) {
+			if (input == GUI::Intern::kNotifyResize) {
 				_gameScreen->sizeChanged();
 				continue;
 			} else if (!handleInput(input)) {

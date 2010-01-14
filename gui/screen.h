@@ -111,12 +111,12 @@ public:
 	 */
 	void sizeChanged();
 private:
-	GUI::Screen &_screen;
-	GUI::Input &_input;
+	GUI::Intern::Screen &_screen;
+	GUI::Intern::Input &_input;
 
-	GUI::Window *_messageLine;
-	GUI::Window *_mapWindow;
-	GUI::Window *_playerStats;
+	GUI::Intern::Window *_messageLine;
+	GUI::Intern::Window *_mapWindow;
+	GUI::Intern::Window *_playerStats;
 
 	void createOutputWindows();
 

@@ -30,6 +30,7 @@
 #include <stdlib.h>
 
 namespace GUI {
+namespace Intern {
 
 Screen *Screen::_instance = 0;
 
@@ -121,5 +122,6 @@ void Screen::update() {
 	//refresh();
 }
 
+} // end of namespace Intern
 } // end of namespace GUI
 

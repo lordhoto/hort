@@ -26,9 +26,9 @@
 namespace Game {
 
 Screen::Screen(const Monster &player)
-    : _screen(GUI::Screen::instance()), _input(GUI::Input::instance()), _messageLine(0), _mapWindow(0),
-      _playerStats(0), _messages(), _turn(0), _player(player), _needRedraw(false), _map(0), _monsters(),
-      _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
+    : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
+      _mapWindow(0), _playerStats(0), _messages(), _turn(0), _player(player), _needRedraw(false), _map(0),
+      _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
@@ -79,8 +79,7 @@ void Screen::update(bool drawMsg) {
 		_mapWindow->printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
 	}
 
-	GUI::Screen::instance().setCursor(*_mapWindow, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
-
+	_screen.setCursor(*_mapWindow, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
 	_screen.update();
 }
 
@@ -147,13 +146,13 @@ void Screen::createOutputWindows() {
 
 	assert(_screen.width() >= 80 && _screen.height() >= 24);
 
-	_messageLine = new GUI::Window(0, 0, _screen.width(), 1, false);
+	_messageLine = new GUI::Intern::Window(0, 0, _screen.width(), 1, false);
 	assert(_messageLine);
 
-	_mapWindow = new GUI::Window(0, 1, _screen.width(), _screen.height() - 2, false);
+	_mapWindow = new GUI::Intern::Window(0, 1, _screen.width(), _screen.height() - 2, false);
 	assert(_mapWindow);
 
-	_playerStats = new GUI::Window(0, _screen.height() - 1, _screen.width(), 1, false);
+	_playerStats = new GUI::Intern::Window(0, _screen.height() - 1, _screen.width(), 1, false);
 	assert(_playerStats);
 
 	_screen.add(_messageLine);

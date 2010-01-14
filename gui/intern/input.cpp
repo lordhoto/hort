@@ -24,6 +24,7 @@
 #include <cctype>
 
 namespace GUI {
+namespace Intern {
 
 Input *Input::_instance = 0;
 
@@ -74,5 +75,6 @@ void Input::destroy() {
 	_instance = 0;
 }
 
+} // end of namespace Intern
 } // end of namespace GUI
 

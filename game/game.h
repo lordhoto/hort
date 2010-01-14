@@ -60,7 +60,7 @@ private:
 	TickCount _tickCounter;
 	TickCount _nextWarning;
 
-	GUI::Input &_input;
+	GUI::Intern::Input &_input;
 
 	Screen *_gameScreen;
 	Level *_curLevel;

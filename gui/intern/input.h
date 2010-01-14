@@ -18,30 +18,18 @@
  *
  */
 
-#ifndef GUI_INPUT_H
-#define GUI_INPUT_H
+#ifndef GUI_INTERN_INPUT_H
+#define GUI_INTERN_INPUT_H
 
 #include "window.h"
+
+#include "gui/defs.h"
 
 #include <ncurses.h>
 #include <string>
 
 namespace GUI {
-
-enum Keys {
-	kKeyKeypad1 = '1',
-	kKeyKeypad2 = '2',
-	kKeyKeypad3 = '3',
-	kKeyKeypad4 = '4',
-	kKeyKeypad5 = '5',
-	kKeyKeypad6 = '6',
-	kKeyKeypad7 = '7',
-	kKeyKeypad8 = '8',
-	kKeyKeypad9 = '9',
-	kKeyBackspace = KEY_BACKSPACE,
-	kKeyReturn = 10,
-	kKeyEscape = 27
-};
+namespace Intern {
 
 enum Notifications {
 	kNotifyResize = KEY_RESIZE
@@ -89,6 +77,7 @@ private:
 	static Input *_instance;
 };
 
+} // end of namespace Intern
 } // end of namespace GUI
 
 #endif
