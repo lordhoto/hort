@@ -26,8 +26,17 @@
 
 #include "rnd.h"
 
+#include <cstdio>
+
 int main(int argc, char *argv[]) {
 	GUI::Screen::instance();
+
+	if (GUI::Screen::instance().width() < 80 || GUI::Screen::instance().height() < 24) {
+		GUI::Screen::destroy();
+		std::fprintf(stderr, "ERROR: Terminal size must be at least 80x24\n");
+		return -1;
+	}
+
 	GUI::Input::instance();
 	Base::initRNG();
 

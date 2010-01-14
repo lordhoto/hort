@@ -90,7 +90,7 @@ bool GameState::run() {
 	drawStatsWindow();
 	_screen.update();
 
-	while (input != GUI::kKeyEscape) {
+	while (input != GUI::kKeyEscape && input != GUI::kNotifyResize) {
 		drawStatsWindow();
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {

@@ -102,6 +102,20 @@ public:
 	 * @see clear
 	 */
 	void update();
+
+	/**
+	 * Queries the width of the screen.
+	 *
+	 * @return width.
+	 */
+	unsigned int width() const { return COLS; }
+
+	/**
+	 * Queries the height of the screen.
+	 *
+	 * @return height.
+	 */
+	unsigned int height() const { return LINES; }
 private:
 	Screen();
 	static Screen *_instance;

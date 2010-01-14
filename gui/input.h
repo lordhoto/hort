@@ -43,6 +43,10 @@ enum Keys {
 	kKeyEscape = 27
 };
 
+enum Notifications {
+	kNotifyResize = KEY_RESIZE
+};
+
 class Input {
 public:
 	/**
