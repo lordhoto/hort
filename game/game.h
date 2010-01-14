@@ -62,7 +62,7 @@ private:
 
 	GUI::Intern::Input &_input;
 
-	Screen *_gameScreen;
+	GUI::Screen *_gameScreen;
 	Level *_curLevel;
 	Monster _player;
 

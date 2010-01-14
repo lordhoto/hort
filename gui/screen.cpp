@@ -23,9 +23,9 @@
 #include <cassert>
 #include <sstream>
 
-namespace Game {
+namespace GUI {
 
-Screen::Screen(const Monster &player)
+Screen::Screen(const Game::Monster &player)
     : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
       _mapWindow(0), _playerStats(0), _messages(), _turn(0), _player(player), _needRedraw(false), _map(0),
       _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
@@ -61,7 +61,7 @@ void Screen::update(bool drawMsg) {
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
 	for (unsigned int y = 0; y < maxHeight; ++y) {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
-			const Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
+			const Game::Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
 			const DrawDesc &desc = _mapDrawDescs[tile];
 			_mapWindow->printChar(desc.symbol, x, y, desc.color, desc.attribs);
 		}
@@ -107,20 +107,20 @@ void Screen::setCenter(unsigned int x, unsigned int y) {
 	_needRedraw = true;
 }
 
-void Screen::setMap(const Map *map) {
+void Screen::setMap(const Game::Map *map) {
 	_map = map;
 	flagForUpdate();
 	clearObjects();
 }
 
-void Screen::addObject(const Monster *monster) {
+void Screen::addObject(const Game::Monster *monster) {
 	flagForUpdate();
 	remObject(monster);
 
 	_monsters.push_back(monster);
 }
 
-void Screen::remObject(const Monster *monster) {
+void Screen::remObject(const Game::Monster *monster) {
 	flagForUpdate();
 	_monsters.remove(monster);
 }
@@ -208,10 +208,10 @@ void Screen::drawStatsWindow() {
 	std::stringstream line;
 
 	// Stats line
-	line << "Str: " << (int)_player.getAttribute(Monster::kAttribStrength)
-	     << " Dex: " << (int)_player.getAttribute(Monster::kAttribDexterity)
-	     << " Agi: " << (int)_player.getAttribute(Monster::kAttribAgility)
-	     << " Wis: " << (int)_player.getAttribute(Monster::kAttribWisdom)
+	line << "Str: " << (int)_player.getAttribute(Game::Monster::kAttribStrength)
+	     << " Dex: " << (int)_player.getAttribute(Game::Monster::kAttribDexterity)
+	     << " Agi: " << (int)_player.getAttribute(Game::Monster::kAttribAgility)
+	     << " Wis: " << (int)_player.getAttribute(Game::Monster::kAttribWisdom)
 	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
 	     << " | T: " << _turn;
 

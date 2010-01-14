@@ -62,7 +62,7 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::makeActive(Screen &screen, Monster &player) {
+void Level::makeActive(GUI::Screen &screen, Monster &player) {
 	makeInactive();
 
 	screen.setMap(_map);

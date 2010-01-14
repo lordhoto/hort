@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GAME_GAME_SCREEN_H
-#define GAME_GAME_SCREEN_H
+#ifndef GUI_SCREEN_H
+#define GUI_SCREEN_H
 
 #include "intern/screen.h"
 #include "intern/window.h"
@@ -32,11 +32,11 @@
 #include <vector>
 #include <string>
 
-namespace Game {
+namespace GUI {
 
 class Screen {
 public:
-	Screen(const Monster &player);
+	Screen(const Game::Monster &player);
 	~Screen();
 
 	/**
@@ -57,7 +57,7 @@ public:
 	 *
 	 * @param map The map to draw.
 	 */
-	void setMap(const Map *map);
+	void setMap(const Game::Map *map);
 
 	/**
 	 * Sets the position, which should be centered.
@@ -74,7 +74,7 @@ public:
 	 *
 	 * @param monster The monster to draw.
 	 */
-	void addObject(const Monster *monster);
+	void addObject(const Game::Monster *monster);
 
 	/**
 	 * Removes a monster from the display object list.
@@ -83,7 +83,7 @@ public:
 	 *
 	 * @param monster The monster to remove.
 	 */
-	void remObject(const Monster *monster);
+	void remObject(const Game::Monster *monster);
 
 	/**
 	 * Clears all object lists.
@@ -125,13 +125,13 @@ private:
 	void printMessages();
 
 	unsigned int _turn;
-	const Monster &_player;
+	const Game::Monster &_player;
 	void drawStatsWindow();
 
 	bool _needRedraw;
-	const Map *_map;
+	const Game::Map *_map;
 
-	typedef std::list<const Monster *> MonsterList;
+	typedef std::list<const Game::Monster *> MonsterList;
 	MonsterList _monsters;
 
 	unsigned int _centerX, _centerY;

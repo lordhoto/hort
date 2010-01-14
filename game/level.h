@@ -49,7 +49,7 @@ public:
 	 * @param screen Screen to setup.
 	 * @param player The player monster.
 	 */
-	void makeActive(Screen &screen, Monster &player);
+	void makeActive(GUI::Screen &screen, Monster &player);
 
 	/**
 	 * Unsets the level as the active game level.
@@ -127,7 +127,7 @@ public:
 	void update();
 private:
 	Map *_map;
-	Screen *_screen;
+	GUI::Screen *_screen;
 	GameState &_gameState;
 	EventDispatcher _eventDisp;
 
