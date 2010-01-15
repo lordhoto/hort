@@ -165,7 +165,8 @@ void Monster::update() {
 			break;
 
 		case kMonsterAttack:
-			_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
+			if (_level.getMonster(Game::kPlayerMonsterID))
+				_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
 			break;
 
 		default:
