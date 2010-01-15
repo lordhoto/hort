@@ -92,7 +92,7 @@ bool GameState::run() {
 
 		if (_player.getHitPoints() <= 0) {
 			_gameScreen->addToMsgWindow("You die...");
-			_gameScreen->update();
+			_gameScreen->update(true);
 			_gameScreen->getInput();
 			break;
 		}
