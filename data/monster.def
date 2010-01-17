@@ -1,3 +1,9 @@
-def-monster Player  :=  8  8  8  8  8  8  8  8 10 10 10
-def-monster Gnome   :=  2  2  4  4  4  4  6  6  3  3 10
-def-monster Squolly := 10 10  1  1  1  1  1  1  1  1  7
+def-monster Player   :=  8  8  8  8  8  8  8  8 10 10 10
+def-monster Dwarf    :=  6  6  4  4  4  4  8  8  5  5 12
+def-monster Gnome    :=  2  2  4  4  4  4  6  6  3  3 10
+def-monster Squolly  := 10 10  1  1  1  1  1  1  1  1  7
+def-monster Schnippi := 10 10  1  1  1  1  1  1  1  1  7
+def-monster LordHoto := 10 10  1  1  1  1  1  1  1  1  7
+def-monster Norse    :=  5  5 10 10 10 10 12 12  8  8  8
+def-monster Dragon   := 18 18  5  5 12 12 18 18 20 20 10
+def-monster Nibelung := 18 18 18 18 18 18 18 18 36 36  3

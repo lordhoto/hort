@@ -1,3 +1,9 @@
-def-monster Player := @ kWhiteOnBlack kAttribBold
-def-monster Gnome := G kYellowOnBlack kAttribNormal
-def-monster Squolly := @ kBlueOnBlack kAttribBold
+def-monster Player   := @ kWhiteOnBlack kAttribBold
+def-monster Dwarf    := h kRedOnBlack kAttribDim
+def-monster Gnome    := G kYellowOnBlack kAttribNormal
+def-monster Squolly  := @ kBlueOnBlack kAttribBold
+def-monster Schnippi := @ kCyanOnBlack kAttribBold
+def-monster LordHoto := @ kRedOnBlack kAttribReverse
+def-monster Norse    := @ kRedOnBlack kAttribBold
+def-monster Dragon   := D kCyanOnBlack kAttribNormal
+def-monster Nibelung := N kRedOnBlack kAttribBoldReverse

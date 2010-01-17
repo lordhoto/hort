@@ -38,6 +38,9 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 	_monsterAI = new AI::Monster(*this, _eventDisp);
 	_eventDisp.addHandler(_monsterAI);
 
+	bool hasDragon = false;
+	bool hasNibelung = false;
+
 	for (int i = 0; i < 8192; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
@@ -46,7 +49,25 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 		} while (!isWalkable(monsterX, monsterY));
 
 		MonsterID newId = createNewMonsterID();
-		Monster *newMonster = g_monsterDatabase.createNewMonster(Base::rollDice(g_monsterDatabase.getMonsterTypeCount() - 1));
+		MonsterType newMonsterType = Base::rollDice(g_monsterDatabase.getMonsterTypeCount() - 1);
+
+		if (g_monsterDatabase.getMonsterName(newMonsterType) == std::string("Dragon")) {
+			if (hasDragon) {
+				--i;
+				continue;
+			} else {
+				hasDragon = true;
+			}
+		} else if (g_monsterDatabase.getMonsterName(newMonsterType) == std::string("Nibelung")) {
+			if (hasNibelung) {
+				--i;
+				continue;
+			} else {
+				hasNibelung = true;
+			}
+		}
+
+		Monster *newMonster = g_monsterDatabase.createNewMonster(newMonsterType);
 		newMonster->setX(monsterX);
 		newMonster->setY(monsterY);
 		_monsterField[monsterY * _map->width() + monsterX] = true;
