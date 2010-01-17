@@ -74,11 +74,13 @@ void Level::makeActive(GUI::Screen &screen, Monster &player) {
 	_gameState.setEventDispatcher(&_eventDisp);
 	_eventDisp.addHandler(&_gameState);
 
+	_monsterAI->setPlayer(&player);
 	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
 }
 
 void Level::makeInactive() {
 	removeMonster(kPlayerMonsterID);
+	_monsterAI->setPlayer(0);
 	if (_screen)
 		_screen->setMap(0);
 	_screen = 0;

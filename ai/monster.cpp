@@ -90,7 +90,7 @@ FSM::FSM *createMonsterFSM() {
 
 } // end of anonymous namespace
 
-Monster::Monster(const Game::Level &parent, Game::EventDispatcher &disp) : _level(parent), _eventDisp(disp) {
+Monster::Monster(const Game::Level &parent, Game::EventDispatcher &disp) : _level(parent), _eventDisp(disp), _fsm(0), _monsters(), _player(0) {
 	_fsm = createMonsterFSM();
 }
 
@@ -142,7 +142,7 @@ void Monster::update() {
 			break;
 
 		case kMonsterAttack:
-			if (_level.getMonster(Game::kPlayerMonsterID))
+			if (_player)
 				_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
 			break;
 
@@ -170,11 +170,11 @@ void Monster::processEvent(const Game::Event &event) {
 
 				i->second.fsmState = _fsm->getState();
 			}
-		} else if (_level.getMonster(Game::kPlayerMonsterID)) {
+		} else if (_player) {
 			MonsterMap::iterator i = _monsters.find(event.move.monster);
 			if (i != _monsters.end()) {
 				// Calculate distance
-				const double dist = event.move.newPos.distanceTo(_level.getMonster(Game::kPlayerMonsterID)->getPos());
+				const double dist = event.move.newPos.distanceTo(_player->getPos());
 
 				_fsm->setState(i->second.fsmState);
 

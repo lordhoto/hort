@@ -37,6 +37,11 @@ public:
 	~Monster();
 
 	/**
+	 * Sets the player monster.
+	 */
+	void setPlayer(const Game::Monster *player) { _player = player; }
+
+	/**
 	 * Adds a new monster to the AI.
 	 *
 	 * @param monster New monster.
@@ -77,6 +82,8 @@ private:
 
 	typedef std::map<const Game::MonsterID, MonsterState> MonsterMap;
 	MonsterMap _monsters;
+
+	const Game::Monster *_player;
 };
 
 } // end of namespace AI
