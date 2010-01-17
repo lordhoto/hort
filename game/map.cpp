@@ -27,7 +27,7 @@
 
 namespace Game {
 
-Map::Map() : _w(160), _h(48) {
+Map::Map() : _w(320), _h(200) {
 	_tiles.resize(_w * _h);
 	for (unsigned int i = 0; i < _w * _h; ++i) {
 		switch (Base::rollDice(100)) {
