@@ -23,6 +23,8 @@
 
 #include "monster_types.h"
 
+#include "base/geo.h"
+
 #include <algorithm>
 
 namespace Game {
@@ -43,7 +45,7 @@ public:
 	};
 
 	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, int health, unsigned char speed, unsigned int x, unsigned int y)
-	    : _type(type), _x(x), _y(y), _curHealth(health), _maxHealth(health), _speed(speed) {
+	    : _type(type), _pos(x, y), _curHealth(health), _maxHealth(health), _speed(speed) {
 		_attrib[kAttribWisdom] = wis;
 		_attrib[kAttribDexterity] = dex;
 		_attrib[kAttribAgility] = agi;
@@ -86,28 +88,28 @@ public:
 	 *
 	 * @return x coordinate.
 	 */
-	unsigned int getX() const { return _x; }
+	unsigned int getX() const { return _pos._x; }
 
 	/**
 	 * Returns the y coordinate of the monster.
 	 *
 	 * @return y coordinate.
 	 */
-	unsigned int getY() const { return _y; }
+	unsigned int getY() const { return _pos._y; }
 
 	/**
 	 * Sets the x coordinate of the monster.
 	 *
 	 * @param x new x coordinate.
 	 */
-	void setX(unsigned int x) { _x = x; }
+	void setX(unsigned int x) { _pos._x = x; }
 
 	/**
 	 * Sets the y coordinate of the monster.
 	 *
 	 * @param y new y coordinate.
 	 */
-	void setY(unsigned int y) { _y = y; }
+	void setY(unsigned int y) { _pos._y = y; }
 
 	/**
 	 * Queries the given attribute value.
@@ -138,7 +140,7 @@ public:
 private:
 	MonsterType _type;
 
-	unsigned int _x, _y;
+	Base::Point _pos;
 	int _curHealth, _maxHealth;
 	unsigned char _attrib[4];
 	unsigned char _speed;
