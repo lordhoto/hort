@@ -48,7 +48,15 @@ struct Point {
 	 */
 	bool operator!=(const Point &p) const {
 		return !(*this == p);
-	};
+	}
+
+	/**
+	 * Calculates the distance between two points.
+	 *
+	 * @param p Point to calculate the distance with.
+	 * @return distance.
+	 */
+	double distanceTo(const Point &p) const;
 
 	unsigned int _x, _y;
 };

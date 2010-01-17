@@ -36,6 +36,13 @@ int abs(int value) {
 
 } // end of anonymous namespace
 
+double Point::distanceTo(const Point &p) const {
+	int xDiff = p._x - _x;
+	int yDiff = p._y - _y;
+
+	return std::sqrt(xDiff*xDiff + yDiff*yDiff);
+}
+
 Bresenham::Bresenham(const Point &start, const Point &end)
     : _start(start), _end(end), _cur(start) {
 	int dX = _end._x - _start._x;
