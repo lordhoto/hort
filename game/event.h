@@ -23,6 +23,8 @@
 
 #include "monster.h"
 
+#include "base/geo.h"
+
 #include <list>
 
 namespace Game {
@@ -72,7 +74,7 @@ struct Event {
 			kNoReason,
 			kWary
 		} reason;
-	};
+	} idle;
 
 	struct Death {
 		MonsterID monster;
@@ -82,36 +84,29 @@ struct Event {
 			kKilled,
 			kDrowned
 		} cause;
-	};
+	} death;
 
-	union {
-		struct Move {
-			MonsterID monster;
+	struct Move {
+		MonsterID monster;
 
-			unsigned int newX, newY;
-			unsigned int oldX, oldY;
-		} move;
+		Base::Point newPos, oldPos;
+	} move;
 
-		struct Attack {
-			MonsterID monster;
-			MonsterID target;
-		} attack;
+	struct Attack {
+		MonsterID monster;
+		MonsterID target;
+	} attack;
 
-		struct AttackDamage {
-			MonsterID monster;
-			MonsterID target;
+	struct AttackDamage {
+		MonsterID monster;
+		MonsterID target;
 
-			bool didDmg;
-		} attackDamage;
+		bool didDmg;
+	} attackDamage;
 
-		struct AttackFail {
-			MonsterID monster;
-		} attackFail;
-
-		Death death;
-
-		Idle idle;
-	} data;
+	struct AttackFail {
+		MonsterID monster;
+	} attackFail;
 };
 
 /**

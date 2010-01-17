@@ -176,33 +176,32 @@ void Level::update() {
 
 void Level::processEvent(const Event &event) {
 	if (event.type == Event::kTypeMove) {
-		assert(isAllowedToAct(event.data.move.monster));
-		updateNextActionTick(event.data.move.monster);
+		assert(isAllowedToAct(event.move.monster));
+		updateNextActionTick(event.move.monster);
 
-		Monster *monster = getMonster(event.data.move.monster);
+		Monster *monster = getMonster(event.move.monster);
 		assert(monster);
 
 		// TODO: add some error checking
-		monster->setX(event.data.move.newX);
-		monster->setY(event.data.move.newY);
+		monster->setPos(event.move.newPos);
 
-		if (_map->tileAt(event.data.move.newX, event.data.move.newY) == Map::kTileWater) {
+		if (_map->tileAt(event.move.newPos._x, event.move.newPos._y) == Map::kTileWater) {
 			monster->setHitPoints(0);
-			_eventDisp.dispatch(createDeathEvent(event.data.move.monster, Event::Death::kDrowned));
+			_eventDisp.dispatch(createDeathEvent(event.move.monster, Event::Death::kDrowned));
 		}
 
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
-		assert(isAllowedToAct(event.data.attack.monster));
-		updateNextActionTick(event.data.attack.monster);
+		assert(isAllowedToAct(event.attack.monster));
+		updateNextActionTick(event.attack.monster);
 
-		const Monster *monster = getMonster(event.data.attack.monster);
+		const Monster *monster = getMonster(event.attack.monster);
 		assert(monster);
-		Monster *target = getMonster(event.data.attack.target);
+		Monster *target = getMonster(event.attack.target);
 		assert(target);
 
 		if (Base::rollDice(20) == 20) {
-			_eventDisp.dispatch(createAttackFailEvent(event.data.attack.monster));
+			_eventDisp.dispatch(createAttackFailEvent(event.attack.monster));
 		} else {
 			int damage = 0;
 
@@ -212,17 +211,17 @@ void Level::processEvent(const Event &event) {
 			int newHitPoints = target->getHitPoints() - damage;
 			target->setHitPoints(newHitPoints);
 
-			_eventDisp.dispatch(createAttackDamageEvent(event.data.attack.monster, event.data.attack.target, damage != 0));
+			_eventDisp.dispatch(createAttackDamageEvent(event.attack.monster, event.attack.target, damage != 0));
 
 			if (newHitPoints <= 0)
-				_eventDisp.dispatch(createDeathEvent(event.data.attack.target, Event::Death::kKilled, event.data.attack.monster));
+				_eventDisp.dispatch(createDeathEvent(event.attack.target, Event::Death::kKilled, event.attack.monster));
 		}
 
 		// Do not remove the monster yet, since some other
 		// objects might still use it in the event queue.
 	} else if (event.type == Event::kTypeIdle) {
-		assert(isAllowedToAct(event.data.idle.monster));
-		updateNextActionTick(event.data.idle.monster, (event.data.idle.reason == Event::Idle::kWary));
+		assert(isAllowedToAct(event.idle.monster));
+		updateNextActionTick(event.idle.monster, (event.idle.reason == Event::Idle::kWary));
 	}
 }
 

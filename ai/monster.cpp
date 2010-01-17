@@ -192,17 +192,16 @@ void Monster::update() {
 
 void Monster::processEvent(const Game::Event &event) {
 	if (event.type == Game::Event::kTypeMove) {
-		if (event.data.move.monster == Game::kPlayerMonsterID) {
+		if (event.move.monster == Game::kPlayerMonsterID) {
 			for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 				_fsm->setState(i->second.fsmState);
 
 				// Calculate distance
-				int xDist = std::abs((int)(event.data.move.newX - i->second.monster->getX()));
-				int yDist = std::abs((int)(event.data.move.newY - i->second.monster->getY()));
+				const double dist = event.move.newPos.distanceTo(i->second.monster->getPos());
 
-				if (xDist <= 1 && yDist <= 1)
+				if (dist <= std::sqrt(2))
 					_fsm->process(kPlayerTriggerDist2);
-				else if (std::sqrt(xDist*xDist + yDist*yDist) <= 4.0f)
+				else if (dist <= 4.0f)
 					_fsm->process(kPlayerTriggerDist1);
 				else
 					_fsm->process(kPlayerTriggerDist0);
@@ -210,17 +209,16 @@ void Monster::processEvent(const Game::Event &event) {
 				i->second.fsmState = _fsm->getState();
 			}
 		} else if (_level.getMonster(Game::kPlayerMonsterID)) {
-			MonsterMap::iterator i = _monsters.find(event.data.move.monster);
+			MonsterMap::iterator i = _monsters.find(event.move.monster);
 			if (i != _monsters.end()) {
 				// Calculate distance
-				int xDist = std::abs((int)(event.data.move.newX - _level.getMonster(Game::kPlayerMonsterID)->getX()));
-				int yDist = std::abs((int)(event.data.move.newY - _level.getMonster(Game::kPlayerMonsterID)->getY()));
+				const double dist = event.move.newPos.distanceTo(_level.getMonster(Game::kPlayerMonsterID)->getPos());
 
 				_fsm->setState(i->second.fsmState);
 
-				if (xDist <= 1 && yDist <= 1)
+				if (dist <= std::sqrt(2))
 					_fsm->process(kPlayerTriggerDist2);
-				else if (std::sqrt(xDist*xDist + yDist*yDist) <= 4.0f)
+				else if (dist <= 4.0f)
 					_fsm->process(kPlayerTriggerDist1);
 				else
 					_fsm->process(kPlayerTriggerDist0);
@@ -229,7 +227,7 @@ void Monster::processEvent(const Game::Event &event) {
 			}
 		}
 	} else if (event.type == Game::Event::kTypeAttack) {
-		MonsterMap::iterator i = _monsters.find(event.data.attack.target);
+		MonsterMap::iterator i = _monsters.find(event.attack.target);
 		if (i != _monsters.end()) {
 			_fsm->setState(i->second.fsmState);
 			_fsm->process(kPlayerAttack);

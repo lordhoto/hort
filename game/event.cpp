@@ -42,52 +42,51 @@ void EventDispatcher::dispatch(const Event &event) {
 Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY) {
 	Event event;
 	event.type = Event::kTypeMove;
-	event.data.move.monster = monster;
-	event.data.move.oldX = mP->getX();
-	event.data.move.oldY = mP->getY();
-	event.data.move.newX = mP->getX() + offX;
-	event.data.move.newY = mP->getY() + offY;
+	event.move.monster = monster;
+	event.move.oldPos._x = mP->getX();
+	event.move.oldPos._y = mP->getY();
+	event.move.newPos = event.move.oldPos + Base::Point(offX, offY);
 	return event;
 }
 
 Event createAttackEvent(const MonsterID monster, const MonsterID target) {
 	Event event;
 	event.type = Event::kTypeAttack;
-	event.data.attack.monster = monster;
-	event.data.attack.target = target;
+	event.attack.monster = monster;
+	event.attack.target = target;
 	return event;
 }
 
 Event createAttackDamageEvent(const MonsterID monster, const MonsterID target, bool didDmg) {
 	Event event;
 	event.type = Event::kTypeAttackDamage;
-	event.data.attackDamage.monster = monster;
-	event.data.attackDamage.target = target;
-	event.data.attackDamage.didDmg = didDmg;
+	event.attackDamage.monster = monster;
+	event.attackDamage.target = target;
+	event.attackDamage.didDmg = didDmg;
 	return event;
 }
 
 Event createAttackFailEvent(const MonsterID monster) {
 	Event event;
 	event.type = Event::kTypeAttackFail;
-	event.data.attackFail.monster = monster;
+	event.attackFail.monster = monster;
 	return event;
 }
 
 Event createDeathEvent(const MonsterID monster, Event::Death::Cause cause, const MonsterID killer) {
 	Event event;
 	event.type = Event::kTypeDeath;
-	event.data.death.monster = monster;
-	event.data.death.killer = killer;
-	event.data.death.cause = cause;
+	event.death.monster = monster;
+	event.death.killer = killer;
+	event.death.cause = cause;
 	return event;
 }
 
 Event createIdleEvent(const MonsterID monster, Event::Idle::Reason reason) {
 	Event event;
 	event.type = Event::kTypeIdle;
-	event.data.idle.monster = monster;
-	event.data.idle.reason = reason;
+	event.idle.monster = monster;
+	event.idle.reason = reason;
 	return event;
 }
 
