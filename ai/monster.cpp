@@ -153,10 +153,25 @@ void Monster::update() {
 				break;
 			}
 
-			const Game::Monster *monster = _level.getMonster(i->first);
-			if (offX && offY && _level.isWalkable(monster->getX() + offX, monster->getY() + offY))
-				_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
-			else
+			bool didAction = false;
+			if (offX || offY) {
+				const Game::Monster *monster = _level.getMonster(i->first);
+				const unsigned int newX = monster->getX() + offX;
+				const unsigned int newY = monster->getY() + offY;
+
+				if (newX <= _level.getMap().width() && newY <= _level.getMap().height()) {
+					if (_level.isWalkable(newX, newY)) {
+						Game::Map::Tile tile = _level.getMap().tileAt(newX, newY);
+
+						if (tile != Game::Map::kTileWater) {
+							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
+							didAction = true;
+						}
+					}
+				}
+			}
+
+			if (!didAction)
 				_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kNoReason));
 			} break;
 
