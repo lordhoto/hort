@@ -52,6 +52,7 @@ bool GameState::initialize() {
 		_curLevel = new Level(*this);
 
 		_gameScreen = new GUI::Screen(_player);
+		_gameScreen->initialize();
 		_curLevel->makeActive(*_gameScreen, _player);
 	}
 

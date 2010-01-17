@@ -29,18 +29,25 @@ Screen::Screen(const Game::Monster &player)
     : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
       _mapWindow(0), _playerStats(0), _keyMap(), _messages(), _turn(0), _player(player), _needRedraw(false),
       _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0), _mapDrawDescs(0) {
-	_mapDrawDescs = Intern::parseTileDefinitons("./data/gui-tile.def");
-	createOutputWindows();
-	setupKeyMap();
 }
 
 Screen::~Screen() {
+	delete _mapDrawDescs;
+
 	_screen.remove(_messageLine);
 	delete _messageLine;
 	_screen.remove(_mapWindow);
 	delete _mapWindow;
 	_screen.remove(_playerStats);
 	delete _playerStats;
+}
+
+void Screen::initialize() {
+	if (!_mapDrawDescs) {
+		_mapDrawDescs = Intern::parseTileDefinitons("./data/gui-tile.def");
+		createOutputWindows();
+		setupKeyMap();
+	}
 }
 
 void Screen::update(bool drawMsg) {

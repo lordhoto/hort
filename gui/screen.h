@@ -44,6 +44,11 @@ public:
 	~Screen();
 
 	/**
+	 * Initialize the screen.
+	 */
+	void initialize();
+
+	/**
 	 * Tells the game screen some object state changed.
 	 */
 	void flagForUpdate() { _needRedraw = true; }
