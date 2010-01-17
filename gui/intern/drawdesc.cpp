@@ -155,6 +155,32 @@ TileDDMap *parseTileDefinitons(const std::string &filename) {
 	return new TileDDMap(drawDescs);
 }
 
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename) {
+	DrawDescParser parser(filename, "-monster");
+	parser.parse();
+
+	const DrawDescParser::DrawDescMap &dds = parser.getDescs();
+	MonsterDDMap::DrawDescMap drawDescs;
+
+	Game::MonsterDatabase &mdb = g_monsterDatabase;
+	const Game::MonsterType lastMonsterType = mdb.getMonsterTypeCount();
+
+	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
+		Game::MonsterType type = mdb.queryMonsterType(i->first);
+		if (type == lastMonsterType)
+			throw std::string("Undefined monster \"" + i->first + '"');
+
+		drawDescs[type] = i->second;
+	}
+
+	for (Game::MonsterType i = 0; i < lastMonsterType; ++i) {
+		if (drawDescs.find(i) == drawDescs.end())
+			throw std::string("Missing monster definition for \"" + std::string(mdb.getMonsterName(i)) + '"');
+	}
+
+	return new MonsterDDMap(drawDescs);
+}
+
 } // end of namespace Intern
 } // end of namespace GUI
 

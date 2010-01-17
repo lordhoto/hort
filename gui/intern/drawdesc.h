@@ -26,6 +26,7 @@
 #include "base/parser.h"
 
 #include "game/map.h"
+#include "game/monster_types.h"
 
 #include <map>
 #include <string>
@@ -93,6 +94,9 @@ private:
 
 typedef ASCIIRepresentation<Game::Map::Tile> TileDDMap;
 TileDDMap *parseTileDefinitons(const std::string &filename);
+
+typedef ASCIIRepresentation<Game::MonsterType> MonsterDDMap;
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename);
 
 } // end of namespace Intern
 } // end of namespace GUI

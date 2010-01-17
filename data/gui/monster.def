@@ -1,0 +1,3 @@
+def-monster Player := @ kWhiteOnBlack kAttribBold
+def-monster Gnome := G kYellowOnBlack kAttribNormal
+def-monster Squolly := @ kBlueOnBlack kAttribBold

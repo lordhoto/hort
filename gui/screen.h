@@ -164,19 +164,7 @@ private:
 	unsigned int _centerX, _centerY;
 	unsigned int _mapOffsetX, _mapOffsetY;
 
-	struct DrawDesc {
-		DrawDesc() {}
-		DrawDesc(int symbol, GUI::ColorPair color, int attribs) : symbol(symbol), color(color), attribs(attribs) {}
-
-		int symbol;
-		GUI::ColorPair color;
-		int attribs;
-	};
-	typedef std::vector<DrawDesc> DrawDescVector;
-
-	static const DrawDesc _monsterDrawDescriptions[];
-	static const size_t _monsterDrawDescriptionsEntries;
-
+	Intern::MonsterDDMap *_monsterDrawDescs;
 	Intern::TileDDMap *_mapDrawDescs;
 };
 

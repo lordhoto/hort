@@ -28,10 +28,12 @@ namespace GUI {
 Screen::Screen(const Game::Monster &player)
     : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
       _mapWindow(0), _playerStats(0), _keyMap(), _messages(), _turn(0), _player(player), _needRedraw(false),
-      _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0), _mapDrawDescs(0) {
+      _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0), _monsterDrawDescs(0),
+      _mapDrawDescs(0) {
 }
 
 Screen::~Screen() {
+	delete _monsterDrawDescs;
 	delete _mapDrawDescs;
 
 	_screen.remove(_messageLine);
@@ -45,6 +47,7 @@ Screen::~Screen() {
 void Screen::initialize() {
 	if (!_mapDrawDescs) {
 		_mapDrawDescs = Intern::parseTileDefinitons("./data/gui/tiles.def");
+		_monsterDrawDescs = Intern::parseMonsterDefinitions("./data/gui/monster.def");
 		createOutputWindows();
 		setupKeyMap();
 	}
@@ -80,7 +83,7 @@ void Screen::update(bool drawMsg) {
 		    || monsterY >= _mapOffsetY + outputHeight)
 			continue;
 
-		const DrawDesc &desc = _monsterDrawDescriptions[(*i)->getType()];
+		const Intern::DrawDesc &desc = _monsterDrawDescs->lookUp((*i)->getType());
 		_mapWindow->printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
 	}
 
@@ -284,15 +287,6 @@ void Screen::drawStatsWindow() {
 	_playerStats->clear();
 	_playerStats->printLine(line.str().c_str(), 0, 0);
 }
-
-// Static data
-const Screen::DrawDesc Screen::_monsterDrawDescriptions[] = {
-	DrawDesc('@', GUI::kWhiteOnBlack, GUI::kAttribBold),
-	DrawDesc('G', GUI::kYellowOnBlack, 0),
-	DrawDesc('@', GUI::kBlueOnBlack, GUI::kAttribBold)
-};
-
-const size_t Screen::_monsterDrawDescriptionsEntries = sizeof(Screen::_monsterDrawDescriptions) / sizeof(Screen::_monsterDrawDescriptions[0]);
 
 } // end of namespace Game
 
