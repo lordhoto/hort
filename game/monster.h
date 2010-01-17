@@ -84,6 +84,20 @@ public:
 	}
 
 	/**
+	 * Returns the position of the monster.
+	 *
+	 * @return Position.
+	 */
+	const Base::Point &getPos() const { return _pos; }
+
+	/**
+	 * Sets the position of the monster.
+	 *
+	 * @param pos New position.
+	 */
+	void setPos(const Base::Point &pos) { _pos = pos; }
+
+	/**
 	 * Returns the x coordinate of the monster.
 	 *
 	 * @return x coordinate.

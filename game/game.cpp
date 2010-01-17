@@ -135,12 +135,7 @@ void GameState::processEvent(const Event &event) {
 		const Monster *monster = _curLevel->getMonster(event.data.death.monster);
 		assert(monster);
 
-		// Calculate distance
-		// TODO: Use a real in view test later on here.
-		int xDist = std::abs((double)(monster->getX() - _player.getX()));
-		int yDist = std::abs((double)(monster->getY() - _player.getY()));
-
-		if (std::sqrt(xDist*xDist + yDist*yDist) >= 10.0f)
+		if (_player.getPos().distanceTo(monster->getPos()) >= 10.0f)
 			return;
 
 		if (event.data.death.monster == kPlayerMonsterID) {
@@ -197,11 +192,7 @@ void GameState::processEvent(const Event &event) {
 			const Monster *monster = _curLevel->getMonster(event.data.idle.monster);
 			assert(monster);
 
-			// Calculate distance
-			// TODO: Use a real in view test later on here.
-			int xDist = std::abs((double)(monster->getX() - _player.getX()));
-			int yDist = std::abs((double)(monster->getY() - _player.getY()));
-			if (Base::rollDice(20) == 20 && std::sqrt(xDist*xDist + yDist*yDist) <= 10.0f) {
+			if (Base::rollDice(20) == 20 && _player.getPos().distanceTo(monster->getPos()) <= 10.0f) {
 				std::stringstream ss;
 				bool processMessage = true;
 
