@@ -29,29 +29,87 @@
 
 namespace Base {
 
+/**
+ * A simple rule.
+ *
+ * This allows for defining a parsing rule with optional
+ * variables.
+ *
+ * Consider the following statement:
+ *  def MonsterType := Name HP
+ * where "MonsterType", "Name" and "HP" are variables.
+ *
+ * To write a rule for this one has to use the following:
+ *  "def;%S,type;:=;%S,name;%D,hp"
+ *
+ * Note the ";" defining the urge for a delimiter in the input.
+ *
+ * Via %X,name a variable is defined, where "X" is the type
+ * and "name" is the variable's name.
+ *
+ * Currently the following types are allowed:
+ * s/S : string
+ * d/D : integer
+ */
 class Rule {
 public:
+	/**
+	 * Create a new rule.
+	 *
+	 * @param rule Definition of the rule (see above).
+	 * @param name Name of the rule.
+	 */
 	Rule(const std::string &rule, const std::string &name);
 
 	typedef std::list<std::string> StringList;
+
+	/**
+	 * Queries all the tokens required by the rule.
+	 */
 	const StringList &getParts() const { return _parts; }
 
+	/**
+	 * Queries the name of the rule.
+	 */
 	const std::string getName() const { return _name; }
 private:
 	StringList _parts;
 	const std::string _name;
 };
 
+/**
+ * A simple matcher, which matches a given line against a given rule.
+ * It will save all the variables defined by the rule in a map.
+ *
+ * It allso allows some simple error checking.
+ */
 class Matcher {
 public:
-	Matcher(Tokenizer &input, const Rule &rule);
+	/**
+	 * Creates a matcher, which will match the input "line"
+	 * with the rule "rule".
+	 *
+	 * @param line Input line.
+	 * @param rule Rule to match against.
+	 */
 	Matcher(const std::string &line, const Rule &rule);
 
+	/**
+	 * Whether the rule was successfully matched.
+	 */
 	bool wasSuccessful() const { return _ok; }
-	
+
+	/**
+	 * Returns an error description.
+	 */
 	const std::string &getError() const { return _error; }
 
 	typedef std::map<std::string, std::string> ValueMap;
+
+	/**
+	 * Queries the map containing all variable values.
+	 * The variable name is the "key" in this case.
+	 */
 	const ValueMap &getValues() const { return _values; }
 private:
 	const Rule &_rule;

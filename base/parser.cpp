@@ -32,11 +32,6 @@ Rule::Rule(const std::string &rule, const std::string &name)
 		_parts.push_back(tokenizer.nextToken());
 }
 
-Matcher::Matcher(Tokenizer &input, const Rule &rule)
-    : _rule(rule), _ok(false), _error(), _values() {
-	doMatch(input);
-}
-
 Matcher::Matcher(const std::string &line, const Rule &rule)
     : _rule(rule), _ok(false), _error(), _values() {
 	Tokenizer input(line);
