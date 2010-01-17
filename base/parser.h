@@ -127,7 +127,7 @@ private:
  */
 class ParserListener {
 public:
-	virtual ~ParserListener();
+	virtual ~ParserListener() {}
 
 	/**
 	 * Notifies the listener about the given rule being parsed successfully.
