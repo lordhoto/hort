@@ -38,7 +38,7 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 	_monsterAI = new AI::Monster(*this, _eventDisp);
 	_eventDisp.addHandler(_monsterAI);
 
-	for (int i = 0; i < 2048; ++i) {
+	for (int i = 0; i < 8192; ++i) {
 		int monsterX = 0, monsterY = 0;
 		do {
 			monsterX = Base::rollDice(_map->width()) - 1;
@@ -51,7 +51,7 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, kTicksPerTurn, monsterX, monsterY);
 		else
 			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, 7, monsterX, monsterY);
-		_monsterField[monsterY * _map->width() + monsterY] = true;
+		_monsterField[monsterY * _map->width() + monsterX] = true;
 		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
 	}
