@@ -28,7 +28,7 @@ namespace Base {
  */
 struct Point {
 	Point() : _x(0), _y(0) {}
-	Point(unsigned int x, unsigned int y) : _x(x), _y(y) {}
+	Point(int x, int y) : _x(x), _y(y) {}
 
 	/**
 	 * Compares whether two points are equal.
@@ -51,6 +51,51 @@ struct Point {
 	}
 
 	/**
+	 * 'Adds' two points, by adding their x and y coordinates.
+	 *
+	 * @param p Point to add.
+	 * @return New point.
+	 */
+	Point operator+(const Point &p) const {
+		return Point(_x + p._x, _y + p._y);
+	}
+
+	/**
+	 * Adds a point to this point.
+	 *
+	 * @param p Point to add.
+	 * @return Reference to this point.
+	 */
+	const Point &operator+=(const Point &p) {
+		_x += p._x;
+		_y += p._y;
+		return (*this);
+	}
+
+	/**
+	 * 'Subtracts' two points, by subtracting their
+	 * x and y coordinates.
+	 *
+	 * @param p Point to substract.
+	 * @return New point.
+	 */
+	Point operator-(const Point &p) const {
+		return Point(_x - p._x, _y - p._y);
+	}
+
+	/**
+	 * Substracts a point from this point.
+	 *
+	 * @param p Point to substract,
+	 * @return Reference to this point.
+	 */
+	const Point &operator-=(const Point &p) {
+		_x -= p._x;
+		_y -= p._y;
+		return (*this);
+	}
+
+	/**
 	 * Calculates the distance between two points.
 	 *
 	 * @param p Point to calculate the distance with.
@@ -58,7 +103,7 @@ struct Point {
 	 */
 	double distanceTo(const Point &p) const;
 
-	unsigned int _x, _y;
+	int _x, _y;
 };
 
 /**
