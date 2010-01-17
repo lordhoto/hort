@@ -137,8 +137,8 @@ void GameState::processEvent(const Event &event) {
 
 		// Calculate distance
 		// TODO: Use a real in view test later on here.
-		int xDist = std::abs((int)(monster->getX() - _player.getX()));
-		int yDist = std::abs((int)(monster->getY() - _player.getY()));
+		int xDist = std::abs((double)(monster->getX() - _player.getX()));
+		int yDist = std::abs((double)(monster->getY() - _player.getY()));
 
 		if (std::sqrt(xDist*xDist + yDist*yDist) >= 10.0f)
 			return;
@@ -199,8 +199,8 @@ void GameState::processEvent(const Event &event) {
 
 			// Calculate distance
 			// TODO: Use a real in view test later on here.
-			int xDist = std::abs((int)(monster->getX() - _player.getX()));
-			int yDist = std::abs((int)(monster->getY() - _player.getY()));
+			int xDist = std::abs((double)(monster->getX() - _player.getX()));
+			int yDist = std::abs((double)(monster->getY() - _player.getY()));
 			if (Base::rollDice(20) == 20 && std::sqrt(xDist*xDist + yDist*yDist) <= 10.0f) {
 				std::stringstream ss;
 				bool processMessage = true;
