@@ -18,34 +18,40 @@
  *
  */
 
-#ifndef GAME_DEFS_H
-#define GAME_DEFS_H
-
-#include <stdint.h>
-
-#include "base/geo.h"
+#include "defs.h"
 
 namespace Game {
 
-typedef uint32_t TickCount;
+Base::Point getDirection(unsigned char dir) {
+	switch (dir) {
+	case 1:
+		return Base::Point(-1, +1);
 
-enum {
-	/**
-	 * How many internal ticks are processed, before
-	 * the turn counter increases.
-	 */
-	kTicksPerTurn = 10
-};
+	case 2:
+		return Base::Point( 0, +1);
 
-/**
- * Returns the direction pointer of the given direction.
- *
- * @param dir Direction (must be inside [1, 9])
- * @return Direction pointer.
- */
-Base::Point getDirection(unsigned char dir);
+	case 3:
+		return Base::Point(+1, +1);
+	
+	case 4:
+		return Base::Point(-1,  0);
+
+	case 6:
+		return Base::Point(+1,  0);
+
+	case 7:
+		return Base::Point(-1, -1);
+
+	case 8:
+		return Base::Point( 0, -1);
+
+	case 9:
+		return Base::Point(+1, -1);
+
+	default:
+		return Base::Point(0, 0);
+	}
+}
 
 } // end of namespace Game
-
-#endif
 

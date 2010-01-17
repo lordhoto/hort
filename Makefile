@@ -17,6 +17,7 @@ OBJS := base/main.o \
 		game/level.o \
 		game/event.o \
 		game/monster.o \
+		game/defs.o \
 		ai/fsm.o \
 		ai/monster.o
 

@@ -234,46 +234,46 @@ bool GameState::handleInput(int input) {
 	if (!_eventDisp)
 		return false;
 
-	int offX = 0, offY = 0;
+	Base::Point offset;
 	switch (input) {
 	case 'h':
 	case GUI::kKeyKeypad4:
-		--offX;
+		offset = getDirection(4);
 		break;
 
 	case 'l':
 	case GUI::kKeyKeypad6:
-		++offX;
+		offset = getDirection(6);
 		break;
 
 	case 'k':
 	case GUI::kKeyKeypad8:
-		--offY;
+		offset = getDirection(8);
 		break;
 
 	case 'j':
 	case GUI::kKeyKeypad2:
-		++offY;
+		offset = getDirection(2);
 		break;
 
 	case 'y': case 'z':
 	case GUI::kKeyKeypad7:
-		--offX; --offY;
+		offset = getDirection(7);
 		break;
 
 	case 'u':
 	case GUI::kKeyKeypad9:
-		++offX; --offY;
+		offset = getDirection(9);
 		break;
 
 	case 'b':
 	case GUI::kKeyKeypad1:
-		--offX; ++offY;
+		offset = getDirection(1);
 		break;
 
 	case 'n':
 	case GUI::kKeyKeypad3:
-		++offX; ++offY;
+		offset = getDirection(3);
 		break;
 
 	case '.':
@@ -289,7 +289,7 @@ bool GameState::handleInput(int input) {
 		return false;
 	}
 
-	const Base::Point newPos(_player.getX() + offX, _player.getY() + offY);
+	const Base::Point newPos = _player.getPos() + offset;
 
 	MonsterID monster = _curLevel->monsterAt(newPos);
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)

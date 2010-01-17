@@ -23,6 +23,7 @@
 
 #include "base/rnd.h"
 #include "game/monster_types.h"
+#include "game/defs.h"
 
 #include <map>
 #include <cmath>
@@ -115,43 +116,7 @@ void Monster::update() {
 		// TODO: Proper implementation of this :-D
 		switch (i->second.fsmState) {
 		case kMonsterIdle: {
-			Base::Point newPos = i->second.monster->getPos();
-			switch (Base::rollDice(9)) {
-			case 1:
-				--newPos._x; ++newPos._y;
-				break;
-			
-			case 2:
-				++newPos._y;
-				break;
-
-			case 3:
-				++newPos._x; ++newPos._y;
-				break;
-
-			case 4:
-				--newPos._x;
-				break;
-
-			case 6:
-				++newPos._x;
-				break;
-
-			case 7:
-				--newPos._x; --newPos._y;
-				break;
-
-			case 8:
-				--newPos._y;
-				break;
-
-			case 9:
-				++newPos._x; --newPos._y;
-				break;
-
-			default:
-				break;
-			}
+			Base::Point newPos = i->second.monster->getPos() + Game::getDirection(Base::rollDice(9));
 
 			bool didAction = false;
 			if (newPos != i->second.monster->getPos()) {
