@@ -33,6 +33,7 @@
 
 #include <list>
 #include <map>
+#include <vector>
 
 namespace AI {
 class Monster;
@@ -150,6 +151,8 @@ public:
 	void update();
 private:
 	Map *_map;
+	std::vector<bool> _monsterField; // Keeps track, where monsters are placed
+
 	GUI::Screen *_screen;
 	GameState &_gameState;
 	EventDispatcher _eventDisp;

@@ -27,8 +27,12 @@
 
 namespace Game {
 
-Level::Level(GameState &gs) : _map(0), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
+Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
 	_map = new Map();
+
+	_monsterField.resize(_map->width() * _map->height());
+	for (unsigned int i = 0; i < _map->width() * _map->height(); ++i)
+		_monsterField[i] = false;
 
 	_eventDisp.addHandler(this);
 	_monsterAI = new AI::Monster(*this, _eventDisp);
@@ -47,6 +51,7 @@ Level::Level(GameState &gs) : _map(0), _screen(0), _gameState(gs), _eventDisp(),
 			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, kTicksPerTurn, monsterX, monsterY);
 		else
 			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, 7, monsterX, monsterY);
+		_monsterField[monsterY * _map->width() + monsterY] = true;
 		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
 	}
@@ -76,6 +81,8 @@ void Level::makeActive(GUI::Screen &screen, Monster &player) {
 
 	_monsterAI->setPlayer(&player);
 	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
+
+	_monsterField[player.getY() * _map->width() + player.getX()] = true;
 }
 
 void Level::makeInactive() {
@@ -95,7 +102,7 @@ bool Level::isWalkable(unsigned int x, unsigned int y) const {
 	if (!_map->isWalkable(x, y))
 		return false;
 
-	if (monsterAt(x, y) != kInvalidMonsterID)
+	if (_monsterField[y * _map->width() + x])
 		return false;
 
 	return true;
@@ -141,6 +148,7 @@ void Level::removeMonster(const MonsterID monster) {
 	if (i == _monsters.end())
 		return;
 
+	_monsterField[i->second.monster->getY() * _map->width() + i->second.monster->getX()] = false;
 	if (monster != kPlayerMonsterID) {
 		if (_screen)
 			_screen->remObject(i->second.monster);
@@ -185,6 +193,8 @@ void Level::processEvent(const Event &event) {
 		assert(monster);
 
 		// TODO: add some error checking
+		_monsterField[event.move.oldPos._y * _map->width() + event.move.oldPos._x] = false;
+		_monsterField[event.move.newPos._y * _map->width() + event.move.newPos._x] = true;
 		monster->setPos(event.move.newPos);
 
 		if (_map->tileAt(event.move.newPos) == Map::kTileWater) {
