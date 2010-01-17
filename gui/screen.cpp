@@ -1,6 +1,6 @@
 /* Hort - A roguelike inspired by the Nibelungenlied
  *
- * (c) 2009 by Johannes Schickel <lordhoto at scummvm dot org>
+ * (c) 2009-2010 by Johannes Schickel <lordhoto at scummvm dot org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
