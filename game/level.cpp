@@ -181,9 +181,7 @@ void Level::update() {
 void Level::processEvent(const Event &event) {
 	if (event.type == Event::kTypeMove) {
 		assert(isAllowedToAct(event.move.monster));
-		updateNextActionTick(event.move.monster);
-
-		Monster *monster = getMonster(event.move.monster);
+		Monster *monster = updateNextActionTick(event.move.monster);
 		assert(monster);
 
 		// TODO: add some error checking
@@ -197,9 +195,7 @@ void Level::processEvent(const Event &event) {
 		_screen->flagForUpdate();
 	} else if (event.type == Event::kTypeAttack) {
 		assert(isAllowedToAct(event.attack.monster));
-		updateNextActionTick(event.attack.monster);
-
-		const Monster *monster = getMonster(event.attack.monster);
+		const Monster *monster = updateNextActionTick(event.attack.monster);
 		assert(monster);
 		Monster *target = getMonster(event.attack.target);
 		assert(target);
@@ -229,10 +225,14 @@ void Level::processEvent(const Event &event) {
 	}
 }
 
-void Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {
+Monster *Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {
 	MonsterMap::iterator i = _monsters.find(monster);
-	if (i != _monsters.end())
+	if (i != _monsters.end()) {
 		i->second.nextAction = _gameState.getCurrentTick() + (oneTickOnly ? 1 : i->second.monster->getSpeed());
+		return i->second.monster;
+	} else {
+		return 0;
+	}
 }
 
 } // end of namespace Game

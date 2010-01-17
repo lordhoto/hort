@@ -164,7 +164,7 @@ private:
 		MonsterEntry(Monster *m, TickCount curTick) : monster(m), nextAction(curTick), nextRegeneration(curTick) {}
 	};
 
-	void updateNextActionTick(MonsterID monster, bool oneTickOnly = false);
+	Monster *updateNextActionTick(MonsterID monster, bool oneTickOnly = false);
 
 	typedef std::map<MonsterID, MonsterEntry> MonsterMap;
 	MonsterMap _monsters;
