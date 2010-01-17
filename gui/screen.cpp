@@ -27,13 +27,14 @@ namespace GUI {
 
 Screen::Screen(const Game::Monster &player)
     : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
-      _mapWindow(0), _playerStats(0), _messages(), _turn(0), _player(player), _needRedraw(false), _map(0),
-      _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
+      _mapWindow(0), _playerStats(0), _keyMap(), _messages(), _turn(0), _player(player), _needRedraw(false),
+      _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
 	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
 	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
 	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
 
 	createOutputWindows();
+	setupKeyMap();
 }
 
 Screen::~Screen() {
@@ -130,7 +131,20 @@ void Screen::clearObjects() {
 	_monsters.clear();
 }
 
-int Screen::getInput() {
+Input Screen::getInput() {
+	Input input = kInputNone;
+
+	do {
+		int key = getKey();
+		KeyMap::const_iterator i = _keyMap.find(key);
+		if (i != _keyMap.end())
+			input = i->second;
+	} while (input == kInputNone);
+
+	return input;
+}
+
+int Screen::getKey() {
 	int input = 0;
 
 	do {
@@ -148,6 +162,39 @@ int Screen::getInput() {
 	} while (!input);
 
 	return input;
+}
+
+void Screen::setupKeyMap() {
+	_keyMap[kKeyKeypad1] = kInputDir1;
+	_keyMap['b'] = kInputDir1;
+
+	_keyMap[kKeyKeypad2] = kInputDir2;
+	_keyMap['j'] = kInputDir2;
+
+	_keyMap[kKeyKeypad3] = kInputDir3;
+	_keyMap['n'] = kInputDir3;
+
+	_keyMap[kKeyKeypad4] = kInputDir4;
+	_keyMap['h'] = kInputDir4;
+
+	_keyMap[kKeyKeypad5] = kInputDir5;
+	_keyMap['.'] = kInputDir5;
+
+	_keyMap[kKeyKeypad6] = kInputDir6;
+	_keyMap['l'] = kInputDir6;
+
+	_keyMap[kKeyKeypad7] = kInputDir7;
+	_keyMap['z'] = kInputDir7;
+	_keyMap['y'] = kInputDir7;
+
+	_keyMap[kKeyKeypad8] = kInputDir8;
+	_keyMap['k'] = kInputDir8;
+
+	_keyMap[kKeyKeypad9] = kInputDir9;
+	_keyMap['u'] = kInputDir9;
+
+	_keyMap['/'] = kInputExamine;
+	_keyMap[kKeyEscape] = kInputQuit;
 }
 
 void Screen::createOutputWindows() {

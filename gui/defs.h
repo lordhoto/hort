@@ -71,6 +71,21 @@ enum Keys {
 	kKeyEscape = 27
 };
 
+enum Input {
+	kInputNone,
+	kInputQuit,
+	kInputDir1,
+	kInputDir2,
+	kInputDir3,
+	kInputDir4,
+	kInputDir5,
+	kInputDir6,
+	kInputDir7,
+	kInputDir8,
+	kInputDir9,
+	kInputExamine
+};
+
 } // end of namespace GUI
 
 #endif

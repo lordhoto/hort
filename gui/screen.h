@@ -33,6 +33,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <map>
 
 namespace GUI {
 
@@ -120,14 +121,10 @@ public:
 	/**
 	 * Waits for the user to enter any key.
 	 *
-	 * This is either the ASCII representation of the key, one of 
-	 * values defined via Keys or an unknown value in case the key
-	 * pressed is not known.
-	 *
-	 * @see Keys
+	 * @see Input
 	 * @return User's input.
 	 */
-	int getInput();
+	Input getInput();
 private:
 	GUI::Intern::Screen &_screen;
 	GUI::Intern::Input &_input;
@@ -135,6 +132,12 @@ private:
 	GUI::Intern::Window *_messageLine;
 	GUI::Intern::Window *_mapWindow;
 	GUI::Intern::Window *_playerStats;
+
+	int getKey();
+	typedef std::map<int, Input> KeyMap;
+	KeyMap _keyMap;
+
+	void setupKeyMap();
 
 	void createOutputWindows();
 

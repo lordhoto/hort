@@ -27,6 +27,7 @@
 #include "defs.h"
 
 #include "gui/screen.h"
+#include "gui/defs.h"
 
 #include <list>
 #include <string>
@@ -63,7 +64,7 @@ private:
 	Level *_curLevel;
 	Monster _player;
 
-	bool handleInput(int input);
+	bool handleInput(GUI::Input input);
 	void examine();
 };
 

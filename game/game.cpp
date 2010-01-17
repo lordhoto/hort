@@ -59,8 +59,6 @@ bool GameState::initialize() {
 }
 
 bool GameState::run() {
-	int input = -1;
-
 	Base::Point playerPos;
 
 	do {
@@ -73,7 +71,8 @@ bool GameState::run() {
 	_gameScreen->setCenter(playerPos);
 	_gameScreen->update();
 
-	while (input != GUI::kKeyEscape) {
+	GUI::Input input = GUI::kInputNone;
+	while (input != GUI::kInputQuit) {
 		_gameScreen->setTurn(_tickCounter / kTicksPerTurn);
 
 		if (_curLevel->isAllowedToAct(kPlayerMonsterID)) {
@@ -230,63 +229,36 @@ void GameState::processEvent(const Event &event) {
 	}
 }
 
-bool GameState::handleInput(int input) {
+bool GameState::handleInput(GUI::Input input) {
 	if (!_eventDisp)
 		return false;
 
 	Base::Point offset;
 	switch (input) {
-	case 'h':
-	case GUI::kKeyKeypad4:
-		offset = getDirection(4);
-		break;
+	case GUI::kInputQuit:
+		return true;
 
-	case 'l':
-	case GUI::kKeyKeypad6:
-		offset = getDirection(6);
-		break;
-
-	case 'k':
-	case GUI::kKeyKeypad8:
-		offset = getDirection(8);
-		break;
-
-	case 'j':
-	case GUI::kKeyKeypad2:
-		offset = getDirection(2);
-		break;
-
-	case 'y': case 'z':
-	case GUI::kKeyKeypad7:
-		offset = getDirection(7);
-		break;
-
-	case 'u':
-	case GUI::kKeyKeypad9:
-		offset = getDirection(9);
-		break;
-
-	case 'b':
-	case GUI::kKeyKeypad1:
-		offset = getDirection(1);
-		break;
-
-	case 'n':
-	case GUI::kKeyKeypad3:
-		offset = getDirection(3);
-		break;
-
-	case '.':
-	case GUI::kKeyKeypad5:
+	case GUI::kInputDir5:
 		_eventDisp->dispatch(createIdleEvent(kPlayerMonsterID, Event::Idle::kNoReason));
 		return true;
 
-	case '/':
+	case GUI::kInputNone:
+		return false;
+
+	case GUI::kInputExamine:
 		examine();
 		return false;
 
-	default:
-		return false;
+	case GUI::kInputDir1:
+	case GUI::kInputDir2:
+	case GUI::kInputDir3:
+	case GUI::kInputDir4:
+	case GUI::kInputDir6:
+	case GUI::kInputDir7:
+	case GUI::kInputDir8:
+	case GUI::kInputDir9:
+		offset = getDirection(input);
+		break;
 	}
 
 	const Base::Point newPos = _player.getPos() + offset;
@@ -303,64 +275,34 @@ bool GameState::handleInput(int input) {
 }
 
 void GameState::examine() {
-	unsigned int x = _player.getX(), y = _player.getY();
+	Base::Point pos = _player.getPos();
 
-	int input = 0;
-	while (input != GUI::kKeyEscape) {
+	GUI::Input input = GUI::kInputNone;
+	while (input != GUI::kInputQuit) {
 		input = _gameScreen->getInput();
-		int offX = 0, offY = 0;
+		Base::Point offset;
 
 		switch (input) {
-		case 'h':
-		case GUI::kKeyKeypad4:
-			--offX;
+		case GUI::kInputDir1:
+		case GUI::kInputDir2:
+		case GUI::kInputDir3:
+		case GUI::kInputDir4:
+		case GUI::kInputDir6:
+		case GUI::kInputDir7:
+		case GUI::kInputDir8:
+		case GUI::kInputDir9:
+			offset = getDirection(input);
 			break;
 
-		case 'l':
-		case GUI::kKeyKeypad6:
-			++offX;
-			break;
-
-		case 'k':
-		case GUI::kKeyKeypad8:
-			--offY;
-			break;
-
-		case 'j':
-		case GUI::kKeyKeypad2:
-			++offY;
-			break;
-
-		case 'y': case 'z':
-		case GUI::kKeyKeypad7:
-			--offX; --offY;
-			break;
-
-		case 'u':
-		case GUI::kKeyKeypad9:
-			++offX; --offY;
-			break;
-
-		case 'b':
-		case GUI::kKeyKeypad1:
-			--offX; ++offY;
-			break;
-
-		case 'n':
-		case GUI::kKeyKeypad3:
-			++offX; ++offY;
-			break;
-
-		case '.':
-		case GUI::kKeyKeypad5: {
-			input = GUI::kKeyEscape;
+		case GUI::kInputDir5: {
+			input = GUI::kInputQuit;
 
 			std::stringstream ss;
-			MonsterID monster = _curLevel->monsterAt(x, y);
+			MonsterID monster = _curLevel->monsterAt(pos);
 			if (monster != kInvalidMonsterID)
 				ss << "You see here a " << getMonsterName(_curLevel->getMonster(monster)->getType()) << ".";
 			else
-				ss << "This is just a simple " << Map::queryTileName(_curLevel->getMap().tileAt(x, y)) << ".";
+				ss << "This is just a simple " << Map::queryTileName(_curLevel->getMap().tileAt(pos)) << ".";
 
 			_gameScreen->addToMsgWindow(ss.str());
 			} break;
@@ -369,16 +311,15 @@ void GameState::examine() {
 			break;
 		}
 
-		if (input == GUI::kKeyEscape)
+		if (input == GUI::kInputQuit)
 			break;
 
-		if (x + offX >= 0 && x + offX < _curLevel->getMap().width()
-		    && y + offY >= 0 && y + offY < _curLevel->getMap().height()) {
-			x += offX;
-			y += offY;
-		}
+		const Base::Point newPos = pos + offset;
+		if (newPos._x >= 0 && (unsigned int)newPos._x < _curLevel->getMap().width()
+		    && newPos._y >= 0 && (unsigned int)newPos._y < _curLevel->getMap().height())
+			pos = newPos;
 
-		_gameScreen->setCenter(x, y);
+		_gameScreen->setCenter(pos);
 		_gameScreen->update();
 	}
 

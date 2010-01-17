@@ -25,6 +25,8 @@
 
 #include "base/geo.h"
 
+#include "gui/defs.h"
+
 namespace Game {
 
 typedef uint32_t TickCount;
@@ -44,6 +46,14 @@ enum {
  * @return Direction pointer.
  */
 Base::Point getDirection(unsigned char dir);
+
+/**
+ * Returns the direction pointer of the given direction.
+ *
+ * @param dir Direction (must be one of kInputDir1 to kInputDir9)
+ * @return Direction pointer.
+ */
+Base::Point getDirection(GUI::Input dir);
 
 } // end of namespace Game
 

@@ -22,6 +22,40 @@
 
 namespace Game {
 
+Base::Point getDirection(GUI::Input dir) {
+	switch (dir) {
+	case GUI::kInputDir1:
+		return getDirection(1);
+
+	case GUI::kInputDir2:
+		return getDirection(2);
+
+	case GUI::kInputDir3:
+		return getDirection(3);
+
+	case GUI::kInputDir4:
+		return getDirection(4);
+
+	case GUI::kInputDir5:
+		return getDirection(5);
+
+	case GUI::kInputDir6:
+		return getDirection(6);
+
+	case GUI::kInputDir7:
+		return getDirection(7);
+
+	case GUI::kInputDir8:
+		return getDirection(8);
+
+	case GUI::kInputDir9:
+		return getDirection(9);
+
+	default:
+		return Base::Point(0, 0);
+	}
+}
+
 Base::Point getDirection(unsigned char dir) {
 	switch (dir) {
 	case 1:
