@@ -7,6 +7,7 @@ DEPDIR:=.deps
 OBJS := base/main.o \
 		base/rnd.o \
 		base/geo.o \
+		base/token.o \
 		gui/intern/screen.o \
 		gui/intern/window.o \
 		gui/intern/input.o \
