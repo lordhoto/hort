@@ -1,0 +1,3 @@
+def-tile meadow := . kGreenOnBlack kAttribDim
+def-tile tree := + kGreenOnBlack kAttribUnderlineBold
+def-tile water := kDiamond kBlueOnBlack kAttribBold

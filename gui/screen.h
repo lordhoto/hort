@@ -24,6 +24,7 @@
 #include "intern/screen.h"
 #include "intern/window.h"
 #include "intern/input.h"
+#include "intern/drawdesc.h"
 
 #include "game/map.h"
 #include "game/monster.h"
@@ -171,7 +172,7 @@ private:
 	static const DrawDesc _monsterDrawDescriptions[];
 	static const size_t _monsterDrawDescriptionsEntries;
 
-	DrawDescVector _mapDrawDescs;
+	Intern::TileDDMap *_mapDrawDescs;
 };
 
 } // end of namespace Game

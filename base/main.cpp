@@ -40,9 +40,18 @@ int main(int argc, char *argv[]) {
 	GUI::Intern::Input::instance();
 	Base::initRNG();
 
-	Game::StateHandler states;
-	states.addStateToQueue(new Game::GameState());
-	states.process();
+	try {
+		Game::StateHandler states;
+		states.addStateToQueue(new Game::GameState());
+		states.process();
+	} catch (const std::string &err) {
+		GUI::Intern::Screen::destroy();
+		GUI::Intern::Input::destroy();
+
+		std::fprintf(stderr, "ERROR: %s\n", err.c_str());
+
+		return -1;
+	}
 
 	GUI::Intern::Screen::destroy();
 	GUI::Intern::Input::destroy();

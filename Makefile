@@ -12,6 +12,7 @@ OBJS := base/main.o \
 		gui/intern/screen.o \
 		gui/intern/window.o \
 		gui/intern/input.o \
+		gui/intern/drawdesc.o \
 		gui/screen.o \
 		game/map.o \
 		game/state.o \

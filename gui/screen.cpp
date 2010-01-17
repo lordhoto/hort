@@ -28,11 +28,8 @@ namespace GUI {
 Screen::Screen(const Game::Monster &player)
     : _screen(GUI::Intern::Screen::instance()), _input(GUI::Intern::Input::instance()), _messageLine(0),
       _mapWindow(0), _playerStats(0), _keyMap(), _messages(), _turn(0), _player(player), _needRedraw(false),
-      _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0) {
-	_mapDrawDescs.push_back(DrawDesc('.', GUI::kGreenOnBlack, GUI::kAttribDim));
-	_mapDrawDescs.push_back(DrawDesc('+', GUI::kGreenOnBlack, GUI::kAttribUnderline | GUI::kAttribBold));
-	_mapDrawDescs.push_back(DrawDesc(kDiamond, GUI::kBlueOnBlack, GUI::kAttribBold));
-
+      _map(0), _monsters(), _centerX(0), _centerY(0), _mapOffsetX(0), _mapOffsetY(0), _mapDrawDescs(0) {
+	_mapDrawDescs = Intern::parseTileDefinitons("./data/gui-tile.def");
 	createOutputWindows();
 	setupKeyMap();
 }
@@ -63,7 +60,7 @@ void Screen::update(bool drawMsg) {
 	for (unsigned int y = 0; y < maxHeight; ++y) {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
 			const Game::Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
-			const DrawDesc &desc = _mapDrawDescs[tile];
+			const Intern::DrawDesc &desc = _mapDrawDescs->lookUp(tile);
 			_mapWindow->printChar(desc.symbol, x, y, desc.color, desc.attribs);
 		}
 	}
