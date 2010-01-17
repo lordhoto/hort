@@ -44,7 +44,7 @@ Screen::~Screen() {
 
 void Screen::initialize() {
 	if (!_mapDrawDescs) {
-		_mapDrawDescs = Intern::parseTileDefinitons("./data/gui-tile.def");
+		_mapDrawDescs = Intern::parseTileDefinitons("./data/gui/tiles.def");
 		createOutputWindows();
 		setupKeyMap();
 	}
