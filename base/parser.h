@@ -53,6 +53,8 @@ namespace Base {
  */
 class Rule {
 public:
+	Rule() : _parts() {}
+
 	/**
 	 * Create a new rule.
 	 *
@@ -117,6 +119,68 @@ private:
 	bool _ok;
 	std::string _error;
 	ValueMap _values;
+};
+
+/**
+ * A listener to parsing. This object gets notified, whenever
+ * a rule has been parsed successfully.
+ */
+class ParserListener {
+public:
+	virtual ~ParserListener();
+
+	/**
+	 * Notifies the listener about the given rule being parsed successfully.
+	 *
+	 * The listener is allowed to throw an std::string, which will indicate
+	 * an error.
+	 *
+	 * @param name Name of the rule, which was parsed successfully.
+	 * @param variables Variables, which were parsed.
+	 */
+	virtual void notifyRule(const std::string &name, const Matcher::ValueMap &variables) = 0;
+};
+
+/**
+ * An object which parses a file given the specified rules.
+ */
+class FileParser {
+public:
+	typedef std::map<std::string, Rule> RuleMap;
+
+	/**
+	 * Creates a file parser.
+	 *
+	 * @param filename File to parse.
+	 * @param rules All the allowed rules.
+	 */
+	FileParser(const std::string &filename, const RuleMap &rules);
+
+	/**
+	 * Parses the file and sends all notifications
+	 * to the (optional) listener.
+	 *
+	 * @param listener Where to send notifications.
+	 */
+	void parse(ParserListener *listener);
+
+	/**
+	 * Whether parsing the file was successful.
+	 */
+	bool wasSuccessful() const { return _ok; }
+
+	/**
+	 * Queries the error message.
+	 */
+	const std::string &getError() const { return _error; }
+private:
+	const std::string _filename;
+	const RuleMap _rules;
+
+	bool _ok;
+	std::string _error;
+
+	bool parseLine(const std::string &line, ParserListener *listener);
 };
 
 } // end of namespace Base

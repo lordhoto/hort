@@ -21,6 +21,7 @@
 #include "parser.h"
 
 #include <sstream>
+#include <fstream>
 
 namespace Base {
 
@@ -130,6 +131,64 @@ void Matcher::parseInteger(const std::string &name, Tokenizer &tokenizer) {
 	} else {
 		_values[name] = value;
 	}
+}
+
+FileParser::FileParser(const std::string &filename, const RuleMap &rules)
+    : _filename(filename), _rules(rules), _ok(false), _error() {
+}
+
+void FileParser::parse(ParserListener *listener) {
+	_ok = false;
+	_error.clear();
+
+	std::ifstream file(_filename.c_str());
+
+	if (!file) {
+		_error = "File \"" + _filename + "\" not found";
+		return;
+	}
+
+	_ok = true;
+	size_t lineCount = 0;
+
+	while (!file.eof()) {
+		std::string line;
+		std::getline(file, line);
+
+		if (!line.empty()) {
+			if (!parseLine(line, listener)) {
+				std::stringstream err;
+				err << "Line " << lineCount << ": ERROR: " + _error;
+				_error = err.str();
+				_ok = false;
+				return;
+			}
+		}
+
+		++lineCount;
+	}
+}
+
+bool FileParser::parseLine(const std::string &line, ParserListener *listener) {
+	for (RuleMap::const_iterator i = _rules.begin(); i != _rules.end(); ++i) {
+		Matcher matcher(line, i->second);
+
+		if (matcher.wasSuccessful()) {
+			try {
+				if (listener)
+					listener->notifyRule(i->first, matcher.getValues());
+			} catch (const std::string &str) {
+				_error = str;
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	// TODO: We might want to have some nicer error message here ;-)
+	_error = "No matching rule found!";
+	return false;
 }
 
 } // end of namespace Base
