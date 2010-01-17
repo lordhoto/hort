@@ -100,8 +100,10 @@ bool Level::isWalkable(unsigned int x, unsigned int y) const {
 }
 
 MonsterID Level::monsterAt(unsigned int x, unsigned int y) const {
+	const Base::Point p(x, y);
+
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (i->second.monster->getX() == x && i->second.monster->getY() == y)
+		if (i->second.monster->getPos() == p)
 			return i->first;
 	}
 
@@ -185,7 +187,7 @@ void Level::processEvent(const Event &event) {
 		// TODO: add some error checking
 		monster->setPos(event.move.newPos);
 
-		if (_map->tileAt(event.move.newPos._x, event.move.newPos._y) == Map::kTileWater) {
+		if (_map->tileAt(event.move.newPos) == Map::kTileWater) {
 			monster->setHitPoints(0);
 			_eventDisp.dispatch(createDeathEvent(event.move.monster, Event::Death::kDrowned));
 		}

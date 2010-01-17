@@ -29,6 +29,8 @@
 
 #include "gui/screen.h"
 
+#include "base/geo.h"
+
 #include <list>
 #include <map>
 
@@ -64,6 +66,16 @@ public:
 	const Map &getMap() const { return *_map; }
 
 	/**
+	 * Checks whether the given position is walkable.
+	 *
+	 * @param p Position.
+	 * @return true if walkable, false otherwise.
+	 */
+	bool isWalkable(const Base::Point &p) const {
+		return isWalkable(p._x, p._y);
+	}
+
+	/**
 	 * Checks whether the given position is walkable
 	 *
 	 * @param x x coordiante.
@@ -73,8 +85,19 @@ public:
 	bool isWalkable(unsigned int x, unsigned int y) const;
 
 	/**
-	 * Returns a pointer to the monster at the given position or
-	 * 0, when there is no monster.
+	 * Returns a monster id of the monster at the given position or
+	 * kInvalidMonsterID, when there is no monster.
+	 *
+	 * @param p Position.
+	 * @return Monster's ID.
+	 */
+	MonsterID monsterAt(const Base::Point &p) const {
+		return monsterAt(p._x, p._y);
+	}
+
+	/**
+	 * Returns a monster id of the monster at the given position or
+	 * kInvalidMonsterID, when there is no monster.
 	 *
 	 * @param x x coordinate.
 	 * @param y y coordinate.

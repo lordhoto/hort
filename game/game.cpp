@@ -61,17 +61,16 @@ bool GameState::initialize() {
 bool GameState::run() {
 	int input = -1;
 
-	int playerX = 0, playerY = 0;
+	Base::Point playerPos;
 
 	do {
-		playerX = Base::rollDice(_curLevel->getMap().width()) - 1;
-		playerY = Base::rollDice(_curLevel->getMap().height()) - 1;
-	} while (!_curLevel->isWalkable(playerX, playerY));
+		playerPos._x = Base::rollDice(_curLevel->getMap().width()) - 1;
+		playerPos._y = Base::rollDice(_curLevel->getMap().height()) - 1;
+	} while (!_curLevel->isWalkable(playerPos));
 
-	_player.setX(playerX);
-	_player.setY(playerY);
+	_player.setPos(playerPos);
 
-	_gameScreen->setCenter(playerX, playerY);
+	_gameScreen->setCenter(playerPos);
 	_gameScreen->update();
 
 	while (input != GUI::kKeyEscape) {
@@ -227,7 +226,7 @@ void GameState::processEvent(const Event &event) {
 		}
 	} else if (event.type == Event::kTypeMove) {
 		if (event.move.monster == kPlayerMonsterID)
-			_gameScreen->setCenter(_player.getX(), _player.getY());
+			_gameScreen->setCenter(_player.getPos());
 	}
 }
 
@@ -290,11 +289,12 @@ bool GameState::handleInput(int input) {
 		return false;
 	}
 
-	unsigned int playerX = _player.getX(), playerY = _player.getY();
-	MonsterID monster = _curLevel->monsterAt(playerX + offX, playerY + offY);
+	const Base::Point newPos(_player.getX() + offX, _player.getY() + offY);
+
+	MonsterID monster = _curLevel->monsterAt(newPos);
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
 		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
-	else if (_curLevel->isWalkable(playerX + offX, playerY + offY))
+	else if (_curLevel->isWalkable(newPos))
 		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
 	else
 		return false;
@@ -382,7 +382,7 @@ void GameState::examine() {
 		_gameScreen->update();
 	}
 
-	_gameScreen->setCenter(_player.getX(), _player.getY());
+	_gameScreen->setCenter(_player.getPos());
 	_gameScreen->update();
 }
 

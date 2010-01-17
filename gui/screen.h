@@ -28,6 +28,8 @@
 #include "game/map.h"
 #include "game/monster.h"
 
+#include "base/geo.h"
+
 #include <list>
 #include <vector>
 #include <string>
@@ -58,6 +60,15 @@ public:
 	 * @param map The map to draw.
 	 */
 	void setMap(const Game::Map *map);
+
+	/**
+	 * Sets the position, which should be centered.
+	 *
+	 * @param p Position (in map coordinates).
+	 */
+	void setCenter(const Base::Point &p) {
+		setCenter(p._x, p._y);
+	}
 
 	/**
 	 * Sets the position, which should be centered.

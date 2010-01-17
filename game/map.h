@@ -21,6 +21,8 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
+#include "base/geo.h"
+
 #include <vector>
 
 namespace Game {
@@ -40,11 +42,31 @@ public:
 	 * Walkable does not mean that the player will surive
 	 * walking onto the tile though :-).
 	 *
+	 * @param p Position.
+	 * @return true if walkable, false otherwise
+	 */
+	bool isWalkable(const Base::Point &p) const {
+		return isWalkable(p._x, p._y);
+	}
+
+	/**
+	 * Checks whether the given map tile is walkable.
+	 * Walkable does not mean that the player will surive
+	 * walking onto the tile though :-).
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @return true if walkable, false otherwise
 	 */
 	bool isWalkable(unsigned int x, unsigned int y) const;
+
+	/**
+	 * Returns the tile at the given position.
+	 *
+	 * @param p Position.
+	 * @return Tile type.
+	 */
+	Tile tileAt(const Base::Point &p) const { return _tiles[p._y * _w + p._x]; }
 
 	/**
 	 * Returns the tile at the given position.
