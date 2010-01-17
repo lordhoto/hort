@@ -46,7 +46,7 @@ Screen::~Screen() {
 }
 
 void Screen::update(bool drawMsg) {
-	if (!_needRedraw || !_map)
+	if ((!_needRedraw || !_map) && !(drawMsg && !_messages.empty()))
 		return;
 	_needRedraw = false;
 
