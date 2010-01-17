@@ -18,57 +18,26 @@
  *
  */
 
-#ifndef GAME_GAME_H
-#define GAME_GAME_H
+#ifndef BASE_DEFS_H
+#define BASE_DEFS_H
 
-#include "state.h"
-#include "monster.h"
-#include "event.h"
-#include "defs.h"
+namespace Base {
 
-#include "gui/screen.h"
-#include "gui/defs.h"
+template<typename T>
+struct Range {
+	Range() : _min(), _max() {}
+	Range(T min, T max) : _min(min), _max(max) {}
 
-#include <list>
-#include <string>
-
-namespace Game {
-
-class Level;
-
-class GameState : public State, public EventHandler {
-public:
-	GameState();
-	~GameState();
-
-	bool initialize();
-
-	bool run();
-
-	void processEvent(const Event &event);
-
-	const Monster &getPlayer() const { return *_player; }
-
-	void setEventDispatcher(EventDispatcher *disp) { _eventDisp = disp; }
-
-	TickCount getCurrentTick() const { return _tickCounter; }
+	const T &min() const { return _min; }
+	const T &max() const { return _max; }
 private:
-	bool _initialized;
-
-	EventDispatcher *_eventDisp;
-
-	TickCount _tickCounter;
-	TickCount _nextWarning;
-
-	GUI::Screen *_gameScreen;
-	Level *_curLevel;
-	Monster *_player;
-
-	bool handleInput(GUI::Input input);
-	void examine();
+	T _min, _max;
 };
 
-} // end of namespace Game
+typedef Range<unsigned char> ByteRange;
+typedef Range<int> IntRange;
+
+} // end of namespace Base
 
 #endif
 

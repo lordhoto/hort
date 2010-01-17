@@ -37,13 +37,6 @@ MonsterID createNewMonsterID();
 
 class Monster {
 public:
-	enum Attribute {
-		kAttribWisdom = 0,
-		kAttribDexterity,
-		kAttribAgility,
-		kAttribStrength
-	};
-
 	Monster(MonsterType type, unsigned char wis, unsigned char dex, unsigned char agi, unsigned char str, int health, unsigned char speed, unsigned int x, unsigned int y)
 	    : _type(type), _pos(x, y), _curHealth(health), _maxHealth(health), _speed(speed) {
 		_attrib[kAttribWisdom] = wis;
@@ -156,7 +149,7 @@ private:
 
 	Base::Point _pos;
 	int _curHealth, _maxHealth;
-	unsigned char _attrib[4];
+	unsigned char _attrib[kAttribMaxTypes];
 	unsigned char _speed;
 };
 

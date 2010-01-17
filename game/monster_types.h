@@ -21,20 +21,98 @@
 #ifndef GAME_MONSTER_TYPES_H
 #define GAME_MONSTER_TYPES_H
 
+#include "base/defs.h"
+#include "base/parser.h"
+
+#include <string>
+#include <map>
+
 namespace Game {
 
-enum MonsterType {
-	kMonsterPlayer = 0,
-	kMonsterGnome = 1,
-	kMonsterSquolly = 2
+typedef unsigned int MonsterType;
+
+extern const MonsterType kMonsterPlayer;
+
+enum Attribute {
+	kAttribWisdom = 0,
+	kAttribDexterity,
+	kAttribAgility,
+	kAttribStrength,
+	kAttribMaxTypes
 };
 
-/**
- * Returns the name of the given monster.
- *
- * @param type Type of the monster
- */
-const char *getMonsterName(MonsterType type);
+class Monster;
+
+class MonsterDatabase : private Base::ParserListener {
+public:
+	/**
+	 * Loads the monster database from a file.
+	 *
+	 * This might throw an std::string on error.
+	 *
+	 * @param filename File to load from.
+	 */
+	void load(const std::string &filename);
+
+	/**
+	 * Creates a monster of the given type.
+	 *
+	 * @param type Type of the monster.
+	 */
+	Monster *createNewMonster(const MonsterType type) const;
+
+	/**
+	 * Queries the type of a monster with the given name.
+	 *
+	 * @param name Name of the monster.
+	 * @return Type of the monster (getMounsterTypeCount() in case of an error).
+	 */
+	MonsterType queryMonsterType(const std::string &name) const;
+
+	/**
+	 * Queries the name of a given monster type.
+	 *
+	 * @param type Type of the monster.
+	 */
+	const char *getMonsterName(const MonsterType type) const;
+
+	/**
+	 * Queries the number of different monster types.
+	 */
+	unsigned int getMonsterTypeCount() const { return _nextMonsterType; }
+
+	/**
+	 * Queries the global monster database
+	 */
+	static MonsterDatabase &instance();
+
+	/**
+	 * Destroies the global monster database
+	 */
+	static void destroy();
+private:
+	MonsterDatabase();
+	static MonsterDatabase *_instance;
+
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
+
+	struct MonsterDefinition {
+		std::string name;
+
+		Base::ByteRange defaultAttribs[kAttribMaxTypes];
+		Base::IntRange defaultHitPoints;
+		unsigned char defaultSpeed;
+	};
+
+	MonsterType _nextMonsterType;
+	typedef std::map<MonsterType, MonsterDefinition> MonsterDefMap;
+	MonsterDefMap _monsterDefs;
+
+	typedef std::map<std::string, MonsterType> MonsterNameMap;
+	MonsterNameMap _monsterNames;
+};
+
+#define g_monsterDatabase Game::MonsterDatabase::instance()
 
 } // end of namespace Game
 

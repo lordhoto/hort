@@ -33,7 +33,7 @@
 
 namespace Game {
 
-GameState::GameState() : _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 0, 0) {
+GameState::GameState() : _player(0) {
 	_initialized = false;
 	_curLevel = 0;
 	_eventDisp = 0;
@@ -42,6 +42,7 @@ GameState::GameState() : _player(kMonsterPlayer, 8, 8, 8, 8, 10, kTicksPerTurn, 
 }
 
 GameState::~GameState() {
+	delete _player;
 	delete _curLevel;
 	delete _gameScreen;
 }
@@ -49,11 +50,14 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
+		g_monsterDatabase.load("./data/monster.def");
+		_player = g_monsterDatabase.createNewMonster(kMonsterPlayer);
+		assert(_player);
 		_curLevel = new Level(*this);
 
-		_gameScreen = new GUI::Screen(_player);
+		_gameScreen = new GUI::Screen(*_player);
 		_gameScreen->initialize();
-		_curLevel->makeActive(*_gameScreen, _player);
+		_curLevel->makeActive(*_gameScreen, *_player);
 	}
 
 	return true;
@@ -67,7 +71,7 @@ bool GameState::run() {
 		playerPos._y = Base::rollDice(_curLevel->getMap().height()) - 1;
 	} while (!_curLevel->isWalkable(playerPos));
 
-	_player.setPos(playerPos);
+	_player->setPos(playerPos);
 
 	_gameScreen->setCenter(playerPos);
 	_gameScreen->update();
@@ -89,7 +93,7 @@ bool GameState::run() {
 
 		++_tickCounter;
 
-		if (_player.getHitPoints() <= 0) {
+		if (_player->getHitPoints() <= 0) {
 			_gameScreen->addToMsgWindow("You die...");
 			_gameScreen->update(true);
 			_gameScreen->getInput();
@@ -110,9 +114,9 @@ void GameState::processEvent(const Event &event) {
 		std::stringstream ss;
 
 		if (event.attackDamage.target == kPlayerMonsterID)
-			ss << "The " << getMonsterName(monster->getType()) << " hits you!";
+			ss << "The " << g_monsterDatabase.g_monsterDatabase.getMonsterName(monster->getType()) << " hits you!";
 		else
-			ss << "You hit the " << getMonsterName(target->getType()) << "!";
+			ss << "You hit the " << g_monsterDatabase.getMonsterName(target->getType()) << "!";
 
 		if (!event.attackDamage.didDmg)
 			ss << " Somehow the attack does not cause any damage.";
@@ -127,14 +131,14 @@ void GameState::processEvent(const Event &event) {
 		if (event.attackFail.monster == kPlayerMonsterID)
 			ss << "You miss!";
 		else
-			ss << "The " << getMonsterName(monster->getType()) << " misses!";
+			ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " misses!";
 
 		_gameScreen->addToMsgWindow(ss.str());
 	} else if (event.type == Event::kTypeDeath) {
 		const Monster *monster = _curLevel->getMonster(event.death.monster);
 		assert(monster);
 
-		if (_player.getPos().distanceTo(monster->getPos()) >= 10.0f)
+		if (_player->getPos().distanceTo(monster->getPos()) >= 10.0f)
 			return;
 
 		if (event.death.monster == kPlayerMonsterID) {
@@ -148,7 +152,7 @@ void GameState::processEvent(const Event &event) {
 				assert(killer);
 
 				std::stringstream ss;
-				ss << "The " << getMonsterName(killer->getType()) << " kills you!";
+				ss << "The " << g_monsterDatabase.getMonsterName(killer->getType()) << " kills you!";
 				_gameScreen->addToMsgWindow(ss.str());
 				} break;
 			}
@@ -156,16 +160,16 @@ void GameState::processEvent(const Event &event) {
 		} else {
 			std::stringstream ss;
 			if (event.death.killer == kPlayerMonsterID) {
-				ss << "You kill the " << getMonsterName(monster->getType()) << "!";
+				ss << "You kill the " << g_monsterDatabase.getMonsterName(monster->getType()) << "!";
 			} else {
-				ss << "The " << getMonsterName(monster->getType());
+				ss << "The " << g_monsterDatabase.getMonsterName(monster->getType());
 
 				switch (event.death.cause) {
 				case Event::Death::kKilled: {
 					const Monster *killer = _curLevel->getMonster(event.death.killer);
 					assert(killer);
 
-					ss << " is killed by the " << getMonsterName(killer->getType()) << "!";
+					ss << " is killed by the " << g_monsterDatabase.getMonsterName(killer->getType()) << "!";
 					} break;
 
 				case Event::Death::kDrowned:
@@ -191,11 +195,11 @@ void GameState::processEvent(const Event &event) {
 			const Monster *monster = _curLevel->getMonster(event.idle.monster);
 			assert(monster);
 
-			if (Base::rollDice(20) == 20 && _player.getPos().distanceTo(monster->getPos()) <= 10.0f) {
+			if (Base::rollDice(20) == 20 && _player->getPos().distanceTo(monster->getPos()) <= 10.0f) {
 				std::stringstream ss;
 				bool processMessage = true;
 
-				ss << "The " << getMonsterName(monster->getType()) << " ";
+				ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " ";
 				switch (event.idle.reason) {
 				case Event::Idle::kNoReason:
 					ss << "seems unsure what to do next.";
@@ -226,7 +230,7 @@ void GameState::processEvent(const Event &event) {
 		}
 	} else if (event.type == Event::kTypeMove) {
 		if (event.move.monster == kPlayerMonsterID)
-			_gameScreen->setCenter(_player.getPos());
+			_gameScreen->setCenter(event.move.newPos);
 	}
 }
 
@@ -262,13 +266,13 @@ bool GameState::handleInput(GUI::Input input) {
 		break;
 	}
 
-	const Base::Point newPos = _player.getPos() + offset;
+	const Base::Point newPos = _player->getPos() + offset;
 
 	MonsterID monster = _curLevel->monsterAt(newPos);
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
 		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
 	else if (_curLevel->isWalkable(newPos))
-		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, newPos));
+		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, _player, newPos));
 	else
 		return false;
 
@@ -276,7 +280,7 @@ bool GameState::handleInput(GUI::Input input) {
 }
 
 void GameState::examine() {
-	Base::Point pos = _player.getPos();
+	Base::Point pos = _player->getPos();
 
 	GUI::Input input = GUI::kInputNone;
 	while (input != GUI::kInputQuit) {
@@ -301,7 +305,7 @@ void GameState::examine() {
 			std::stringstream ss;
 			MonsterID monster = _curLevel->monsterAt(pos);
 			if (monster != kInvalidMonsterID)
-				ss << "You see here a " << getMonsterName(_curLevel->getMonster(monster)->getType()) << ".";
+				ss << "You see here a " << g_monsterDatabase.getMonsterName(_curLevel->getMonster(monster)->getType()) << ".";
 			else
 				ss << "This is just a simple " << Map::queryTileName(_curLevel->getMap().tileAt(pos)) << ".";
 
@@ -324,7 +328,7 @@ void GameState::examine() {
 		_gameScreen->update();
 	}
 
-	_gameScreen->setCenter(_player.getPos());
+	_gameScreen->setCenter(_player->getPos());
 	_gameScreen->update(true);
 }
 

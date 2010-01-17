@@ -35,6 +35,9 @@ void initRNG() {
 }
 
 unsigned int rollDice(unsigned int pips) {
+	if (!pips)
+		return 0;
+
 	g_rndSeed = 0xDEADBF03 * (g_rndSeed + 1);
 	g_rndSeed = (g_rndSeed >> 13) | (g_rndSeed << 19);
 	return (g_rndSeed % pips) + 1;
@@ -45,6 +48,10 @@ unsigned int rollDice(unsigned int num, unsigned int pips) {
 	while (num--)
 		count += rollDice(pips);
 	return count;
+}
+
+unsigned int rndValueRange(unsigned int min, unsigned int max) {
+	return min + rollDice(max - min + 1) - 1;
 }
 
 } // end of namespace Base

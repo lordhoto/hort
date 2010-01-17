@@ -43,9 +43,18 @@ unsigned int rollDice(unsigned int pips);
  *
  * @param num How often to roll the dice.
  * @param pips The pips count.
- * @retun The accumulated result of all rolls.
+ * @return The accumulated result of all rolls.
  */
 unsigned int rollDice(unsigned int num, unsigned int pips);
+
+/**
+ * Gets a random number in the given range.
+ *
+ * @param min Minimal value.
+ * @param max Maximal value.
+ * @return The random value.
+ */
+unsigned int rndValueRange(unsigned int min, unsigned int max);
 
 } // end of namespace Base
 

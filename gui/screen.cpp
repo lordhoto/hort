@@ -274,10 +274,10 @@ void Screen::drawStatsWindow() {
 	std::stringstream line;
 
 	// Stats line
-	line << "Str: " << (int)_player.getAttribute(Game::Monster::kAttribStrength)
-	     << " Dex: " << (int)_player.getAttribute(Game::Monster::kAttribDexterity)
-	     << " Agi: " << (int)_player.getAttribute(Game::Monster::kAttribAgility)
-	     << " Wis: " << (int)_player.getAttribute(Game::Monster::kAttribWisdom)
+	line << "Str: " << (int)_player.getAttribute(Game::kAttribStrength)
+	     << " Dex: " << (int)_player.getAttribute(Game::kAttribDexterity)
+	     << " Agi: " << (int)_player.getAttribute(Game::kAttribAgility)
+	     << " Wis: " << (int)_player.getAttribute(Game::kAttribWisdom)
 	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
 	     << " | T: " << _turn;
 

@@ -1,0 +1,3 @@
+def-monster Player  :=  8  8  8  8  8  8  8  8 10 10 10
+def-monster Gnome   :=  2  2  4  4  4  4  6  6  3  3 10
+def-monster Squolly := 10 10  1  1  1  1  1  1  1  1  7

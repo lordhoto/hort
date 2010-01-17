@@ -46,11 +46,9 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 		} while (!isWalkable(monsterX, monsterY));
 
 		MonsterID newId = createNewMonsterID();
-		Monster *newMonster = 0;
-		if (Base::rollDice(6) != 1)
-			newMonster = new Monster(kMonsterGnome, 2, 4, 4, 6, 3, kTicksPerTurn, monsterX, monsterY);
-		else
-			newMonster = new Monster(kMonsterSquolly, 10, 1, 1, 1, 1, 7, monsterX, monsterY);
+		Monster *newMonster = g_monsterDatabase.createNewMonster(Base::rollDice(g_monsterDatabase.getMonsterTypeCount() - 1));
+		newMonster->setX(monsterX);
+		newMonster->setY(monsterY);
 		_monsterField[monsterY * _map->width() + monsterX] = true;
 		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
@@ -213,11 +211,7 @@ void Level::processEvent(const Event &event) {
 		if (Base::rollDice(20) == 20) {
 			_eventDisp.dispatch(createAttackFailEvent(event.attack.monster));
 		} else {
-			int damage = 0;
-
-			if (monster->getType() != kMonsterSquolly)
-				damage = 1;
-
+			int damage = 1;
 			int newHitPoints = target->getHitPoints() - damage;
 			target->setHitPoints(newHitPoints);
 
