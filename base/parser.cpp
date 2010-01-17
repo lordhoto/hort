@@ -50,7 +50,7 @@ void Matcher::doMatch(Tokenizer &input) {
 		} else {
 			std::string curToken = input.nextToken();
 			if (*curPart != curToken) {
-				_error = "Found " + curToken + ", but expected " + *curPart;
+				_error = "Found \"" + curToken + "\" but expected \"" + *curPart + '"';
 				_ok = false;
 			}
 		}
@@ -81,7 +81,7 @@ void Matcher::parseVariable(const std::string &def, Tokenizer &tokenizer) {
 		} else if (type == "d" || type == "D") {
 			parseInteger(name, tokenizer);
 		} else {
-			_error = "Unknown variable type " + type;
+			_error = "Unknown variable type \"" + type + '"';
 			_ok = false;
 		}
 	}
