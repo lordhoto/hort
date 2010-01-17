@@ -383,7 +383,7 @@ void GameState::examine() {
 	}
 
 	_gameScreen->setCenter(_player.getPos());
-	_gameScreen->update();
+	_gameScreen->update(true);
 }
 
 } // end of namespace Game

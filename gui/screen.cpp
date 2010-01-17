@@ -182,7 +182,9 @@ void Screen::addToMsgWindow(const std::string &str) {
 }
 
 void Screen::printMessages() {
+	_messageLine->clear();
 	std::string line;
+
 	while (!_messages.empty()) {
 		_messageLine->clear();
 		line.clear();
