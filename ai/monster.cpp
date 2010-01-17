@@ -115,38 +115,38 @@ void Monster::update() {
 		// TODO: Proper implementation of this :-D
 		switch (i->second.fsmState) {
 		case kMonsterIdle: {
-			int offX = 0, offY = 0;
+			Base::Point newPos = i->second.monster->getPos();
 			switch (Base::rollDice(9)) {
 			case 1:
-				--offX; ++offY;
+				--newPos._x; ++newPos._y;
 				break;
 			
 			case 2:
-				++offY;
+				++newPos._y;
 				break;
 
 			case 3:
-				++offX; ++offY;
+				++newPos._x; ++newPos._y;
 				break;
 
 			case 4:
-				--offX;
+				--newPos._x;
 				break;
 
 			case 6:
-				++offX;
+				++newPos._x;
 				break;
 
 			case 7:
-				--offX; --offY;
+				--newPos._x; --newPos._y;
 				break;
 
 			case 8:
-				--offY;
+				--newPos._y;
 				break;
 
 			case 9:
-				++offX; --offY;
+				++newPos._x; --newPos._y;
 				break;
 
 			default:
@@ -154,17 +154,14 @@ void Monster::update() {
 			}
 
 			bool didAction = false;
-			if (offX || offY) {
-				const Game::Monster *monster = _level.getMonster(i->first);
-				const unsigned int newX = monster->getX() + offX;
-				const unsigned int newY = monster->getY() + offY;
-
-				if (newX <= _level.getMap().width() && newY <= _level.getMap().height()) {
-					if (_level.isWalkable(newX, newY)) {
-						Game::Map::Tile tile = _level.getMap().tileAt(newX, newY);
+			if (newPos != i->second.monster->getPos()) {
+				if ((unsigned int)newPos._x <= _level.getMap().width()
+				    && (unsigned int)newPos._y <= _level.getMap().height()) {
+					if (_level.isWalkable(newPos)) {
+						Game::Map::Tile tile = _level.getMap().tileAt(newPos);
 
 						if (tile != Game::Map::kTileWater) {
-							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, offX, offY));
+							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
 							didAction = true;
 						}
 					}

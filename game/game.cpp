@@ -295,7 +295,7 @@ bool GameState::handleInput(int input) {
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
 		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
 	else if (_curLevel->isWalkable(newPos))
-		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, offX, offY));
+		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, &_player, newPos));
 	else
 		return false;
 

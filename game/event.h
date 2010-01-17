@@ -162,11 +162,10 @@ private:
  *
  * @param monster Monster to move.
  * @param mP Pointer to the monster to move.
- * @param offX X offset to move.
- * @param offY Y offset to move.
+ * @param newPos New position of the monster.
  * @return Event structure.
  */
-Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY);
+Event createMoveEvent(const MonsterID monster, const Monster *mP, const Base::Point &newPos);
 
 /**
  * Creates an attack event.

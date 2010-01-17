@@ -39,13 +39,12 @@ void EventDispatcher::dispatch(const Event &event) {
 		(*i)->processEvent(event);
 }
 
-Event createMoveEvent(const MonsterID monster, const Monster *mP, int offX, int offY) {
+Event createMoveEvent(const MonsterID monster, const Monster *mP, const Base::Point &newPos) {
 	Event event;
 	event.type = Event::kTypeMove;
 	event.move.monster = monster;
-	event.move.oldPos._x = mP->getX();
-	event.move.oldPos._y = mP->getY();
-	event.move.newPos = event.move.oldPos + Base::Point(offX, offY);
+	event.move.oldPos = mP->getPos();
+	event.move.newPos = newPos;
 	return event;
 }
 
