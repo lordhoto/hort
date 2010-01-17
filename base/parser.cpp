@@ -24,8 +24,8 @@
 
 namespace Base {
 
-Rule::Rule(const std::string &rule, const std::string &name)
-    : _parts(), _name(name) {
+Rule::Rule(const std::string &rule)
+    : _parts() {
 	Tokenizer tokenizer(rule, ";");
 
 	while (!tokenizer.finished())

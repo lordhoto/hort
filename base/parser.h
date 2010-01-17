@@ -59,7 +59,7 @@ public:
 	 * @param rule Definition of the rule (see above).
 	 * @param name Name of the rule.
 	 */
-	Rule(const std::string &rule, const std::string &name);
+	Rule(const std::string &rule);
 
 	typedef std::list<std::string> StringList;
 
@@ -67,14 +67,8 @@ public:
 	 * Queries all the tokens required by the rule.
 	 */
 	const StringList &getParts() const { return _parts; }
-
-	/**
-	 * Queries the name of the rule.
-	 */
-	const std::string getName() const { return _name; }
 private:
 	StringList _parts;
-	const std::string _name;
 };
 
 /**
