@@ -249,7 +249,7 @@ void Screen::printMessages() {
 
 			_messages.pop_front();
 			if (!line.empty())
-				line += ' ';
+				line += "  ";
 			line += front;
 		}
 
