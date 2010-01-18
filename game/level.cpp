@@ -42,11 +42,11 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 	bool hasNibelung = false;
 
 	for (int i = 0; i < 8192; ++i) {
-		int monsterX = 0, monsterY = 0;
+		Base::Point pos(0, 0);
 		do {
-			monsterX = Base::rollDice(_map->width()) - 1;
-			monsterY = Base::rollDice(_map->height()) - 1;
-		} while (!isWalkable(monsterX, monsterY));
+			pos._x = Base::rollDice(_map->width()) - 1;
+			pos._y = Base::rollDice(_map->height()) - 1;
+		} while (!isWalkable(pos));
 
 		MonsterID newId = createNewMonsterID();
 		MonsterType newMonsterType = Base::rollDice(g_monsterDatabase.getMonsterTypeCount() - 1);
@@ -68,9 +68,8 @@ Level::Level(GameState &gs) : _map(0), _monsterField(), _screen(0), _gameState(g
 		}
 
 		Monster *newMonster = g_monsterDatabase.createNewMonster(newMonsterType);
-		newMonster->setX(monsterX);
-		newMonster->setY(monsterY);
-		_monsterField[monsterY * _map->width() + monsterX] = true;
+		newMonster->setPos(pos);
+		_monsterField[pos._y * _map->width() + pos._x] = true;
 		_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
 		_monsterAI->addMonster(newId, newMonster);
 	}
@@ -114,22 +113,20 @@ void Level::makeInactive() {
 	_gameState.setEventDispatcher(0);
 }
 
-bool Level::isWalkable(unsigned int x, unsigned int y) const {
-	if (x >= _map->width() || y >= _map->height())
+bool Level::isWalkable(const Base::Point &p) const {
+	if ((unsigned int)p._x >= _map->width() || (unsigned int)p._y >= _map->height())
 		return false;
 
-	if (!_map->isWalkable(x, y))
+	if (!_map->isWalkable(p))
 		return false;
 
-	if (_monsterField[y * _map->width() + x])
+	if (_monsterField[p._y * _map->width() + p._x])
 		return false;
 
 	return true;
 }
 
-MonsterID Level::monsterAt(unsigned int x, unsigned int y) const {
-	const Base::Point p(x, y);
-
+MonsterID Level::monsterAt(const Base::Point &p) const {
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		if (i->second.monster->getPos() == p)
 			return i->first;

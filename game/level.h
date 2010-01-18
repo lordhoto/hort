@@ -72,18 +72,7 @@ public:
 	 * @param p Position.
 	 * @return true if walkable, false otherwise.
 	 */
-	bool isWalkable(const Base::Point &p) const {
-		return isWalkable(p._x, p._y);
-	}
-
-	/**
-	 * Checks whether the given position is walkable
-	 *
-	 * @param x x coordiante.
-	 * @param y y coordinate.
-	 * @return true if walkable, false otherwise
-	 */
-	bool isWalkable(unsigned int x, unsigned int y) const;
+	bool isWalkable(const Base::Point &p) const;
 
 	/**
 	 * Returns a monster id of the monster at the given position or
@@ -92,19 +81,7 @@ public:
 	 * @param p Position.
 	 * @return Monster's ID.
 	 */
-	MonsterID monsterAt(const Base::Point &p) const {
-		return monsterAt(p._x, p._y);
-	}
-
-	/**
-	 * Returns a monster id of the monster at the given position or
-	 * kInvalidMonsterID, when there is no monster.
-	 *
-	 * @param x x coordinate.
-	 * @param y y coordinate.
-	 * @return Monster's ID.
-	 */
-	MonsterID monsterAt(unsigned int x, unsigned int y) const;
+	MonsterID monsterAt(const Base::Point &p) const;
 
 	/**
 	 * Tries to access the monster with the given id.
