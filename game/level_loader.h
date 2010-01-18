@@ -25,6 +25,7 @@
 #include "level.h"
 
 #include "base/parser.h"
+#include "base/geo.h"
 
 #include <string>
 #include <list>
@@ -56,7 +57,9 @@ private:
 
 	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
 	void processMonster(const Base::Matcher::ValueMap &values);
+	void processStartPoint(const Base::Matcher::ValueMap &values);
 
+	Base::Point _start;
 	Level *_level;
 };
 

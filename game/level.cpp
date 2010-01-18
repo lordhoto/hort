@@ -28,7 +28,7 @@
 namespace Game {
 
 Level::Level(Map *map, GameState &gs)
-    : _map(map), _monsterField(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
+    : _map(map), _monsterField(), _start(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
 	assert(_map);
 
 	_monsterField.resize(_map->width() * _map->height());

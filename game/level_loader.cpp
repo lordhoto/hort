@@ -105,12 +105,14 @@ Level *LevelLoader::load(GameState &gs) {
 
 	Base::FileParser::RuleMap rules;
 	rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
+	rules["start-point"] = Base::Rule("def-start-point;%D,x;%D,y");
 	Base::FileParser parser(_path + "/monster.def", rules);
 	parser.parse(this);
-	if (parser.wasSuccessful())
+	if (!parser.wasSuccessful())
 		throw parser.getError();
 
 	Level *level = _level;
+	level->_start = _start;
 	_level = 0;
 	return level;
 }
@@ -118,6 +120,8 @@ Level *LevelLoader::load(GameState &gs) {
 void LevelLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) {
 	if (name == "monster")
 		processMonster(values);
+	else if (name == "start-point")
+		processStartPoint(values);
 }
 
 void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
@@ -135,6 +139,17 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 		throw std::string("Undefined monster type \"" + type + '"');
 
 	_level->addMonster(monType, pos);
+}
+
+void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
+	const unsigned int x = ::atoi(values.find("x")->second.c_str());
+	const unsigned int y = ::atoi(values.find("y")->second.c_str());
+	const Base::Point pos(x, y);
+
+	if (!_level->isWalkable(pos))
+		throw std::string("Position is blocked");
+
+	_start = pos;
 }
 
 } // end of namespace Game

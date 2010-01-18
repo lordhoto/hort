@@ -42,9 +42,15 @@ class Monster;
 namespace Game {
 
 class Level : public EventHandler {
+friend class LevelLoader;
 public:
 	Level(Map *map, GameState &gs);
 	~Level();
+
+	/**
+	 * Queries the start point of the level.
+	 */
+	const Base::Point &getStartPoint() const { return _start; }
 
 	/**
 	 * Sets the level as the active game level.
@@ -138,6 +144,7 @@ public:
 private:
 	Map *_map;
 	std::vector<bool> _monsterField; // Keeps track, where monsters are placed
+	Base::Point _start;
 
 	GUI::Screen *_screen;
 	GameState &_gameState;

@@ -65,17 +65,9 @@ bool GameState::initialize() {
 		_gameScreen = new GUI::Screen(*_player);
 		_gameScreen->initialize();
 
-		Base::Point playerPos;
-
-		do {
-			playerPos._x = Base::rollDice(_curLevel->getMap().width()) - 1;
-			playerPos._y = Base::rollDice(_curLevel->getMap().height()) - 1;
-		} while (!_curLevel->isWalkable(playerPos));
-
-		_player->setPos(playerPos);
-
+		_player->setPos(_curLevel->getStartPoint());
 		_curLevel->makeActive(*_gameScreen, *_player);
-		_gameScreen->setCenter(playerPos);
+		_gameScreen->setCenter(_player->getPos());
 	}
 
 	return true;

@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 		GUI::Intern::Screen::destroy();
 		GUI::Intern::Input::destroy();
 
-		std::fprintf(stderr, "ERROR: %s\n", err.c_str());
+		std::fprintf(stderr, "%s\n", err.c_str());
 
 		return -1;
 	}
