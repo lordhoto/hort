@@ -21,6 +21,7 @@
 #include "level_loader.h"
 
 #include <fstream>
+#include <sstream>
 #include <cassert>
 #include <stdlib.h> // for atoi
 
@@ -38,16 +39,17 @@ MapLoader::MapLoader(const std::string &filename)
 }
 
 Map *MapLoader::load() {
-	// TODO: Error reporting via throw std::string.
 	if (_lines.empty() || _lines.size() < 3)
-		return 0;
+		throwError("Contains too few lines", 0);
+
+	int lineCount = 2;
 
 	TileDatabase &tdb = TileDatabase::instance();
 	const unsigned int w = ::atoi(_lines.front().c_str()); _lines.pop_front();
 	const unsigned int h = ::atoi(_lines.front().c_str()); _lines.pop_front();
 
 	if (_lines.size() < h)
-		return 0;
+		throwError("Height exceeds remaining lines", lineCount);
 
 	std::vector<Tile> tiles;
 	tiles.resize(w * h);
@@ -56,9 +58,10 @@ Map *MapLoader::load() {
 
 	for (unsigned int y = 0; y < h; ++y) {
 		if (_lines.empty())
-			return 0;
+			throwError("Unexpected end of file", lineCount);
 
 		std::string line = _lines.front(); _lines.pop_front();
+		++lineCount;
 
 		if (line.empty()) {
 			--y;
@@ -66,18 +69,24 @@ Map *MapLoader::load() {
 		}
 
 		if (line.size() < w)
-			return 0;
+			throwError("Unexpected end of line", lineCount);
 
 		for (unsigned int x = 0; x < w; ++x) {
 			const Tile tile = tdb.queryTile(line[x]);
 			if (tile >= lastValidTile)
-				return 0;
+				throwError("Undefined tile glyph \"" + line[x] + '"', lineCount);
 
 			tiles[y * w + x] = tile;
 		}
 	}
 
 	return new Map(w, h, tiles);
+}
+
+void MapLoader::throwError(const std::string &error, int line) {
+	std::stringstream ss;
+	ss << "File: " << _filename << " Line: " << line << " ERROR: " << error;
+	throw ss.str();
 }
 
 LevelLoader::LevelLoader(const std::string &path)
@@ -98,6 +107,8 @@ Level *LevelLoader::load(GameState &gs) {
 	rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
 	Base::FileParser parser(_path + "/monster.def", rules);
 	parser.parse(this);
+	if (parser.wasSuccessful())
+		throw parser.getError();
 
 	Level *level = _level;
 	_level = 0;

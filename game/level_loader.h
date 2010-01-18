@@ -39,6 +39,8 @@ public:
 private:
 	const std::string _filename;
 
+	void throwError(const std::string &error, int line);
+
 	typedef std::list<std::string> StringList;
 	StringList _lines;
 };
