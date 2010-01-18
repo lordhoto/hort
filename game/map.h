@@ -154,12 +154,12 @@ public:
 	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }
 
 	/**
-	 * Returns a name of the given tile type.
+	 * Queries the tile definition at the given position.
 	 *
-	 * @param tile Tile to query the name for.
-	 * @return Name of the tile.
+	 * @param p Position.
+	 * @return Tile definition.
 	 */
-	static const char *queryTileName(Tile t);
+	const TileDatabase::Definition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _w + p._x]; }
 
 	/**
 	 * Returns the width of the map.
@@ -175,6 +175,7 @@ public:
 private:
 	unsigned int _w, _h;
 	std::vector<Tile> _tiles;
+	std::vector<const TileDatabase::Definition *> _tileDefs;
 };
 
 } // end of namespace Game

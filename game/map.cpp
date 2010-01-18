@@ -97,6 +97,7 @@ void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::Valu
 
 Map::Map() : _w(320), _h(200) {
 	_tiles.resize(_w * _h);
+	_tileDefs.resize(_w * _h);
 	for (unsigned int i = 0; i < _w * _h; ++i) {
 		switch (Base::rollDice(100)) {
 		case 1:
@@ -112,25 +113,14 @@ Map::Map() : _w(320), _h(200) {
 			_tiles[i] = TileDatabase::instance().queryTile("meadow");
 			break;
 		}
+
+		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
+		assert(_tileDefs[i]);
 	}
 }
 
 bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	const Tile tile = tileAt(x, y);
-
-	const TileDatabase::Definition *def = TileDatabase::instance().queryTileDefinition(tile);
-	if (!def)
-		return true;
-	else
-		return def->_isWalkable;
-}
-
-const char *Map::queryTileName(Tile t) {
-	const TileDatabase::Definition *def = TileDatabase::instance().queryTileDefinition(t);
-	if (def)
-		return def->_name.c_str();
-	else
-		return 0;
+	return _tileDefs[y * _w + x]->_isWalkable;
 }
 
 } // end of namespace Game
