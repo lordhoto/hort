@@ -74,7 +74,7 @@ Map *MapLoader::load() {
 		for (unsigned int x = 0; x < w; ++x) {
 			const Tile tile = tdb.queryTile(line[x]);
 			if (tile >= lastValidTile)
-				throwError("Undefined tile glyph \"" + line[x] + '"', lineCount);
+				throwError(std::string("Undefined tile glyph \"") + line[x] + "\"", lineCount);
 
 			tiles[y * w + x] = tile;
 		}
