@@ -158,7 +158,7 @@ void FileParser::parse(ParserListener *listener) {
 		if (!line.empty()) {
 			if (!parseLine(line, listener)) {
 				std::stringstream err;
-				err << "Line " << lineCount << ": ERROR: " + _error;
+				err << "File: " << _filename << " Line " << lineCount << ": ERROR: " + _error;
 				_error = err.str();
 				_ok = false;
 				return;
