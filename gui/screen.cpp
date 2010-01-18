@@ -139,16 +139,12 @@ void Screen::clearObjects() {
 }
 
 Input Screen::getInput() {
-	Input input = kInputNone;
-
-	do {
+	while (true) {
 		int key = getKey();
 		KeyMap::const_iterator i = _keyMap.find(key);
 		if (i != _keyMap.end())
-			input = i->second;
-	} while (input == kInputNone);
-
-	return input;
+			return i->second;
+	}
 }
 
 int Screen::getKey() {
@@ -202,6 +198,8 @@ void Screen::setupKeyMap() {
 
 	_keyMap['/'] = kInputExamine;
 	_keyMap[kKeyEscape] = kInputQuit;
+
+	_keyMap[' '] = kInputNone;
 }
 
 void Screen::createOutputWindows() {
