@@ -69,7 +69,7 @@ void Screen::update(bool drawMsg) {
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
 	for (unsigned int y = 0; y < maxHeight; ++y) {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
-			const Game::Map::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
+			const Game::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
 			const Intern::DrawDesc &desc = _mapDrawDescs->lookUp(tile);
 			_mapWindow->printChar(desc.symbol, x, y, desc.color, desc.attribs);
 		}

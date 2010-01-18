@@ -22,19 +22,95 @@
 #define GAME_MAP_H
 
 #include "base/geo.h"
+#include "base/parser.h"
 
 #include <vector>
+#include <map>
+#include <string>
 
 namespace Game {
 
-class Map {
+/**
+ * A tile type.
+ */
+typedef unsigned int Tile;
+
+class TileDatabase : private Base::ParserListener {
 public:
-	enum Tile {
-		kTileMeadow = 0,
-		kTileTree,
-		kTileWater
+	/**
+	 * Loads the tile database from a file.
+	 *
+	 * This might throw an std::string on error.
+	 *
+	 * @param filename File to load from.
+	 */
+	void load(const std::string &filename);
+
+	/**
+	 * Queries how many different tiles are defined
+	 * currently.
+	 */
+	Tile getTileCount() const { return _nextTileID; }
+
+	/**
+	 * Definition of a tile.
+	 */
+	struct Definition {
+		std::string _name; /// Name of the tile
+		char _glyph; /// Glyph for map files
+
+		bool _isWalkable; /// Is the tile walkable?
+		bool _blocksSight; /// Does this tile block the sight?
+		bool _isLiquid; /// Is this a liquid?
 	};
 
+	/**
+	 * Queries the definition of the given tile
+	 *
+	 * @param Tile Tile type to query.
+	 * @return Pointer to a Definition structure (or 0 in case it's not defined).
+	 */
+	const Definition *queryTileDefinition(const Tile tile) const;
+
+	/**
+	 * Queries the tile type of the given name.
+	 *
+	 * @param name Name of the tile.
+	 * @return Tile type (getTileCount() in case of an error).
+	 */
+	Tile queryTile(const std::string &name) const;
+
+	/**
+	 * Queries the tile type with the given glyph.
+	 *
+	 * @param glyph Glyph of the tile.
+	 * @return Tile type (getTileCount() in case of an error).
+	 */
+	Tile queryTile(const char glyph) const;
+
+	/**
+	 * Queries the global tile database instance.
+	 */
+	static TileDatabase &instance();
+
+	/**
+	 * Destroies the global tile database instance.
+	 */
+	static void destroy();
+private:
+	TileDatabase();
+
+	static TileDatabase *_instance;
+
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
+
+	Tile _nextTileID;
+	typedef std::map<Tile, Definition> TileDefMap;
+	TileDefMap _tileDefinitions;
+};
+
+class Map {
+public:
 	Map();
 
 	/**

@@ -27,6 +27,7 @@
 
 #include <map>
 #include <cmath>
+#include <cassert>
 
 namespace AI {
 
@@ -123,9 +124,11 @@ void Monster::update() {
 				if ((unsigned int)newPos._x <= _level.getMap().width()
 				    && (unsigned int)newPos._y <= _level.getMap().height()) {
 					if (_level.isWalkable(newPos)) {
-						Game::Map::Tile tile = _level.getMap().tileAt(newPos);
+						const Game::Tile tile = _level.getMap().tileAt(newPos);
+						const Game::TileDatabase::Definition *def = Game::TileDatabase::instance().queryTileDefinition(tile);
+						assert(def);
 
-						if (tile != Game::Map::kTileWater) {
+						if (!def->_isLiquid) {
 							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
 							didAction = true;
 						}

@@ -50,7 +50,10 @@ GameState::~GameState() {
 bool GameState::initialize() {
 	if (!_initialized) {
 		_initialized = true;
+
 		g_monsterDatabase.load("./data/monster.def");
+		TileDatabase::instance().load("./data/tiles.def");
+
 		_player = g_monsterDatabase.createNewMonster(kMonsterPlayer);
 		assert(_player);
 		_curLevel = new Level(*this);

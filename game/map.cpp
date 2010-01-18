@@ -27,38 +27,110 @@
 
 namespace Game {
 
+TileDatabase *TileDatabase::_instance = 0;
+
+TileDatabase::TileDatabase()
+    : _nextTileID(0), _tileDefinitions() {
+}
+
+void TileDatabase::load(const std::string &filename) {
+	_nextTileID = 0;
+	_tileDefinitions.clear();
+
+	Base::FileParser::RuleMap rules;
+	rules["def"] = Base::Rule("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid");
+	Base::FileParser parser(filename, rules);
+	parser.parse(this);
+	if (!parser.wasSuccessful())
+		throw std::string(parser.getError());
+}
+
+const TileDatabase::Definition *TileDatabase::queryTileDefinition(const Tile tile) const {
+	TileDefMap::const_iterator i = _tileDefinitions.find(tile);
+	if (i == _tileDefinitions.end())
+		return 0;
+	else
+		return &i->second;
+}
+
+Tile TileDatabase::queryTile(const std::string &name) const {
+	for (TileDefMap::const_iterator i = _tileDefinitions.begin(); i != _tileDefinitions.end(); ++i) {
+		if (i->second._name == name)
+			return i->first;
+	}
+
+	return getTileCount();
+}
+
+Tile TileDatabase::queryTile(const char glyph) const {
+	for (TileDefMap::const_iterator i = _tileDefinitions.begin(); i != _tileDefinitions.end(); ++i) {
+		if (i->second._glyph == glyph)
+			return i->first;
+	}
+
+	return getTileCount();
+}
+
+TileDatabase &TileDatabase::instance() {
+	if (!_instance)
+		_instance = new TileDatabase();
+	return *_instance;
+}
+
+void TileDatabase::destroy() {
+	delete _instance;
+	_instance = 0;
+}
+
+void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) {
+	assert(name == "def");
+
+	Definition def;
+	def._name = values.find("name")->second;
+	def._glyph = values.find("glyph")->second[0];
+	def._isWalkable = (values.find("isWalkable")->second[0] == '1');
+	def._blocksSight = (values.find("blocksSight")->second[0] == '1');
+	def._isLiquid = (values.find("isLiquid")->second[0] == '1');
+
+	_tileDefinitions[_nextTileID++] = def;
+}
+
 Map::Map() : _w(320), _h(200) {
 	_tiles.resize(_w * _h);
 	for (unsigned int i = 0; i < _w * _h; ++i) {
 		switch (Base::rollDice(100)) {
 		case 1:
-			_tiles[i] = kTileWater;
+			_tiles[i] = TileDatabase::instance().queryTile("water");
 			break;
 
 		case 2: case 3: case 4:
 		case 5: case 6: case 7:
-			_tiles[i] = kTileTree;
+			_tiles[i] = TileDatabase::instance().queryTile("tree");
 			break;
 
 		default:
-			_tiles[i] = kTileMeadow;
+			_tiles[i] = TileDatabase::instance().queryTile("meadow");
 			break;
 		}
 	}
 }
 
 bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	return (tileAt(x, y) != kTileTree);
+	const Tile tile = tileAt(x, y);
+
+	const TileDatabase::Definition *def = TileDatabase::instance().queryTileDefinition(tile);
+	if (!def)
+		return true;
+	else
+		return def->_isWalkable;
 }
 
 const char *Map::queryTileName(Tile t) {
-	static const char *tileNames[] = {
-		"meadow",
-		"tree",
-		"water"
-	};
-
-	return tileNames[t];
+	const TileDatabase::Definition *def = TileDatabase::instance().queryTileDefinition(t);
+	if (def)
+		return def->_name.c_str();
+	else
+		return 0;
 }
 
 } // end of namespace Game

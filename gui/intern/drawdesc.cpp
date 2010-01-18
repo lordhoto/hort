@@ -141,13 +141,12 @@ TileDDMap *parseTileDefinitons(const std::string &filename) {
 	const DrawDescParser::DrawDescMap &dds = parser.getDescs();
 	TileDDMap::DrawDescMap drawDescs;
 
+	const Game::Tile lastTileType = Game::TileDatabase::instance().getTileCount();
+
 	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
-		if (i->first == "meadow")
-			drawDescs[Game::Map::kTileMeadow] = i->second;
-		else if (i->first == "tree")
-			drawDescs[Game::Map::kTileTree] = i->second;
-		else if (i->first == "water")
-			drawDescs[Game::Map::kTileWater] = i->second;
+		const Game::Tile tile = Game::TileDatabase::instance().queryTile(i->first);
+		if (tile < lastTileType)
+			drawDescs[tile] = i->second;
 		else
 			throw std::string("Unknown tile \"" + i->first + '"');
 	}
@@ -166,7 +165,7 @@ MonsterDDMap *parseMonsterDefinitions(const std::string &filename) {
 	const Game::MonsterType lastMonsterType = mdb.getMonsterTypeCount();
 
 	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
-		Game::MonsterType type = mdb.queryMonsterType(i->first);
+		const Game::MonsterType type = mdb.queryMonsterType(i->first);
 		if (type == lastMonsterType)
 			throw std::string("Undefined monster \"" + i->first + '"');
 

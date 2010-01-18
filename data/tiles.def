@@ -1,0 +1,3 @@
+def-tile meadow := . 1 0 0
+def-tile tree   := + 0 1 0
+def-tile water  := w 1 0 1

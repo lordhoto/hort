@@ -92,7 +92,7 @@ private:
 	int parseAttribs(const std::string &value);
 };
 
-typedef ASCIIRepresentation<Game::Map::Tile> TileDDMap;
+typedef ASCIIRepresentation<Game::Tile> TileDDMap;
 TileDDMap *parseTileDefinitons(const std::string &filename);
 
 typedef ASCIIRepresentation<Game::MonsterType> MonsterDDMap;
