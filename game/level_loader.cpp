@@ -106,7 +106,7 @@ Level *LevelLoader::load(GameState &gs) {
 	Base::FileParser::RuleMap rules;
 	rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
 	rules["start-point"] = Base::Rule("def-start-point;%D,x;%D,y");
-	Base::FileParser parser(_path + "/monster.def", rules);
+	Base::FileParser parser(_path + "/objects.def", rules);
 	parser.parse(this);
 	if (!parser.wasSuccessful())
 		throw parser.getError();
