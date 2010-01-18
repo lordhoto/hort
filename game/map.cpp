@@ -95,6 +95,17 @@ void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::Valu
 	_tileDefinitions[_nextTileID++] = def;
 }
 
+Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)
+    : _w(w), _h(h), _tiles(tiles), _tileDefs() {
+	_tileDefs.resize(_w * _h);
+	assert(_tiles.size() == _w * _h);
+
+	for (unsigned int i = 0; i < _w * _h; ++i) {
+		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
+		assert(_tileDefs[i]);
+	}
+}
+
 Map::Map() : _w(320), _h(200) {
 	_tiles.resize(_w * _h);
 	_tileDefs.resize(_w * _h);

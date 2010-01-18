@@ -43,6 +43,7 @@ namespace Game {
 
 class Level : public EventHandler {
 public:
+	Level(Map *map, GameState &gs);
 	Level(GameState &gs);
 	~Level();
 
@@ -107,6 +108,15 @@ public:
 	 * @return true, when it is free to make an action, false otherwise.
 	 */
 	bool isAllowedToAct(const MonsterID monster) const;
+
+	/**
+	 * Adds a monster to the level.
+	 *
+	 * @param monster Monster type to add.
+	 * @param pos Position to add.
+	 * @return The monster id.
+	 */
+	MonsterID addMonster(const MonsterType monster, const Base::Point &pos);
 
 	/**
 	 * Removes the given monster from the level.

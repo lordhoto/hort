@@ -21,6 +21,7 @@ OBJS := base/main.o \
 		game/event.o \
 		game/monster.o \
 		game/defs.o \
+		game/level_loader.o \
 		ai/fsm.o \
 		ai/monster.o
 

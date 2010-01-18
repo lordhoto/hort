@@ -19,6 +19,7 @@
  */
 
 #include "level.h"
+#include "level_loader.h"
 #include "game.h"
 
 #include "base/rnd.h"
@@ -56,27 +57,33 @@ bool GameState::initialize() {
 
 		_player = g_monsterDatabase.createNewMonster(kMonsterPlayer);
 		assert(_player);
-		_curLevel = new Level(*this);
+		LevelLoader *load = new LevelLoader("./data/levels/test");
+		_curLevel = load->load(*this);
+		assert(_curLevel);
+		delete load;
+
+		//_curLevel = new Level(*this);
 
 		_gameScreen = new GUI::Screen(*_player);
 		_gameScreen->initialize();
+
+		Base::Point playerPos;
+
+		do {
+			playerPos._x = Base::rollDice(_curLevel->getMap().width()) - 1;
+			playerPos._y = Base::rollDice(_curLevel->getMap().height()) - 1;
+		} while (!_curLevel->isWalkable(playerPos));
+
+		_player->setPos(playerPos);
+
 		_curLevel->makeActive(*_gameScreen, *_player);
+		_gameScreen->setCenter(playerPos);
 	}
 
 	return true;
 }
 
 bool GameState::run() {
-	Base::Point playerPos;
-
-	do {
-		playerPos._x = Base::rollDice(_curLevel->getMap().width()) - 1;
-		playerPos._y = Base::rollDice(_curLevel->getMap().height()) - 1;
-	} while (!_curLevel->isWalkable(playerPos));
-
-	_player->setPos(playerPos);
-
-	_gameScreen->setCenter(playerPos);
 	_gameScreen->update();
 
 	GUI::Input input = GUI::kInputNone;
