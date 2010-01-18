@@ -1,3 +1,7 @@
 def-monster Gnome  0  0
 def-monster Gnome 24  9
+def-monster Nibelung 33 14
+def-monster LordHoto 79 0
+def-monster Squolly 78 0
+def-monster Schnippi 79 1
 def-start-point 2 2
