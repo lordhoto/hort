@@ -40,6 +40,7 @@ GameState::GameState() : _player(0) {
 	_eventDisp = 0;
 	_tickCounter = 0;
 	_nextWarning = 0;
+	_gameScreen = 0;
 }
 
 GameState::~GameState() {
