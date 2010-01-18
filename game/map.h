@@ -112,7 +112,6 @@ private:
 class Map {
 public:
 	Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles);
-	Map();
 
 	/**
 	 * Checks whether the given map tile is walkable.

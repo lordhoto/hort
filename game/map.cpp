@@ -106,30 +106,6 @@ Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)
 	}
 }
 
-Map::Map() : _w(320), _h(200) {
-	_tiles.resize(_w * _h);
-	_tileDefs.resize(_w * _h);
-	for (unsigned int i = 0; i < _w * _h; ++i) {
-		switch (Base::rollDice(100)) {
-		case 1:
-			_tiles[i] = TileDatabase::instance().queryTile("water");
-			break;
-
-		case 2: case 3: case 4:
-		case 5: case 6: case 7:
-			_tiles[i] = TileDatabase::instance().queryTile("tree");
-			break;
-
-		default:
-			_tiles[i] = TileDatabase::instance().queryTile("meadow");
-			break;
-		}
-
-		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
-		assert(_tileDefs[i]);
-	}
-}
-
 bool Map::isWalkable(unsigned int x, unsigned int y) const {
 	return _tileDefs[y * _w + x]->_isWalkable;
 }

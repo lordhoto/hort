@@ -62,8 +62,6 @@ bool GameState::initialize() {
 		assert(_curLevel);
 		delete load;
 
-		//_curLevel = new Level(*this);
-
 		_gameScreen = new GUI::Screen(*_player);
 		_gameScreen->initialize();
 

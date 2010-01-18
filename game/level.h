@@ -44,7 +44,6 @@ namespace Game {
 class Level : public EventHandler {
 public:
 	Level(Map *map, GameState &gs);
-	Level(GameState &gs);
 	~Level();
 
 	/**
