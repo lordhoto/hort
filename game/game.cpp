@@ -283,6 +283,9 @@ bool GameState::handleInput(GUI::Input input) {
 void GameState::examine() {
 	Base::Point pos = _player->getPos();
 
+	_gameScreen->addToMsgWindow("You are examining the environment now.");
+	_gameScreen->update(true);
+
 	GUI::Input input = GUI::kInputNone;
 	while (input != GUI::kInputQuit) {
 		input = _gameScreen->getInput();
