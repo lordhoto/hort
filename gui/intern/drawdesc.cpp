@@ -141,14 +141,23 @@ TileDDMap *parseTileDefinitons(const std::string &filename) {
 	const DrawDescParser::DrawDescMap &dds = parser.getDescs();
 	TileDDMap::DrawDescMap drawDescs;
 
-	const Game::Tile lastTileType = Game::TileDatabase::instance().getTileCount();
+	Game::TileDatabase &tdb = Game::TileDatabase::instance();
+	const Game::Tile lastTileType = tdb.getTileCount();
 
 	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
-		const Game::Tile tile = Game::TileDatabase::instance().queryTile(i->first);
+		const Game::Tile tile = tdb.queryTile(i->first);
 		if (tile < lastTileType)
 			drawDescs[tile] = i->second;
 		else
 			throw std::string("Unknown tile \"" + i->first + '"');
+	}
+
+	for (Game::Tile i = 0; i < lastTileType; ++i) {
+		if (drawDescs.find(i) == drawDescs.end()) {
+			const Game::TileDatabase::Definition *def = tdb.queryTileDefinition(i);
+			assert(i);
+			throw std::string("Missing tile definition for \"" + def->_name + '"');
+		}
 	}
 
 	return new TileDDMap(drawDescs);
