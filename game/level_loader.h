@@ -32,10 +32,24 @@
 
 namespace Game {
 
+/**
+ * Object which loads a map from a file.
+ */
 class MapLoader {
 public:
+	/**
+	 * Creates a map loader, which loads from the given
+	 * filename.
+	 *
+	 * @param filename Filename of the map
+	 */
 	MapLoader(const std::string &filename);
 
+	/**
+	 * Load the map.
+	 *
+	 * @return A pointer to a new map object.
+	 */
 	Map *load();
 private:
 	const std::string _filename;
@@ -46,11 +60,27 @@ private:
 	StringList _lines;
 };
 
+/**
+ * Object which loads a level from a directory.
+ *
+ * It loads the map from "path/map.def"
+ * and the objects on the map from "path/objects.def"
+ */
 class LevelLoader : private Base::ParserListener {
 public:
+	/**
+	 * Creates a level loader, which loads from the
+	 * given path.
+	 */
 	LevelLoader(const std::string &path);
 	~LevelLoader() { delete _level; }
 
+	/**
+	 * Load the level.
+	 *
+	 * @param gs Game state associated with the new level.
+	 * @return A pointer to the new level object.
+	 */
 	Level *load(GameState &gs);
 private:
 	const std::string _path;

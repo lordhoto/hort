@@ -43,6 +43,12 @@ enum Attribute {
 
 class Monster;
 
+/**
+ * Object which handles all monster types.
+ *
+ * It is used to keep track of all the different monsters,
+ * which can be defined via external files.
+ */
 class MonsterDatabase : private Base::ParserListener {
 public:
 	/**
