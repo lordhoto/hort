@@ -22,10 +22,13 @@
 #define BASE_PARSER_H
 
 #include "token.h"
+#include "exception.h"
 
 #include <string>
 #include <list>
 #include <map>
+#include <exception>
+#include <istream>
 
 namespace Base {
 
@@ -130,15 +133,29 @@ public:
 	virtual ~ParserListener() {}
 
 	/**
+	 * An exception the listener can throw, in case something is wrong with the matched rule.
+	 */
+	class Exception : public Base::Exception {
+	public:
+		Exception(const std::string &description) : _error(description) {}
+
+		const std::string &getDescription() const { return _error; }
+
+		std::string toString() const {
+			return _error;
+		}
+	private:
+		std::string _error;
+	};
+
+
+	/**
 	 * Notifies the listener about the given rule being parsed successfully.
-	 *
-	 * The listener is allowed to throw an std::string, which will indicate
-	 * an error.
 	 *
 	 * @param name Name of the rule, which was parsed successfully.
 	 * @param variables Variables, which were parsed.
 	 */
-	virtual void notifyRule(const std::string &name, const Matcher::ValueMap &variables) = 0;
+	virtual void notifyRule(const std::string &name, const Matcher::ValueMap &variables) throw (Exception) = 0;
 };
 
 /**
@@ -146,6 +163,54 @@ public:
  */
 class FileParser {
 public:
+	/**
+	 * A generic parsing exception.
+	 */
+	class ParseException : public Exception {};
+
+	/**
+	 * Exception, which is thrown in case no matching rule could be found.
+	 */
+	class NoMatchingRuleException : public ParseException {
+	public:
+		NoMatchingRuleException(int line) : _line(line) {}
+
+		/**
+		 * @return the line, which could not be matched.
+		 */
+		int getLine() const { return _line; }
+
+		std::string toString() const;
+	private:
+		int _line; //< Line which could not be matched against any rule
+	};
+
+	/**
+	 * Indicates that even though a rule was matched fine, the listener
+	 * thought that something is wrong.
+	 */
+	class ListenerErrorException : public ParseException {
+	public:
+		ListenerErrorException(const std::string &desc) : _desc(desc) {}
+
+		/**
+		 * @return return the description of the error.
+		 */
+		const std::string &getDescription() const { return _desc; }
+
+		std::string toString() const {
+			return "Listener throw the following error: \"" + _desc + "\"";
+		}
+	private:
+		std::string _desc; //< The description
+	};
+
+	/**
+	 * The rule map.
+	 *
+	 * key = name of the rule
+	 * value = rule description
+	 */
 	typedef std::map<std::string, Rule> RuleMap;
 
 	/**
@@ -154,7 +219,8 @@ public:
 	 * @param filename File to parse.
 	 * @param rules All the allowed rules.
 	 */
-	FileParser(const std::string &filename, const RuleMap &rules);
+	FileParser(const std::string &filename, const RuleMap &rules) throw (FileNotFoundException);
+	~FileParser() { delete _file; }
 
 	/**
 	 * Parses the file and sends all notifications
@@ -162,25 +228,12 @@ public:
 	 *
 	 * @param listener Where to send notifications.
 	 */
-	void parse(ParserListener *listener);
-
-	/**
-	 * Whether parsing the file was successful.
-	 */
-	bool wasSuccessful() const { return _ok; }
-
-	/**
-	 * Queries the error message.
-	 */
-	const std::string &getError() const { return _error; }
+	void parse(ParserListener *listener) throw (NoMatchingRuleException, ListenerErrorException);
 private:
-	const std::string _filename;
+	std::istream *_file;
 	const RuleMap _rules;
 
-	bool _ok;
-	std::string _error;
-
-	bool parseLine(const std::string &line, ParserListener *listener);
+	bool parseLine(const std::string &line, ParserListener *listener) throw (ParserListener::Exception);
 };
 
 } // end of namespace Base

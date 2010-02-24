@@ -34,10 +34,14 @@ void MonsterDatabase::load(const std::string &filename) {
 
 	Base::FileParser::RuleMap rules;
 	rules["def"] = Base::Rule("def-monster;%S,name;:=;%D,wisMin;%D,wisMax;%D,dexMin;%D,dexMax;%D,agiMin;%D,agiMax;%D,strMin;%D,strMax;%D,hpMin;%D,hpMax;%D,speed");
-	Base::FileParser parser(filename, rules);
-	parser.parse(this);
-	if (!parser.wasSuccessful())
-		throw std::string(parser.getError());
+
+	try {
+		Base::FileParser parser(filename, rules);
+		parser.parse(this);
+	} catch (Base::Exception &e) {
+		// TODO: Fix this...
+		throw e.toString();
+	}
 }
 
 Monster *MonsterDatabase::createNewMonster(const MonsterType type) const {
@@ -86,7 +90,7 @@ MonsterDatabase::MonsterDatabase()
     : _nextMonsterType(0), _monsterDefs(), _monsterNames() {
 }
 
-void MonsterDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) {
+void MonsterDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
 	assert(name == "def");
 
 	const std::string &n = values.find("name")->second;

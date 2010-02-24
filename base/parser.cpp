@@ -133,35 +133,37 @@ void Matcher::parseInteger(const std::string &name, Tokenizer &tokenizer) {
 	}
 }
 
-FileParser::FileParser(const std::string &filename, const RuleMap &rules)
-    : _filename(filename), _rules(rules), _ok(false), _error() {
+std::string FileParser::NoMatchingRuleException::toString() const {
+	std::stringstream sstr;
+	sstr << "Line " << _line << " could not be matched against any rule!";
+	return sstr.str();
 }
 
-void FileParser::parse(ParserListener *listener) {
-	_ok = false;
-	_error.clear();
+FileParser::FileParser(const std::string &filename, const RuleMap &rules) throw (FileNotFoundException)
+    : _file(0), _rules(rules) {
+	_file = new std::ifstream(filename.c_str());
 
-	std::ifstream file(_filename.c_str());
-
-	if (!file) {
-		_error = "File \"" + _filename + "\" not found";
-		return;
+	if (!*_file) {
+		delete _file;
+		throw FileNotFoundException(filename);
 	}
+}
 
-	_ok = true;
+void FileParser::parse(ParserListener *listener) throw (NoMatchingRuleException, ListenerErrorException) {
+	_file->seekg(0);
+
 	size_t lineCount = 0;
 
-	while (!file.eof()) {
+	while (!_file->eof()) {
 		std::string line;
-		std::getline(file, line);
+		std::getline(*_file, line);
 
 		if (!line.empty()) {
-			if (!parseLine(line, listener)) {
-				std::stringstream err;
-				err << "File: " << _filename << " Line " << lineCount << ": ERROR: " + _error;
-				_error = err.str();
-				_ok = false;
-				return;
+			try {
+				if (!parseLine(line, listener))
+					throw NoMatchingRuleException(lineCount);
+			} catch (ParserListener::Exception &e) {
+				throw ListenerErrorException(e.getDescription());
 			}
 		}
 
@@ -169,25 +171,17 @@ void FileParser::parse(ParserListener *listener) {
 	}
 }
 
-bool FileParser::parseLine(const std::string &line, ParserListener *listener) {
+bool FileParser::parseLine(const std::string &line, ParserListener *listener) throw (ParserListener::Exception) {
 	for (RuleMap::const_iterator i = _rules.begin(); i != _rules.end(); ++i) {
 		Matcher matcher(line, i->second);
 
 		if (matcher.wasSuccessful()) {
-			try {
-				if (listener)
-					listener->notifyRule(i->first, matcher.getValues());
-			} catch (const std::string &str) {
-				_error = str;
-				return false;
-			}
-
+			if (listener)
+				listener->notifyRule(i->first, matcher.getValues());
 			return true;
 		}
 	}
 
-	// TODO: We might want to have some nicer error message here ;-)
-	_error = "No matching rule found!";
 	return false;
 }
 

@@ -102,7 +102,7 @@ private:
 
 	static TileDatabase *_instance;
 
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
 	Tile _nextTileID;
 	typedef std::map<Tile, Definition> TileDefMap;

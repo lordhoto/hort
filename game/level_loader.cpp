@@ -106,10 +106,14 @@ Level *LevelLoader::load(GameState &gs) {
 	Base::FileParser::RuleMap rules;
 	rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
 	rules["start-point"] = Base::Rule("def-start-point;%D,x;%D,y");
-	Base::FileParser parser(_path + "/objects.def", rules);
-	parser.parse(this);
-	if (!parser.wasSuccessful())
-		throw parser.getError();
+
+	try {
+		Base::FileParser parser(_path + "/objects.def", rules);
+		parser.parse(this);
+	} catch (Base::Exception &e) {
+		// TODO: Fix this...
+		throw e.toString();
+	}
 
 	Level *level = _level;
 	level->_start = _start;
@@ -117,7 +121,7 @@ Level *LevelLoader::load(GameState &gs) {
 	return level;
 }
 
-void LevelLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) {
+void LevelLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
 	if (name == "monster")
 		processMonster(values);
 	else if (name == "start-point")
@@ -131,12 +135,12 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 	const Base::Point pos(x, y);
 
 	if (!_level->isWalkable(pos))
-		throw std::string("Position is blocked");
+		throw Base::ParserListener::Exception("Position is blocked");
 
 	MonsterDatabase &mdb = MonsterDatabase::instance();
 	const MonsterType monType = mdb.queryMonsterType(type);
 	if (monType >= mdb.getMonsterTypeCount())
-		throw std::string("Undefined monster type \"" + type + '"');
+		throw Base::ParserListener::Exception("Undefined monster type \"" + type + '"');
 
 	_level->addMonster(monType, pos);
 }
@@ -147,7 +151,7 @@ void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
 	const Base::Point pos(x, y);
 
 	if (!_level->isWalkable(pos))
-		throw std::string("Position is blocked");
+		throw Base::ParserListener::Exception("Position is blocked");
 
 	_start = pos;
 }

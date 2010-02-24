@@ -78,7 +78,7 @@ public:
 	 */
 	void parse();
 
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables);
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception);
 
 	typedef std::map<std::string, DrawDesc> DrawDescMap;
 	const DrawDescMap &getDescs() const { return _descs; }

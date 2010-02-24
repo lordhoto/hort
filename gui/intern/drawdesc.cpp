@@ -39,12 +39,15 @@ DrawDescParser::~DrawDescParser() {
 
 void DrawDescParser::parse() {
 	_descs.clear();
-	_parser->parse(this);
-	if (!_parser->wasSuccessful())
-		throw std::string(_parser->getError());
+	try {
+		_parser->parse(this);
+	} catch (Base::Exception &e) {
+		// TODO: Fix this...
+		throw e.toString();
+	}
 }
 
-void DrawDescParser::notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) {
+void DrawDescParser::notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception) {
 	assert(name == "def");
 
 	Base::Matcher::ValueMap::const_iterator n = variables.find("name");

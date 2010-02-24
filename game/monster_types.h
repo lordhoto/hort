@@ -100,7 +100,7 @@ private:
 	MonsterDatabase();
 	static MonsterDatabase *_instance;
 
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
 	struct MonsterDefinition {
 		std::string name;

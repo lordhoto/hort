@@ -85,7 +85,7 @@ public:
 private:
 	const std::string _path;
 
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values);
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 	void processMonster(const Base::Matcher::ValueMap &values);
 	void processStartPoint(const Base::Matcher::ValueMap &values);
 

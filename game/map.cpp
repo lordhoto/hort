@@ -39,10 +39,14 @@ void TileDatabase::load(const std::string &filename) {
 
 	Base::FileParser::RuleMap rules;
 	rules["def"] = Base::Rule("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid");
-	Base::FileParser parser(filename, rules);
-	parser.parse(this);
-	if (!parser.wasSuccessful())
-		throw std::string(parser.getError());
+
+	try {
+		Base::FileParser parser(filename, rules);
+		parser.parse(this);
+	} catch (Base::Exception &e) {
+		// TODO: Fix this...
+		throw e.toString();
+	}
 }
 
 const TileDatabase::Definition *TileDatabase::queryTileDefinition(const Tile tile) const {
@@ -82,7 +86,7 @@ void TileDatabase::destroy() {
 	_instance = 0;
 }
 
-void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) {
+void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
 	assert(name == "def");
 
 	Definition def;
