@@ -137,7 +137,27 @@ void Monster::update() {
 			} break;
 
 		case kMonsterWary:
-			_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+			if (_player) {
+				int xDist = _player->getX() - i->second.monster->getX();
+				int yDist = _player->getY() - i->second.monster->getY();
+
+				int xAdd = (xDist < 0) ? -1 : ((xDist > 0) ? +1 : 0);
+				int yAdd = (yDist < 0) ? -1 : ((yDist > 0) ? +1 : 0);
+
+				Base::Point newPos = i->second.monster->getPos();
+				newPos._x += xAdd;
+				newPos._y += yAdd;
+
+				if (_level.isWalkable(newPos)) {
+					const Game::TileDatabase::Definition &def = _level.getMap().tileDefinition(newPos);
+					if (!def._isLiquid)
+						_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
+				} else {
+					_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+				}
+			} else {
+				_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+			}
 			break;
 
 		case kMonsterAttack:
