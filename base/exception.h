@@ -44,22 +44,31 @@ public:
 class IOException : public Exception {};
 
 /**
- * Generic exception, which describes that a given file does not exist.
+ * A generic exception in file I/O.
  */
-class FileNotFoundException : public IOException {
+class FileIOException : public IOException {
 public:
-	FileNotFoundException(const std::string &filename) : _filename(filename) {}
+	FileIOException(const std::string &filename) : _filename(filename) {}
 
 	/**
 	 * @return the filename.
 	 */
 	const std::string &getFilename() const { return _filename; }
 
-	std::string toString() const {
-		return "File not found: \"" + _filename + "\"";
-	}
 private:
 	std::string _filename; //< The specified filename
+};
+
+/**
+ * Generic exception, which describes that a given file does not exist.
+ */
+class FileNotFoundException : public FileIOException {
+public:
+	FileNotFoundException(const std::string &filename) : FileIOException(filename) {}
+
+	std::string toString() const {
+		return "File not found: \"" + getFilename() + "\"";
+	}
 };
 
 } // end of namespace Base
