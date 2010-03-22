@@ -26,6 +26,7 @@
 #include <algorithm>
 
 #include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
 
 namespace Base {
 
@@ -97,11 +98,10 @@ void Rule::createVariable(const std::string &rule, const std::string &definition
 
 Matcher::Matcher(const std::string &line, const Rule &rule)
     : _rule(rule), _ok(false), _error(), _values() {
-	Tokenizer input(line, Separator(" \t\r\n"));
-	doMatch(input);
-}
+	typedef boost::char_separator<char> Separator;
+	typedef boost::tokenizer<Separator> Tokenizer;
 
-void Matcher::doMatch(const Tokenizer &input) {
+	Tokenizer input(line, Separator(" \t\r\n"));
 	const Rule::PartList &parts = _rule.getParts();
 	Tokenizer::const_iterator token = input.begin();
 

@@ -29,7 +29,6 @@
 #include <exception>
 #include <istream>
 
-#include <boost/tokenizer.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace Base {
@@ -197,11 +196,6 @@ public:
 	const ValueMap &getValues() const { return _values; }
 private:
 	const Rule &_rule;
-
-	typedef boost::char_separator<char> Separator;
-	typedef boost::tokenizer<Separator> Tokenizer;
-
-	void doMatch(const Tokenizer &input);
 
 	void matchString(const Rule::StringPart &part, const std::string &token);
 	void matchVariable(const Rule::VariablePart &part, const std::string &token);
