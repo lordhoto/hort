@@ -51,6 +51,13 @@ int main(int argc, char *argv[]) {
 		std::fprintf(stderr, "std::string exception: %s\n", err.c_str());
 
 		return -1;
+	} catch (Base::NonRecoverableException &e) {
+		GUI::Intern::Screen::destroy();
+		GUI::Intern::Input::destroy();
+
+		std::fprintf(stderr, "%s\n", e.toString().c_str());
+
+		return -1;
 	} catch (Base::Exception &e) {
 		GUI::Intern::Screen::destroy();
 		GUI::Intern::Input::destroy();
