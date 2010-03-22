@@ -58,7 +58,7 @@ public:
 	 *
 	 * @param filename File to load from.
 	 */
-	void load(const std::string &filename);
+	void load(const std::string &filename) throw (Base::NonRecoverableException);
 
 	/**
 	 * Creates a monster of the given type.

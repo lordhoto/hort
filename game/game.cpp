@@ -49,7 +49,7 @@ GameState::~GameState() {
 	delete _gameScreen;
 }
 
-bool GameState::initialize() {
+bool GameState::initialize() throw (Base::NonRecoverableException) {
 	if (!_initialized) {
 		_initialized = true;
 

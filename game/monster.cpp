@@ -27,7 +27,7 @@
 
 namespace Game {
 
-void MonsterDatabase::load(const std::string &filename) {
+void MonsterDatabase::load(const std::string &filename) throw (Base::NonRecoverableException) {
 	_monsterDefs.clear();
 	_monsterNames.clear();
 	_nextMonsterType = 0;
@@ -42,8 +42,8 @@ void MonsterDatabase::load(const std::string &filename) {
 	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
 		throw Base::NonRecoverableException(e.toString());
 	} catch (Base::Exception &e) {
-		// TODO: Fix this...
-		throw e.toString();
+		// TODO: More information is preferable
+		throw Base::NonRecoverableException(e.toString());
 	}
 }
 

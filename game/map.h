@@ -40,11 +40,9 @@ public:
 	/**
 	 * Loads the tile database from a file.
 	 *
-	 * This might throw an std::string on error.
-	 *
 	 * @param filename File to load from.
 	 */
-	void load(const std::string &filename);
+	void load(const std::string &filename) throw (Base::NonRecoverableException);
 
 	/**
 	 * Queries how many different tiles are defined

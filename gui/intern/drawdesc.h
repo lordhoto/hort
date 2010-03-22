@@ -67,16 +67,13 @@ private:
 
 class DrawDescParser : public Base::ParserListener {
 public:
-	DrawDescParser(const std::string &filename, const std::string &suffix);
+	DrawDescParser(const std::string &filename, const std::string &suffix) throw (Base::NonRecoverableException);
 	~DrawDescParser();
 
 	/**
 	 * Does all the parsing.
-	 *
-	 * Note that this might throw a std::string, in case an
-	 * error happened.
 	 */
-	void parse();
+	void parse() throw (Base::NonRecoverableException);
 
 	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception);
 
@@ -93,10 +90,10 @@ private:
 };
 
 typedef ASCIIRepresentation<Game::Tile> TileDDMap;
-TileDDMap *parseTileDefinitons(const std::string &filename);
+TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException);
 
 typedef ASCIIRepresentation<Game::MonsterType> MonsterDDMap;
-MonsterDDMap *parseMonsterDefinitions(const std::string &filename);
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::string, Base::NonRecoverableException);
 
 } // end of namespace Intern
 } // end of namespace GUI

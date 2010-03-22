@@ -41,7 +41,7 @@ public:
 	GameState();
 	~GameState();
 
-	bool initialize();
+	bool initialize() throw (Base::NonRecoverableException);
 
 	bool run();
 

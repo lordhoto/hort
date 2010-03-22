@@ -44,7 +44,7 @@ Screen::~Screen() {
 	delete _playerStats;
 }
 
-void Screen::initialize() {
+void Screen::initialize() throw (std::string, Base::NonRecoverableException) {
 	if (!_mapDrawDescs) {
 		_mapDrawDescs = Intern::parseTileDefinitons("./data/gui/tiles.def");
 		_monsterDrawDescs = Intern::parseMonsterDefinitions("./data/gui/monster.def");

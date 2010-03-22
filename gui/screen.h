@@ -46,7 +46,7 @@ public:
 	/**
 	 * Initialize the screen.
 	 */
-	void initialize();
+	void initialize() throw (std::string, Base::NonRecoverableException);
 
 	/**
 	 * Tells the game screen some object state changed.

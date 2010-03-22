@@ -38,7 +38,7 @@ MapLoader::MapLoader(const std::string &filename)
 	}
 }
 
-Map *MapLoader::load() {
+Map *MapLoader::load() throw (Base::NonRecoverableException) {
 	if (_lines.empty() || _lines.size() < 3)
 		throwError("Contains too few lines", 0);
 
@@ -83,17 +83,17 @@ Map *MapLoader::load() {
 	return new Map(w, h, tiles);
 }
 
-void MapLoader::throwError(const std::string &error, int line) {
+void MapLoader::throwError(const std::string &error, int line) throw (Base::NonRecoverableException) {
 	std::stringstream ss;
-	ss << "File: " << _filename << " Line: " << line << " ERROR: " << error;
-	throw ss.str();
+	ss << "Map loading failed. File: " << _filename << " Line: " << line << " ERROR: " << error;
+	throw Base::NonRecoverableException(ss.str());
 }
 
 LevelLoader::LevelLoader(const std::string &path)
     : _path(path), _level(0) {
 }
 
-Level *LevelLoader::load(GameState &gs) {
+Level *LevelLoader::load(GameState &gs) throw (Base::NonRecoverableException) {
 	MapLoader *mapLoader = new MapLoader(_path + "/map.def");
 	assert(mapLoader);
 
@@ -113,8 +113,8 @@ Level *LevelLoader::load(GameState &gs) {
 	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
 		throw Base::NonRecoverableException(e.toString());
 	} catch (Base::Exception &e) {
-		// TODO: Fix this...
-		throw e.toString();
+		// TODO: More information is preferable
+		throw Base::NonRecoverableException(e.toString());
 	}
 
 	Level *level = _level;

@@ -25,7 +25,7 @@
 namespace GUI {
 namespace Intern {
 
-DrawDescParser::DrawDescParser(const std::string &filename, const std::string &suffix)
+DrawDescParser::DrawDescParser(const std::string &filename, const std::string &suffix) throw (Base::NonRecoverableException)
     : _parser(0), _descs() {
 	Base::FileParser::RuleMap rules;
 
@@ -42,13 +42,13 @@ DrawDescParser::~DrawDescParser() {
 	delete _parser;
 }
 
-void DrawDescParser::parse() {
+void DrawDescParser::parse() throw (Base::NonRecoverableException) {
 	_descs.clear();
 	try {
 		_parser->parse(this);
 	} catch (Base::Exception &e) {
-		// TODO: Fix this...
-		throw e.toString();
+		// TODO: More information is preferable
+		throw Base::NonRecoverableException(e.toString());
 	}
 }
 
@@ -142,7 +142,7 @@ int DrawDescParser::parseAttribs(const std::string &value) {
 		throw std::string("Unknown attribs value \"" + value + '"');
 }
 
-TileDDMap *parseTileDefinitons(const std::string &filename) {
+TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
 	DrawDescParser parser(filename, "-tile");
 	parser.parse();
 
@@ -171,7 +171,7 @@ TileDDMap *parseTileDefinitons(const std::string &filename) {
 	return new TileDDMap(drawDescs);
 }
 
-MonsterDDMap *parseMonsterDefinitions(const std::string &filename) {
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
 	DrawDescParser parser(filename, "-monster");
 	parser.parse();
 

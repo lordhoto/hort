@@ -33,19 +33,22 @@ TileDatabase::TileDatabase()
     : _nextTileID(0), _tileDefinitions() {
 }
 
-void TileDatabase::load(const std::string &filename) {
+void TileDatabase::load(const std::string &filename) throw (Base::NonRecoverableException) {
 	_nextTileID = 0;
 	_tileDefinitions.clear();
 
 	Base::FileParser::RuleMap rules;
-	rules["def"] = Base::Rule("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid");
 
 	try {
+		rules["def"] = Base::Rule("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid");
+
 		Base::FileParser parser(filename, rules);
 		parser.parse(this);
+	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
+		throw Base::NonRecoverableException(e.toString());
 	} catch (Base::Exception &e) {
-		// TODO: Fix this...
-		throw e.toString();
+		// TODO: More information is preferable
+		throw Base::NonRecoverableException(e.toString());
 	}
 }
 

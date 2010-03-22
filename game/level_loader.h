@@ -50,11 +50,11 @@ public:
 	 *
 	 * @return A pointer to a new map object.
 	 */
-	Map *load();
+	Map *load() throw (Base::NonRecoverableException);
 private:
 	const std::string _filename;
 
-	void throwError(const std::string &error, int line);
+	void throwError(const std::string &error, int line) throw (Base::NonRecoverableException);
 
 	typedef std::list<std::string> StringList;
 	StringList _lines;
@@ -81,7 +81,7 @@ public:
 	 * @param gs Game state associated with the new level.
 	 * @return A pointer to the new level object.
 	 */
-	Level *load(GameState &gs);
+	Level *load(GameState &gs) throw (Base::NonRecoverableException);
 private:
 	const std::string _path;
 
