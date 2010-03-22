@@ -21,7 +21,6 @@
 #ifndef BASE_PARSER_H
 #define BASE_PARSER_H
 
-#include "token.h"
 #include "exception.h"
 
 #include <string>
@@ -29,6 +28,9 @@
 #include <map>
 #include <exception>
 #include <istream>
+
+#include <boost/tokenizer.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace Base {
 
@@ -59,21 +61,104 @@ public:
 	Rule() : _parts() {}
 
 	/**
+	 * This exception is raised, when the rule does not match the above
+	 * mentioned syntax.
+	 */
+	class InvalidRuleDefinitionException : public Base::Exception {
+	public:
+		InvalidRuleDefinitionException(const std::string &rule, const std::string &error) : _rule(rule), _error(error) {}
+
+		/**
+		 * Returns the offending rule.
+		 */
+		const std::string getRule() const { return _rule; }
+
+		/**
+		 * Returns the error string.
+		 */
+		const std::string getError() const { return _error; }
+
+		std::string toString() const {
+			return "Invalid rule \"" + _rule + "\":" + _error;
+		}
+
+	private:
+		const std::string _rule;
+		const std::string _error;
+	};
+
+	/**
 	 * Create a new rule.
 	 *
 	 * @param rule Definition of the rule (see above).
 	 * @param name Name of the rule.
 	 */
-	Rule(const std::string &rule);
+	Rule(const std::string &rule) throw (InvalidRuleDefinitionException);
 
-	typedef std::list<std::string> StringList;
+	/**
+	 * A "part" of a rule, this is either a string to match against
+	 * or a variable definition.
+	 */
+	struct Part {
+		/**
+		 * Type definition of the part.
+		 */
+		enum Type {
+			/**
+			 * Whether the part is a fixed string to match.
+			 */
+			kTypeString,
+
+			/**
+			 * Whether the part is a variable to match.
+			 */
+			kTypeVariable
+		} type;
+
+		Part(Type type) : type(type) {}
+		virtual ~Part() {}
+	};
+
+	/**
+	 * A string part.
+	 */
+	struct StringPart : public Part {
+		const std::string string;
+
+		StringPart(const std::string &s) : Part(kTypeString), string(s) {}
+	};
+
+	/**
+	 * A variable part.
+	 */
+	struct VariablePart : public Part {
+		const std::string name;
+		enum VariableType {
+			/**
+			 * Whether it's an integer variable.
+			 */
+			kVariableTypeInteger,
+
+			/**
+			 * Whether it's an string variable.
+			 */
+			kVariableTypeString
+		} variableType;
+
+		VariablePart(const std::string &n, VariableType vT) : Part(kTypeVariable), name(n), variableType(vT) {}
+	};
+
+	typedef boost::shared_ptr<const Part> PartPointer;
+	typedef std::list<PartPointer> PartList;
 
 	/**
 	 * Queries all the tokens required by the rule.
 	 */
-	const StringList &getParts() const { return _parts; }
+	const PartList &getParts() const { return _parts; }
 private:
-	StringList _parts;
+	void createVariable(const std::string &rule, const std::string &definition) throw (InvalidRuleDefinitionException);
+
+	PartList _parts;
 };
 
 /**
@@ -113,11 +198,13 @@ public:
 private:
 	const Rule &_rule;
 
-	void doMatch(Tokenizer &input);
+	typedef boost::char_separator<char> Separator;
+	typedef boost::tokenizer<Separator> Tokenizer;
 
-	void parseVariable(const std::string &def, Tokenizer &tokenizer);
-	void parseString(const std::string &name, Tokenizer &tokenizer);
-	void parseInteger(const std::string &name, Tokenizer &tokenizer);
+	void doMatch(const Tokenizer &input);
+
+	void matchString(const Rule::StringPart &part, const std::string &token);
+	void matchVariable(const Rule::VariablePart &part, const std::string &token);
 
 	bool _ok;
 	std::string _error;
@@ -173,7 +260,7 @@ public:
 	 */
 	class NoMatchingRuleException : public ParseException {
 	public:
-		NoMatchingRuleException(int line) : _line(line) {}
+		NoMatchingRuleException(const std::string &contents, int line) : _contents(contents), _line(line) {}
 
 		/**
 		 * @return the line, which could not be matched.
@@ -182,6 +269,7 @@ public:
 
 		std::string toString() const;
 	private:
+		const std::string _contents; //< Contents of the line
 		int _line; //< Line which could not be matched against any rule
 	};
 
@@ -199,7 +287,7 @@ public:
 		const std::string &getDescription() const { return _desc; }
 
 		std::string toString() const {
-			return "Listener throw the following error: \"" + _desc + "\"";
+			return "Listener threw the following error: \"" + _desc + "\"";
 		}
 	private:
 		std::string _desc; //< The description

@@ -22,120 +22,157 @@
 
 #include <sstream>
 #include <fstream>
+#include <iterator>
+#include <algorithm>
+
+#include <boost/foreach.hpp>
 
 namespace Base {
 
-Rule::Rule(const std::string &rule)
+Rule::Rule(const std::string &rule) throw (InvalidRuleDefinitionException)
     : _parts() {
-	Tokenizer tokenizer(rule, ";");
+	typedef boost::char_separator<char> Separator;
+	typedef boost::tokenizer<Separator> Tokenizer;
 
-	while (!tokenizer.finished())
-		_parts.push_back(tokenizer.nextToken());
+	Tokenizer tokenizer(rule, Separator(";", "%"));
+
+	for (Tokenizer::const_iterator t = tokenizer.begin(); t != tokenizer.end(); ++t) {
+		if (*t == "%") {
+			// The next token should contain both type and name
+			++t;
+
+			// Check for premature end of the token list
+			if (t == tokenizer.end())
+				throw InvalidRuleDefinitionException(rule, "Missing variable information");
+
+			createVariable(rule, *t);
+		} else {
+			_parts.push_back(PartPointer(new StringPart(*t)));
+		}
+	}
+}
+
+void Rule::createVariable(const std::string &rule, const std::string &definition) throw (InvalidRuleDefinitionException) {
+	typedef boost::char_separator<char> Separator;
+	typedef boost::tokenizer<Separator> Tokenizer;
+
+	Tokenizer varDef(definition, Separator(","));
+	Tokenizer::const_iterator vT = varDef.begin();
+
+	// Check for an empty token list
+	if (vT == varDef.end())
+		throw InvalidRuleDefinitionException(rule, "Variable definition is empty");
+
+	// Extract the variable type
+	const std::string type = *vT++;
+
+	// Check for premature end of the definition
+	if (vT == varDef.end())
+		throw InvalidRuleDefinitionException(rule, "Missing variable name");
+
+	// Extract the variable name
+	const std::string name = *vT++;
+
+	// Check for an empty name
+	if (name.empty())
+		throw InvalidRuleDefinitionException(rule, "Empty variable name given");
+
+	// Check whether a valid type is specified.
+	VariablePart::VariableType pType;
+
+	if (type == "s" || type == "S")
+		pType = VariablePart::kVariableTypeString;
+	else if (type == "d" || type == "D")
+		pType = VariablePart::kVariableTypeInteger;
+	else
+		throw InvalidRuleDefinitionException(rule, "Invalid type \"" + type + "\"");
+
+	// Check whether we have any extra tokens
+	if (vT != varDef.end())
+		throw InvalidRuleDefinitionException(rule, "Variable definition has extra tokens");
+
+	// Create a part description
+	_parts.push_back(PartPointer(new VariablePart(name, pType)));
 }
 
 Matcher::Matcher(const std::string &line, const Rule &rule)
     : _rule(rule), _ok(false), _error(), _values() {
-	Tokenizer input(line);
+	Tokenizer input(line, Separator(" \t\r\n"));
 	doMatch(input);
 }
 
-void Matcher::doMatch(Tokenizer &input) {
-	const Rule::StringList &parts = _rule.getParts();
-	Rule::StringList::const_iterator curPart = parts.begin();
+void Matcher::doMatch(const Tokenizer &input) {
+	const Rule::PartList &parts = _rule.getParts();
+	Tokenizer::const_iterator token = input.begin();
 
 	_ok = true;
 
-	while (!input.finished() && curPart != parts.end()) {
-		if ((*curPart)[0] == '%') {
-			parseVariable(*curPart, input);
-		} else {
-			std::string curToken = input.nextToken();
-			if (*curPart != curToken) {
-				_error = "Found \"" + curToken + "\" but expected \"" + *curPart + '"';
-				_ok = false;
-			}
+	BOOST_FOREACH(Rule::PartPointer p, parts) {
+		// Check whether we reached the end of the token
+		// list yet.
+		if (token == input.end()) {
+			_error = "Premature token list end";
+			_ok = false;
+
+			return;
+		}
+
+		// Check the part type.
+		switch (p->type) {
+		case Rule::Part::kTypeString:
+			matchString(*(const Rule::StringPart *)p.get(), *token++);
+			break;
+
+		case Rule::Part::kTypeVariable:
+			matchVariable(*(const Rule::VariablePart *)p.get(), *token++);
+			break;
 		}
 
 		if (!_ok)
 			return;
-
-		++curPart;
 	}
 
-	_ok = (curPart == parts.end() && input.finished());
+	_ok = (token == input.end());
 }
 
-void Matcher::parseVariable(const std::string &def, Tokenizer &tokenizer) {
-	Tokenizer var(def, "%,");
-	std::string type = var.nextToken();
-	std::string name = var.nextToken();
+void Matcher::matchString(const Rule::StringPart &part, const std::string &token) {
+	if (part.string != token) {
+		_error = "Found \"" + token + "\" but expected: \"" + part.string + "\"";
+		_ok = false;
+	}
+}
 
-	if (type.empty()) {
-		_error = "Variable type empty";
-		_ok = false;
-	} else if (name.empty()) {
-		_error = "Variable name empty";
-		_ok = false;
-	} else {
-		if (type == "s" || type == "S") {
-			parseString(name, tokenizer);
-		} else if (type == "d" || type == "D") {
-			parseInteger(name, tokenizer);
+void Matcher::matchVariable(const Rule::VariablePart &part, const std::string &token) {
+	switch (part.variableType) {
+	case Rule::VariablePart::kVariableTypeInteger: {
+		std::stringstream input(token), verify;
+
+		int variable;
+		input >> variable;
+		verify << variable;
+
+		if (verify.str() != token) {
+			_error = "\"" + token + "\" is no integer variable";
+			_ok = false;
 		} else {
-			_error = "Unknown variable type \"" + type + '"';
+			_values[part.name] = token;
+		}
+		} break;
+
+	case Rule::VariablePart::kVariableTypeString:
+		if (token.empty()) {
+			_error = "Found empty string variable \"" + part.name + "\"";
 			_ok = false;
+		} else {
+			_values[part.name] = token;
 		}
-	}
-}
-
-void Matcher::parseString(const std::string &name, Tokenizer &tokenizer) {
-	std::string value = tokenizer.nextToken();
-
-	if (value[0] == '"') {
-		value.erase(0, 1);
-		bool foundEnd = false;
-		while (!tokenizer.finished() && !foundEnd) {
-			value += " ";
-			value += tokenizer.nextToken();
-
-			size_t end = value.find('"');
-			if (end != std::string::npos) {
-				foundEnd = true;
-				value.erase(end);
-			}
-		}
-
-		if (!foundEnd) {
-			_error = "Expected ending \" for string variable \"" + name + '"';
-			_ok = false;
-			return;
-		}
-	}
-
-	_values[name] = value;
-}
-
-void Matcher::parseInteger(const std::string &name, Tokenizer &tokenizer) {
-	std::string value = tokenizer.nextToken();
-
-	std::stringstream ss(value);
-	int val = 0;
-	ss >> val;
-
-	std::stringstream testSS;
-	testSS << val;
-
-	if (testSS.str() != value) {
-		_error = '"' + value + "\" is not a valid integer";
-		_ok = false;
-	} else {
-		_values[name] = value;
+		break;
 	}
 }
 
 std::string FileParser::NoMatchingRuleException::toString() const {
 	std::stringstream sstr;
-	sstr << "Line " << _line << " could not be matched against any rule!";
+	sstr << "Line " << _line << " \"" << _contents << "\" could not be matched against any rule!";
 	return sstr.str();
 }
 
@@ -161,7 +198,7 @@ void FileParser::parse(ParserListener *listener) throw (NoMatchingRuleException,
 		if (!line.empty()) {
 			try {
 				if (!parseLine(line, listener))
-					throw NoMatchingRuleException(lineCount);
+					throw NoMatchingRuleException(line, lineCount);
 			} catch (ParserListener::Exception &e) {
 				throw ListenerErrorException(e.getDescription());
 			}
