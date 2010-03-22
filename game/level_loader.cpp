@@ -104,12 +104,14 @@ Level *LevelLoader::load(GameState &gs) {
 	assert(_level);
 
 	Base::FileParser::RuleMap rules;
-	rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
-	rules["start-point"] = Base::Rule("def-start-point;%D,x;%D,y");
-
 	try {
+		rules["monster"] = Base::Rule("def-monster;%S,type;%D,x;%D,y");
+		rules["start-point"] = Base::Rule("def-start-point;%D,x;%D,y");
+
 		Base::FileParser parser(_path + "/objects.def", rules);
 		parser.parse(this);
+	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
+		throw Base::NonRecoverableException(e.toString());
 	} catch (Base::Exception &e) {
 		// TODO: Fix this...
 		throw e.toString();

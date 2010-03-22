@@ -33,11 +33,14 @@ void MonsterDatabase::load(const std::string &filename) {
 	_nextMonsterType = 0;
 
 	Base::FileParser::RuleMap rules;
-	rules["def"] = Base::Rule("def-monster;%S,name;:=;%D,wisMin;%D,wisMax;%D,dexMin;%D,dexMax;%D,agiMin;%D,agiMax;%D,strMin;%D,strMax;%D,hpMin;%D,hpMax;%D,speed");
 
 	try {
+		rules["def"] = Base::Rule("def-monster;%S,name;:=;%D,wisMin;%D,wisMax;%D,dexMin;%D,dexMax;%D,agiMin;%D,agiMax;%D,strMin;%D,strMax;%D,hpMin;%D,hpMax;%D,speed");
+
 		Base::FileParser parser(filename, rules);
 		parser.parse(this);
+	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
+		throw Base::NonRecoverableException(e.toString());
 	} catch (Base::Exception &e) {
 		// TODO: Fix this...
 		throw e.toString();

@@ -29,7 +29,12 @@ DrawDescParser::DrawDescParser(const std::string &filename, const std::string &s
     : _parser(0), _descs() {
 	Base::FileParser::RuleMap rules;
 
-	rules["def"] = Base::Rule("def" + suffix + ";%S,name;:=;%S,glyph;%S,color;%S,attribs");
+	try {
+		rules["def"] = Base::Rule("def" + suffix + ";%S,name;:=;%S,glyph;%S,color;%S,attribs");
+	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
+		throw Base::NonRecoverableException(e.toString());
+	}
+
 	_parser = new Base::FileParser(filename, rules);
 }
 
