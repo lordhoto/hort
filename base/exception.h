@@ -39,6 +39,20 @@ public:
 };
 
 /**
+ * A class for all non recoverable exceptions.
+ */
+class NonRecoverableException : public Exception {
+public:
+	NonRecoverableException(const std::string &error) : _error(error) {}
+
+	std::string toString() const {
+		return "Non recoverable error occured: \"" + _error + "\"";
+	}
+private:
+	const std::string _error;
+};
+
+/**
  * A generic class describing an I/O error.
  */
 class IOException : public Exception {};
