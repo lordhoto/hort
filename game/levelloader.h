@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GAME_LEVEL_LOADER_H
-#define GAME_LEVEL_LOADER_H
+#ifndef GAME_LEVELLOADER_H
+#define GAME_LEVELLOADER_H
 
 #include "game.h"
 #include "level.h"
