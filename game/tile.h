@@ -33,17 +33,43 @@ typedef unsigned int Tile;
 /**
  * Definition of a tile.
  */
-struct TileDefinition {
+class TileDefinition {
+public:
+	TileDefinition() : _name(), _glyph(0), _isWalkable(false), _blocksSight(false), _isLiquid(false) {}
+	TileDefinition(const std::string &name, const char glyph, const bool isWalkable, const bool blocksSight, const bool isLiquid)
+	    : _name(name), _glyph(glyph), _isWalkable(isWalkable), _blocksSight(blocksSight), _isLiquid(isLiquid) {}
+
+	/**
+	 * @return name of the tile.
+	 */
+	const std::string &getName() const { return _name; }
+
+	/**
+	 * @return glyph of the tile, for use in map files.
+	 */
+	char getGlyph() const { return _glyph; }
+
+	/**
+	 * @return whether the tile is walkable.
+	 */
+	bool getIsWalkable() const { return _isWalkable; }
+
+	/**
+	 * @return whether the tile blocks the sight.
+	 */
+	bool getBlocksSlight() const { return _blocksSight; }
+
+	/**
+	 * @return whether the tile is a liquid.
+	 */
+	bool getIsLiquid() const { return _isLiquid; }
+private:
 	std::string _name; //< Name of the tile
 	char _glyph; //< Glyph for map files
 
 	bool _isWalkable; //< Is the tile walkable?
 	bool _blocksSight; //< Does this tile block the sight?
 	bool _isLiquid; //< Is this a liquid?
-
-	TileDefinition() : _name(), _glyph(0), _isWalkable(false), _blocksSight(false), _isLiquid(false) {}
-	TileDefinition(const std::string &name, const char glyph, const bool isWalkable, const bool blocksSight, const bool isLiquid)
-	    : _name(name), _glyph(glyph), _isWalkable(isWalkable), _blocksSight(blocksSight), _isLiquid(isLiquid) {}
 };
 
 } // end of namespace Game

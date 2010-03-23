@@ -125,7 +125,7 @@ void Monster::update() {
 				    && (unsigned int)newPos._y <= _level.getMap().height()) {
 					if (_level.isWalkable(newPos)) {
 						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
-						if (!def._isLiquid) {
+						if (!def.getIsLiquid()) {
 							_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
 							didAction = true;
 						}
@@ -151,7 +151,7 @@ void Monster::update() {
 
 				if (_level.isWalkable(newPos)) {
 					const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
-					if (!def._isLiquid)
+					if (!def.getIsLiquid())
 						_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
 				} else {
 					_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kWary));

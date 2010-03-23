@@ -38,9 +38,8 @@ void TileDatabase::load(const std::string &filename) throw (Base::NonRecoverable
 	TileDefinitionLoader loader;
 	TileDefinitionLoader::TileDefinitionList tiles = loader.load(filename);
 
-	BOOST_FOREACH(TileDefinition &def, tiles) {
+	BOOST_FOREACH(TileDefinition &def, tiles)
 		_tileDefinitions[_nextTileID++] = def;
-	}
 }
 
 const TileDefinition *TileDatabase::queryTileDefinition(const Tile tile) const {
@@ -53,7 +52,7 @@ const TileDefinition *TileDatabase::queryTileDefinition(const Tile tile) const {
 
 Tile TileDatabase::queryTile(const std::string &name) const {
 	BOOST_FOREACH(const TileDefMap::value_type &i, _tileDefinitions) {
-		if (i.second._name == name)
+		if (i.second.getName() == name)
 			return i.first;
 	}
 
@@ -62,7 +61,7 @@ Tile TileDatabase::queryTile(const std::string &name) const {
 
 Tile TileDatabase::queryTile(const char glyph) const {
 	BOOST_FOREACH(const TileDefMap::value_type &i, _tileDefinitions) {
-		if (i.second._glyph == glyph)
+		if (i.second.getGlyph() == glyph)
 			return i.first;
 	}
 

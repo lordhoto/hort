@@ -191,7 +191,7 @@ void Level::processEvent(const Event &event) {
 		monster->setPos(event.move.newPos);
 
 		const TileDefinition &def = _map->tileDefinition(event.move.newPos);
-		if (def._isLiquid) {
+		if (def.getIsLiquid()) {
 			monster->setHitPoints(0);
 			_eventDisp.dispatch(createDeathEvent(event.move.monster, Event::Death::kDrowned));
 		}

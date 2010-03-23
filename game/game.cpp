@@ -312,7 +312,7 @@ void GameState::examine() {
 			if (monster != kInvalidMonsterID)
 				ss << "You see here a " << g_monsterDatabase.getMonsterName(_curLevel->getMonster(monster)->getType()) << ".";
 			else
-				ss << "This is just a simple " << _curLevel->getMap().tileDefinition(pos)._name << ".";
+				ss << "This is just a simple " << _curLevel->getMap().tileDefinition(pos).getName() << ".";
 
 			_gameScreen->addToMsgWindow(ss.str());
 			} break;

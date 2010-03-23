@@ -169,7 +169,7 @@ TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, 
 		if (drawDescs.find(i) == drawDescs.end()) {
 			const Game::TileDefinition *def = tdb.queryTileDefinition(i);
 			assert(i);
-			throw std::string("Missing tile definition for \"" + def->_name + '"');
+			throw std::string("Missing tile definition for \"" + def->getName() + '"');
 		}
 	}
 
