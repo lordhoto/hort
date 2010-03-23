@@ -102,13 +102,11 @@ private:
 
 	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
-	struct MonsterDefinition {
-		std::string _name;
-
-		Base::ByteRange _defaultAttribs[kAttribMaxTypes];
-		Base::IntRange _defaultHitPoints;
-		unsigned char _defaultSpeed;
-
+	/**
+	 * Definition of a monster.
+	 */
+	class MonsterDefinition {
+	public:
 		MonsterDefinition() : _name(), _defaultAttribs(), _defaultHitPoints(), _defaultSpeed() {}
 		MonsterDefinition(const std::string &name, const Base::ByteRange &wisdom, const Base::ByteRange &dexterity,
 		                  const Base::ByteRange &agility, const Base::ByteRange &strength, const Base::IntRange &hitPoints,
@@ -119,6 +117,32 @@ private:
 			_defaultAttribs[kAttribAgility] = agility;
 			_defaultAttribs[kAttribStrength] = strength;
 		}
+
+		/**
+		 * @return the name of the monster.
+		 */
+		const std::string &getName() const { return _name; }
+
+		/**
+		 * @return the specified attribute.
+		 */
+		const Base::ByteRange &getDefaultAttribs(Attribute attrib) const { assert(attrib != kAttribMaxTypes); return _defaultAttribs[attrib]; }
+
+		/**
+		 * @return the default hit points.
+		 */
+		const Base::IntRange &getDefaultHitPoints() const { return _defaultHitPoints; }
+
+		/**
+		 * @return the default speed.
+		 */
+		unsigned char getDefaultSpeed() const { return _defaultSpeed; }
+	private:
+		std::string _name;
+
+		Base::ByteRange _defaultAttribs[kAttribMaxTypes];
+		Base::IntRange _defaultHitPoints;
+		unsigned char _defaultSpeed;
 	};
 
 	MonsterType _nextMonsterType;
