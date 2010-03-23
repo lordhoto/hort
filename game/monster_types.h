@@ -74,8 +74,6 @@ enum Attribute {
 	kAttribMaxTypes
 };
 
-class Monster;
-
 /**
  * Definition of a monster.
  */
@@ -118,73 +116,6 @@ private:
 	Base::IntRange _defaultHitPoints;
 	unsigned char _defaultSpeed;
 };
-
-/**
- * Object which handles all monster types.
- *
- * It is used to keep track of all the different monsters,
- * which can be defined via external files.
- */
-class MonsterDatabase {
-public:
-	/**
-	 * Loads the monster database from a file.
-	 *
-	 * This might throw an std::string on error.
-	 *
-	 * @param filename File to load from.
-	 */
-	void load(const std::string &filename) throw (Base::NonRecoverableException);
-
-	/**
-	 * Creates a monster of the given type.
-	 *
-	 * @param type Type of the monster.
-	 */
-	Monster *createNewMonster(const MonsterType type) const;
-
-	/**
-	 * Queries the type of a monster with the given name.
-	 *
-	 * @param name Name of the monster.
-	 * @return Type of the monster (getMounsterTypeCount() in case of an error).
-	 */
-	MonsterType queryMonsterType(const std::string &name) const;
-
-	/**
-	 * Queries the name of a given monster type.
-	 *
-	 * @param type Type of the monster.
-	 */
-	const char *getMonsterName(const MonsterType type) const;
-
-	/**
-	 * Queries the number of different monster types.
-	 */
-	unsigned int getMonsterTypeCount() const { return _nextMonsterType; }
-
-	/**
-	 * Queries the global monster database
-	 */
-	static MonsterDatabase &instance();
-
-	/**
-	 * Destroies the global monster database
-	 */
-	static void destroy();
-private:
-	MonsterDatabase();
-	static MonsterDatabase *_instance;
-
-	MonsterType _nextMonsterType;
-	typedef std::map<MonsterType, MonsterDefinition> MonsterDefMap;
-	MonsterDefMap _monsterDefs;
-
-	typedef std::map<std::string, MonsterType> MonsterNameMap;
-	MonsterNameMap _monsterNames;
-};
-
-#define g_monsterDatabase Game::MonsterDatabase::instance()
 
 } // end of namespace Game
 

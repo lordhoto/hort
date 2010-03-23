@@ -20,6 +20,7 @@
 
 #include "levelloader.h"
 #include "maploader.h"
+#include "monsterdatabase.h"
 
 #include <fstream>
 #include <cassert>
@@ -90,7 +91,7 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 	if (!_level->isWalkable(pos))
 		throw Base::ParserListener::Exception("Position is blocked");
 
-	MonsterDatabase &mdb = MonsterDatabase::instance();
+	MonsterDatabase &mdb = g_monsterDatabase;
 	const MonsterType monType = mdb.queryMonsterType(type);
 	if (monType >= mdb.getMonsterTypeCount())
 		throw Base::ParserListener::Exception("Undefined monster type \"" + type + '"');

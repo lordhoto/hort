@@ -21,6 +21,7 @@
 #include "drawdesc.h"
 
 #include "game/tiledatabase.h"
+#include "game/monsterdatabase.h"
 
 #include <cassert>
 

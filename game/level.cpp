@@ -19,6 +19,7 @@
  */
 
 #include "level.h"
+#include "monsterdatabase.h"
 
 #include "base/rnd.h"
 #include "ai/monster.h"
@@ -127,7 +128,7 @@ bool Level::isAllowedToAct(const MonsterID monster) const {
 }
 
 MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) {
-	Monster *newMonster = MonsterDatabase::instance().createNewMonster(monster);
+	Monster *newMonster = g_monsterDatabase.createNewMonster(monster);
 	assert(newMonster);
 	newMonster->setPos(pos);
 

@@ -22,6 +22,7 @@
 #include "levelloader.h"
 #include "game.h"
 #include "tiledatabase.h"
+#include "monsterdatabase.h"
 
 #include "base/rnd.h"
 

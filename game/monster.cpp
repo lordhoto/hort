@@ -19,78 +19,8 @@
  */
 
 #include "monster.h"
-#include "monsterdefinitionloader.h"
-
-#include "base/rnd.h"
-
-#include <cassert>
-
-#include <boost/foreach.hpp>
 
 namespace Game {
-
-void MonsterDatabase::load(const std::string &filename) throw (Base::NonRecoverableException) {
-	_monsterDefs.clear();
-	_monsterNames.clear();
-	_nextMonsterType = 0;
-
-	MonsterDefinitionLoader loader;
-	MonsterDefinitionLoader::MonsterDefinitionList monsters = loader.load(filename);
-
-	BOOST_FOREACH(const MonsterDefinition &def, monsters) {
-		_monsterDefs[_nextMonsterType] = def;
-		_monsterNames[def.getName()] = _nextMonsterType;
-		++_nextMonsterType;
-	}
-}
-
-Monster *MonsterDatabase::createNewMonster(const MonsterType type) const {
-	MonsterDefMap::const_iterator i = _monsterDefs.find(type);
-	if (i == _monsterDefs.end())
-		return 0;
-
-	const MonsterDefinition &def = i->second;
-	const unsigned char wis = Base::rndValueRange(def.getDefaultAttribs(kAttribWisdom));
-	const unsigned char dex = Base::rndValueRange(def.getDefaultAttribs(kAttribDexterity));
-	const unsigned char agi = Base::rndValueRange(def.getDefaultAttribs(kAttribAgility));
-	const unsigned char str = Base::rndValueRange(def.getDefaultAttribs(kAttribStrength));
-	const int hp = Base::rndValueRange(def.getDefaultHitPoints());
-
-	return new Monster(type, wis, dex, agi, str, hp, def.getDefaultSpeed(), 0, 0);
-}
-
-const char *MonsterDatabase::getMonsterName(const MonsterType type) const {
-	MonsterDefMap::const_iterator i = _monsterDefs.find(type);
-	if (i == _monsterDefs.end())
-		return 0;
-	else
-		return i->second.getName().c_str();
-}
-
-MonsterType MonsterDatabase::queryMonsterType(const std::string &name) const {
-	MonsterNameMap::const_iterator i = _monsterNames.find(name);
-	if (i == _monsterNames.end())
-		return getMonsterTypeCount();
-	else
-		return i->second;
-}
-
-MonsterDatabase &MonsterDatabase::instance() {
-	if (!_instance)
-		_instance = new MonsterDatabase();
-	return *_instance;
-}
-
-void MonsterDatabase::destroy() {
-	delete _instance;
-	_instance = 0;
-}
-
-MonsterDatabase::MonsterDatabase()
-    : _nextMonsterType(0), _monsterDefs(), _monsterNames() {
-}
-
-MonsterDatabase *MonsterDatabase::_instance = 0;
 
 const MonsterType kMonsterPlayer = 0;
 
