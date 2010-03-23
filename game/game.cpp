@@ -21,6 +21,7 @@
 #include "level.h"
 #include "level_loader.h"
 #include "game.h"
+#include "tiledatabase.h"
 
 #include "base/rnd.h"
 

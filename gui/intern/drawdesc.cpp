@@ -20,6 +20,8 @@
 
 #include "drawdesc.h"
 
+#include "game/tiledatabase.h"
+
 #include <cassert>
 
 namespace GUI {
@@ -162,7 +164,7 @@ TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, 
 
 	for (Game::Tile i = 0; i < lastTileType; ++i) {
 		if (drawDescs.find(i) == drawDescs.end()) {
-			const Game::TileDatabase::Definition *def = tdb.queryTileDefinition(i);
+			const Game::TileDefinition *def = tdb.queryTileDefinition(i);
 			assert(i);
 			throw std::string("Missing tile definition for \"" + def->_name + '"');
 		}

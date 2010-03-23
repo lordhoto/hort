@@ -22,88 +22,12 @@
 #define GAME_MAP_H
 
 #include "base/geo.h"
-#include "base/exception.h"
+
+#include "tile.h"
 
 #include <vector>
-#include <map>
-#include <string>
 
 namespace Game {
-
-/**
- * A tile type.
- */
-typedef unsigned int Tile;
-
-class TileDatabase {
-public:
-	/**
-	 * Loads the tile database from a file.
-	 *
-	 * @param filename File to load from.
-	 */
-	void load(const std::string &filename) throw (Base::NonRecoverableException);
-
-	/**
-	 * Queries how many different tiles are defined
-	 * currently.
-	 */
-	Tile getTileCount() const { return _nextTileID; }
-
-	/**
-	 * Definition of a tile.
-	 */
-	struct Definition {
-		std::string _name; /// Name of the tile
-		char _glyph; /// Glyph for map files
-
-		bool _isWalkable; /// Is the tile walkable?
-		bool _blocksSight; /// Does this tile block the sight?
-		bool _isLiquid; /// Is this a liquid?
-	};
-
-	/**
-	 * Queries the definition of the given tile
-	 *
-	 * @param Tile Tile type to query.
-	 * @return Pointer to a Definition structure (or 0 in case it's not defined).
-	 */
-	const Definition *queryTileDefinition(const Tile tile) const;
-
-	/**
-	 * Queries the tile type of the given name.
-	 *
-	 * @param name Name of the tile.
-	 * @return Tile type (getTileCount() in case of an error).
-	 */
-	Tile queryTile(const std::string &name) const;
-
-	/**
-	 * Queries the tile type with the given glyph.
-	 *
-	 * @param glyph Glyph of the tile.
-	 * @return Tile type (getTileCount() in case of an error).
-	 */
-	Tile queryTile(const char glyph) const;
-
-	/**
-	 * Queries the global tile database instance.
-	 */
-	static TileDatabase &instance();
-
-	/**
-	 * Destroies the global tile database instance.
-	 */
-	static void destroy();
-private:
-	TileDatabase();
-
-	static TileDatabase *_instance;
-
-	Tile _nextTileID;
-	typedef std::map<Tile, Definition> TileDefMap;
-	TileDefMap _tileDefinitions;
-};
 
 class Map {
 public:
@@ -155,7 +79,7 @@ public:
 	 * @param p Position.
 	 * @return Tile definition.
 	 */
-	const TileDatabase::Definition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _w + p._x]; }
+	const TileDefinition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _w + p._x]; }
 
 	/**
 	 * Returns the width of the map.
@@ -171,7 +95,7 @@ public:
 private:
 	unsigned int _w, _h;
 	std::vector<Tile> _tiles;
-	std::vector<const TileDatabase::Definition *> _tileDefs;
+	std::vector<const TileDefinition *> _tileDefs;
 };
 
 } // end of namespace Game

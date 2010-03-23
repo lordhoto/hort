@@ -18,28 +18,31 @@
  *
  */
 
-#include "map.h"
+#ifndef GAME_TILE_H
+#define GAME_TILE_H
 
-#include "tiledatabase.h"
-
-#include <cassert>
+#include <string>
 
 namespace Game {
 
-Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)
-    : _w(w), _h(h), _tiles(tiles), _tileDefs() {
-	_tileDefs.resize(_w * _h);
-	assert(_tiles.size() == _w * _h);
+/**
+ * A tile type.
+ */
+typedef unsigned int Tile;
 
-	for (unsigned int i = 0; i < _w * _h; ++i) {
-		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
-		assert(_tileDefs[i]);
-	}
-}
+/**
+ * Definition of a tile.
+ */
+struct TileDefinition {
+	std::string _name; //< Name of the tile
+	char _glyph; //< Glyph for map files
 
-bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	return _tileDefs[y * _w + x]->_isWalkable;
-}
+	bool _isWalkable; //< Is the tile walkable?
+	bool _blocksSight; //< Does this tile block the sight?
+	bool _isLiquid; //< Is this a liquid?
+};
 
 } // end of namespace Game
+
+#endif
 

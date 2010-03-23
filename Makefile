@@ -21,6 +21,8 @@ OBJS := base/main.o \
 		game/monster.o \
 		game/defs.o \
 		game/level_loader.o \
+		game/tiledatabase.o \
+		game/tiledefinitionloader.o \
 		ai/fsm.o \
 		ai/monster.o
 

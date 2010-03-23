@@ -22,6 +22,7 @@
 #include "fsm.h"
 
 #include "base/rnd.h"
+
 #include "game/monster_types.h"
 #include "game/defs.h"
 
@@ -123,7 +124,7 @@ void Monster::update() {
 				if ((unsigned int)newPos._x <= _level.getMap().width()
 				    && (unsigned int)newPos._y <= _level.getMap().height()) {
 					if (_level.isWalkable(newPos)) {
-						const Game::TileDatabase::Definition &def = _level.getMap().tileDefinition(newPos);
+						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 						if (!def._isLiquid) {
 							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
 							didAction = true;
@@ -149,7 +150,7 @@ void Monster::update() {
 				newPos._y += yAdd;
 
 				if (_level.isWalkable(newPos)) {
-					const Game::TileDatabase::Definition &def = _level.getMap().tileDefinition(newPos);
+					const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 					if (!def._isLiquid)
 						_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
 				} else {

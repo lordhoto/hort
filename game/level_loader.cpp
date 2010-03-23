@@ -19,6 +19,7 @@
  */
 
 #include "level_loader.h"
+#include "tiledatabase.h"
 
 #include <fstream>
 #include <sstream>

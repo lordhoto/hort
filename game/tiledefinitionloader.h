@@ -18,28 +18,46 @@
  *
  */
 
-#include "map.h"
+#ifndef GAME_TILEDEFINITIONLOADER_H
+#define GAME_TILEDEFINITIONLOADER_H
 
-#include "tiledatabase.h"
+#include "tile.h"
 
-#include <cassert>
+#include "base/parser.h"
+
+#include <list>
 
 namespace Game {
 
-Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)
-    : _w(w), _h(h), _tiles(tiles), _tileDefs() {
-	_tileDefs.resize(_w * _h);
-	assert(_tiles.size() == _w * _h);
+/**
+ * A loader for a tile definition file.
+ */
+class TileDefinitionLoader : public Base::ParserListener {
+public:
+	/**
+	 * The tile definiton vector.
+	 */
+	typedef std::list<TileDefinition> TileDefinitionList;
 
-	for (unsigned int i = 0; i < _w * _h; ++i) {
-		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
-		assert(_tileDefs[i]);
-	}
-}
+	/**
+	 * Load tile definitions from the given file.
+	 *
+	 * @param filename File to load from
+	 * @return the tile definitions
+	 */
+	TileDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
 
-bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	return _tileDefs[y * _w + x]->_isWalkable;
-}
+	/**
+	 * Rule notifiaction as required by Base::ParserListener.
+	 *
+	 * @see Base::ParserListener::notifyRule
+	 */
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
+private:
+	TileDefinitionList _tiles;
+};
 
 } // end of namespace Game
+
+#endif
 
