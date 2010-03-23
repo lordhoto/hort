@@ -55,7 +55,8 @@ void DrawDescParser::parse() throw (Base::NonRecoverableException) {
 }
 
 void DrawDescParser::notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception) {
-	assert(name == "def");
+	if (name != "def")
+		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
 
 	Base::Matcher::ValueMap::const_iterator n = variables.find("name");
 	Base::Matcher::ValueMap::const_iterator g = variables.find("glyph");

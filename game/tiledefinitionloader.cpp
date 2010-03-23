@@ -20,9 +20,6 @@
 
 #include "tiledefinitionloader.h"
 
-#include <cassert>
-#include <algorithm>
-
 #include <boost/foreach.hpp>
 
 namespace Game {
@@ -48,7 +45,8 @@ TileDefinitionLoader::TileDefinitionList TileDefinitionLoader::load(const std::s
 }
 
 void TileDefinitionLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	assert(name == "def");
+	if (name != "def")
+		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
 
 	TileDefinition def;
 	def._name = values.find("name")->second;

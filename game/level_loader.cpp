@@ -129,6 +129,8 @@ void LevelLoader::notifyRule(const std::string &name, const Base::Matcher::Value
 		processMonster(values);
 	else if (name == "start-point")
 		processStartPoint(values);
+	else
+		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
 }
 
 void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
