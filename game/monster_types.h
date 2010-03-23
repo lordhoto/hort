@@ -22,10 +22,8 @@
 #define GAME_MONSTER_TYPES_H
 
 #include "base/defs.h"
-#include "base/exception.h"
 
 #include <string>
-#include <map>
 #include <cassert>
 
 namespace Game {

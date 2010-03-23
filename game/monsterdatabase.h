@@ -24,6 +24,10 @@
 #include "monster_types.h"
 #include "monster.h"
 
+#include "base/exception.h"
+
+#include <map>
+
 namespace Game {
 
 /**
