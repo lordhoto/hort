@@ -18,7 +18,7 @@
  *
  */
 
-#include "level_loader.h"
+#include "levelloader.h"
 #include "maploader.h"
 
 #include <fstream>

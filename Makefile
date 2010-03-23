@@ -20,7 +20,7 @@ OBJS := base/main.o \
 		game/event.o \
 		game/monster.o \
 		game/defs.o \
-		game/level_loader.o \
+		game/levelloader.o \
 		game/tiledatabase.o \
 		game/tiledefinitionloader.o \
 		game/maploader.o \

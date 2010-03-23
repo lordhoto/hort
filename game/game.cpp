@@ -19,7 +19,7 @@
  */
 
 #include "level.h"
-#include "level_loader.h"
+#include "levelloader.h"
 #include "game.h"
 #include "tiledatabase.h"
 
