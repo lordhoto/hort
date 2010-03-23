@@ -24,6 +24,8 @@
 #include <fstream>
 #include <cassert>
 
+#include <boost/lexical_cast.hpp>
+
 namespace Game {
 
 LevelLoader::LevelLoader(const std::string &path)
@@ -71,8 +73,18 @@ void LevelLoader::notifyRule(const std::string &name, const Base::Matcher::Value
 
 void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 	const std::string &type = values.find("type")->second;
-	const unsigned int x = ::atoi(values.find("x")->second.c_str());
-	const unsigned int y = ::atoi(values.find("y")->second.c_str());
+
+	unsigned int x, y;
+
+	try {
+		x = boost::lexical_cast<int>(values.find("x")->second);
+		y = boost::lexical_cast<int>(values.find("y")->second);
+	} catch (boost::bad_lexical_cast &e) {
+		// This should never happen, since the values are
+		// prechecked by the parser.
+		assert(false);
+	}
+
 	const Base::Point pos(x, y);
 
 	if (!_level->isWalkable(pos))
@@ -87,8 +99,16 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 }
 
 void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
-	const unsigned int x = ::atoi(values.find("x")->second.c_str());
-	const unsigned int y = ::atoi(values.find("y")->second.c_str());
+	unsigned int x, y;
+	try {
+		x = boost::lexical_cast<int>(values.find("x")->second);
+		y = boost::lexical_cast<int>(values.find("y")->second);
+	} catch (boost::bad_lexical_cast &e) {
+		// This should never happen, since the values are
+		// prechecked by the parser.
+		assert(false);
+	}
+
 	const Base::Point pos(x, y);
 
 	if (!_level->isWalkable(pos))

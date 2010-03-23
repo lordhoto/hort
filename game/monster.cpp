@@ -23,7 +23,8 @@
 #include "base/rnd.h"
 
 #include <cassert>
-#include <stdlib.h> // for ::atoi
+
+#include <boost/lexical_cast.hpp>
 
 namespace Game {
 
@@ -94,33 +95,40 @@ MonsterDatabase::MonsterDatabase()
 }
 
 void MonsterDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	assert(name == "def");
+	if (name != "def")
+		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
 
-	const std::string &n = values.find("name")->second;
-	const int wisMin = ::atoi(values.find("wisMin")->second.c_str());
-	const int wisMax = ::atoi(values.find("wisMax")->second.c_str());
-	const int dexMin = ::atoi(values.find("dexMin")->second.c_str());
-	const int dexMax = ::atoi(values.find("dexMax")->second.c_str());
-	const int agiMin = ::atoi(values.find("agiMin")->second.c_str());
-	const int agiMax = ::atoi(values.find("agiMax")->second.c_str());
-	const int strMin = ::atoi(values.find("strMin")->second.c_str());
-	const int strMax = ::atoi(values.find("strMax")->second.c_str());
-	const int hpMin = ::atoi(values.find("hpMin")->second.c_str());
-	const int hpMax = ::atoi(values.find("hpMax")->second.c_str());
-	const unsigned char speed = ::atoi(values.find("speed")->second.c_str());
+	try {
+		const std::string &n = values.find("name")->second;
+		const int wisMin = boost::lexical_cast<int>(values.find("wisMin")->second);
+		const int wisMax = boost::lexical_cast<int>(values.find("wisMax")->second);
+		const int dexMin = boost::lexical_cast<int>(values.find("dexMin")->second);
+		const int dexMax = boost::lexical_cast<int>(values.find("dexMax")->second);
+		const int agiMin = boost::lexical_cast<int>(values.find("agiMin")->second);
+		const int agiMax = boost::lexical_cast<int>(values.find("agiMax")->second);
+		const int strMin = boost::lexical_cast<int>(values.find("strMin")->second);
+		const int strMax = boost::lexical_cast<int>(values.find("strMax")->second);
+		const int hpMin = boost::lexical_cast<int>(values.find("hpMin")->second);
+		const int hpMax = boost::lexical_cast<int>(values.find("hpMax")->second);
+		const unsigned char speed = boost::lexical_cast<int>(values.find("speed")->second);
 
-	MonsterDefinition def;
-	def.name = n;
-	def.defaultAttribs[kAttribWisdom] = Base::ByteRange(wisMin, wisMax);
-	def.defaultAttribs[kAttribDexterity] = Base::ByteRange(dexMin, dexMax);
-	def.defaultAttribs[kAttribAgility] = Base::ByteRange(agiMin, agiMax);
-	def.defaultAttribs[kAttribStrength] = Base::ByteRange(strMin, strMax);
-	def.defaultHitPoints = Base::IntRange(hpMin, hpMax);
-	def.defaultSpeed = speed;
+		MonsterDefinition def;
+		def.name = n;
+		def.defaultAttribs[kAttribWisdom] = Base::ByteRange(wisMin, wisMax);
+		def.defaultAttribs[kAttribDexterity] = Base::ByteRange(dexMin, dexMax);
+		def.defaultAttribs[kAttribAgility] = Base::ByteRange(agiMin, agiMax);
+		def.defaultAttribs[kAttribStrength] = Base::ByteRange(strMin, strMax);
+		def.defaultHitPoints = Base::IntRange(hpMin, hpMax);
+		def.defaultSpeed = speed;
 
-	_monsterDefs[_nextMonsterType] = def;
-	_monsterNames[n] = _nextMonsterType;
-	++_nextMonsterType;
+		_monsterDefs[_nextMonsterType] = def;
+		_monsterNames[n] = _nextMonsterType;
+		++_nextMonsterType;
+	} catch (boost::bad_lexical_cast &e) {
+		// This should never happen, since the values are
+		// prechecked by the parser.
+		assert(false);
+	}
 }
 
 MonsterDatabase *MonsterDatabase::_instance = 0;

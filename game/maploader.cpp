@@ -23,7 +23,8 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdlib.h>
+
+#include <boost/lexical_cast.hpp>
 
 namespace Game {
 
@@ -45,8 +46,21 @@ Map *MapLoader::load() throw (Base::NonRecoverableException) {
 	int lineCount = 2;
 
 	TileDatabase &tdb = TileDatabase::instance();
-	const unsigned int w = ::atoi(_lines.front().c_str()); _lines.pop_front();
-	const unsigned int h = ::atoi(_lines.front().c_str()); _lines.pop_front();
+	unsigned int w, h;
+   
+	try {
+		w = boost::lexical_cast<int>(_lines.front());
+		_lines.pop_front();
+	} catch (boost::bad_lexical_cast &e) {
+		throwError("Width definition is no integer", 0);
+	}
+
+	try {
+		h = boost::lexical_cast<int>(_lines.front());
+		_lines.pop_front();
+	} catch (boost::bad_lexical_cast &e) {
+		throwError("Height definition is no integer", 1);
+	}
 
 	if (_lines.size() < h)
 		throwError("Height exceeds remaining lines", lineCount);
