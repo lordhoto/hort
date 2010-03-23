@@ -20,13 +20,12 @@
 
 #include "parser.h"
 
-#include <sstream>
 #include <fstream>
-#include <iterator>
 #include <algorithm>
 
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace Base {
 
@@ -144,20 +143,15 @@ void Matcher::matchString(const Rule::StringPart &part, const std::string &token
 
 void Matcher::matchVariable(const Rule::VariablePart &part, const std::string &token) {
 	switch (part.variableType) {
-	case Rule::VariablePart::kVariableTypeInteger: {
-		std::stringstream input(token), verify;
-
-		int variable;
-		input >> variable;
-		verify << variable;
-
-		if (verify.str() != token) {
+	case Rule::VariablePart::kVariableTypeInteger:
+		try {
+			boost::lexical_cast<int>(token);
+			_values[part.name] = token;
+		} catch (boost::bad_lexical_cast &e) {
 			_error = "\"" + token + "\" is no integer variable";
 			_ok = false;
-		} else {
-			_values[part.name] = token;
 		}
-		} break;
+		break;
 
 	case Rule::VariablePart::kVariableTypeString:
 		if (token.empty()) {
