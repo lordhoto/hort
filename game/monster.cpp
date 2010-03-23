@@ -54,13 +54,13 @@ Monster *MonsterDatabase::createNewMonster(const MonsterType type) const {
 		return 0;
 
 	const MonsterDefinition &def = i->second;
-	const unsigned char wis = Base::rndValueRange(def.defaultAttribs[kAttribWisdom].min(), def.defaultAttribs[kAttribWisdom].max());
-	const unsigned char dex = Base::rndValueRange(def.defaultAttribs[kAttribDexterity].min(), def.defaultAttribs[kAttribDexterity].max());
-	const unsigned char agi = Base::rndValueRange(def.defaultAttribs[kAttribAgility].min(), def.defaultAttribs[kAttribAgility].max());
-	const unsigned char str = Base::rndValueRange(def.defaultAttribs[kAttribStrength].min(), def.defaultAttribs[kAttribStrength].max());
-	const int hp = Base::rndValueRange(def.defaultHitPoints.min(), def.defaultHitPoints.max());
+	const unsigned char wis = Base::rndValueRange(def._defaultAttribs[kAttribWisdom].min(), def._defaultAttribs[kAttribWisdom].max());
+	const unsigned char dex = Base::rndValueRange(def._defaultAttribs[kAttribDexterity].min(), def._defaultAttribs[kAttribDexterity].max());
+	const unsigned char agi = Base::rndValueRange(def._defaultAttribs[kAttribAgility].min(), def._defaultAttribs[kAttribAgility].max());
+	const unsigned char str = Base::rndValueRange(def._defaultAttribs[kAttribStrength].min(), def._defaultAttribs[kAttribStrength].max());
+	const int hp = Base::rndValueRange(def._defaultHitPoints.min(), def._defaultHitPoints.max());
 
-	return new Monster(type, wis, dex, agi, str, hp, def.defaultSpeed, 0, 0);
+	return new Monster(type, wis, dex, agi, str, hp, def._defaultSpeed, 0, 0);
 }
 
 const char *MonsterDatabase::getMonsterName(const MonsterType type) const {
@@ -68,7 +68,7 @@ const char *MonsterDatabase::getMonsterName(const MonsterType type) const {
 	if (i == _monsterDefs.end())
 		return 0;
 	else
-		return i->second.name.c_str();
+		return i->second._name.c_str();
 }
 
 MonsterType MonsterDatabase::queryMonsterType(const std::string &name) const {

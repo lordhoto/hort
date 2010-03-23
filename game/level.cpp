@@ -45,7 +45,7 @@ Level::~Level() {
 
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
 		if (i->first != kPlayerMonsterID)
-			delete i->second.monster;
+			delete i->second._monster;
 	}
 	delete _map;
 }
@@ -55,7 +55,7 @@ void Level::makeActive(GUI::Screen &screen, Monster &player) {
 
 	screen.setMap(_map);
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		screen.addObject(i->second.monster);
+		screen.addObject(i->second._monster);
 	screen.addObject(&player);
 	_screen = &screen;
 
@@ -93,7 +93,7 @@ bool Level::isWalkable(const Base::Point &p) const {
 
 MonsterID Level::monsterAt(const Base::Point &p) const {
 	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (i->second.monster->getPos() == p)
+		if (i->second._monster->getPos() == p)
 			return i->first;
 	}
 
@@ -105,7 +105,7 @@ Monster *Level::getMonster(const MonsterID monster) {
 	if (i == _monsters.end())
 		return 0;
 	else
-		return i->second.monster;
+		return i->second._monster;
 }
 
 const Monster *Level::getMonster(const MonsterID monster) const {
@@ -113,7 +113,7 @@ const Monster *Level::getMonster(const MonsterID monster) const {
 	if (i == _monsters.end())
 		return 0;
 	else
-		return i->second.monster;
+		return i->second._monster;
 }
 
 bool Level::isAllowedToAct(const MonsterID monster) const {
@@ -121,7 +121,7 @@ bool Level::isAllowedToAct(const MonsterID monster) const {
 	if (i == _monsters.end())
 		return false;
 	else
-		return (i->second.nextAction <= _gameState.getCurrentTick());
+		return (i->second._nextAction <= _gameState.getCurrentTick());
 }
 
 MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) {
@@ -142,12 +142,12 @@ void Level::removeMonster(const MonsterID monster) {
 	if (i == _monsters.end())
 		return;
 
-	_monsterField[i->second.monster->getY() * _map->width() + i->second.monster->getX()] = false;
+	_monsterField[i->second._monster->getY() * _map->width() + i->second._monster->getX()] = false;
 	if (monster != kPlayerMonsterID) {
 		if (_screen)
-			_screen->remObject(i->second.monster);
+			_screen->remObject(i->second._monster);
 
-		delete i->second.monster;
+		delete i->second._monster;
 		_monsterAI->removeMonster(i->first);
 	}
 
@@ -158,20 +158,20 @@ void Level::update() {
 	const TickCount curTick = _gameState.getCurrentTick();
 
 	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end();) {
-		if (i->second.monster->getHitPoints() <= 0) {
+		if (i->second._monster->getHitPoints() <= 0) {
 			MonsterID toRemove = i->first;
 			++i;
 			removeMonster(toRemove);
 		} else {
-			if (i->second.nextRegeneration <= curTick) {
-				int curHitPoints = i->second.monster->getHitPoints();
+			if (i->second._nextRegeneration <= curTick) {
+				int curHitPoints = i->second._monster->getHitPoints();
 
-				if (curHitPoints < i->second.monster->getMaxHitPoints())
+				if (curHitPoints < i->second._monster->getMaxHitPoints())
 					// TODO: Consider increasing the hit points based on some stats (Str?)
-					i->second.monster->setHitPoints(curHitPoints + 1);
+					i->second._monster->setHitPoints(curHitPoints + 1);
 
 				// TODO: Handle "nextRegeneration" properly
-				i->second.nextRegeneration = curTick + 5 * kTicksPerTurn;
+				i->second._nextRegeneration = curTick + 5 * kTicksPerTurn;
 			}
 			++i;
 		}
@@ -229,8 +229,8 @@ void Level::processEvent(const Event &event) {
 Monster *Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {
 	MonsterMap::iterator i = _monsters.find(monster);
 	if (i != _monsters.end()) {
-		i->second.nextAction = _gameState.getCurrentTick() + (oneTickOnly ? 1 : i->second.monster->getSpeed());
-		return i->second.monster;
+		i->second._nextAction = _gameState.getCurrentTick() + (oneTickOnly ? 1 : i->second._monster->getSpeed());
+		return i->second._monster;
 	} else {
 		return 0;
 	}

@@ -151,13 +151,13 @@ private:
 	EventDispatcher _eventDisp;
 
 	struct MonsterEntry {
-		Monster *monster;
-		TickCount nextAction;
-		TickCount nextRegeneration;
+		Monster *_monster;
+		TickCount _nextAction;
+		TickCount _nextRegeneration;
 
-		MonsterEntry() : monster(0), nextAction(0), nextRegeneration(0) {}
+		MonsterEntry() : _monster(0), _nextAction(0), _nextRegeneration(0) {}
 		// TODO: Handle "nextRegeneration" properly
-		MonsterEntry(Monster *m, TickCount curTick) : monster(m), nextAction(curTick), nextRegeneration(curTick) {}
+		MonsterEntry(Monster *monster, TickCount curTick) : _monster(monster), _nextAction(curTick), _nextRegeneration(curTick) {}
 	};
 
 	Monster *updateNextActionTick(MonsterID monster, bool oneTickOnly = false);

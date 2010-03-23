@@ -35,12 +35,12 @@ namespace GUI {
 namespace Intern {
 
 struct DrawDesc {
-	DrawDesc() : symbol(0), color(kWhiteOnBlack), attribs(0) {}
-	DrawDesc(int symbol, ColorPair color, int attribs) : symbol(symbol), color(color), attribs(attribs) {}
+	DrawDesc() : _symbol(0), _color(kWhiteOnBlack), _attribs(0) {}
+	DrawDesc(int symbol, ColorPair color, int attribs) : _symbol(symbol), _color(color), _attribs(attribs) {}
 
-	int symbol;
-	ColorPair color;
-	int attribs;
+	int _symbol;
+	ColorPair _color;
+	int _attribs;
 };
 
 template<typename Key>

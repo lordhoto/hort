@@ -73,11 +73,11 @@ private:
 	FSM::FSM *_fsm;
 
 	struct MonsterState {
-		FSM::StateID fsmState;
-		const Game::Monster *monster;
+		FSM::StateID _fsmState;
+		const Game::Monster *_monster;
 
-		MonsterState() : fsmState(FSM::kInvalidStateID), monster(0) {}
-		MonsterState(FSM::StateID f, const Game::Monster *m) : fsmState(f), monster(m) {}
+		MonsterState() : _fsmState(FSM::kInvalidStateID), _monster(0) {}
+		MonsterState(FSM::StateID f, const Game::Monster *m) : _fsmState(f), _monster(m) {}
 	};
 
 	typedef std::map<const Game::MonsterID, MonsterState> MonsterMap;

@@ -103,21 +103,21 @@ private:
 	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
 	struct MonsterDefinition {
-		std::string name;
+		std::string _name;
 
-		Base::ByteRange defaultAttribs[kAttribMaxTypes];
-		Base::IntRange defaultHitPoints;
-		unsigned char defaultSpeed;
+		Base::ByteRange _defaultAttribs[kAttribMaxTypes];
+		Base::IntRange _defaultHitPoints;
+		unsigned char _defaultSpeed;
 
-		MonsterDefinition() : name(), defaultAttribs(), defaultHitPoints(), defaultSpeed() {}
+		MonsterDefinition() : _name(), _defaultAttribs(), _defaultHitPoints(), _defaultSpeed() {}
 		MonsterDefinition(const std::string &name, const Base::ByteRange &wisdom, const Base::ByteRange &dexterity,
 		                  const Base::ByteRange &agility, const Base::ByteRange &strength, const Base::IntRange &hitPoints,
 		                  const unsigned char defaultSpeed)
-		    : name(name), defaultAttribs(), defaultHitPoints(hitPoints), defaultSpeed(defaultSpeed) {
-			defaultAttribs[kAttribWisdom] = wisdom;
-			defaultAttribs[kAttribDexterity] = dexterity;
-			defaultAttribs[kAttribAgility] = agility;
-			defaultAttribs[kAttribStrength] = strength;
+		    : _name(name), _defaultAttribs(), _defaultHitPoints(hitPoints), _defaultSpeed(defaultSpeed) {
+			_defaultAttribs[kAttribWisdom] = wisdom;
+			_defaultAttribs[kAttribDexterity] = dexterity;
+			_defaultAttribs[kAttribAgility] = agility;
+			_defaultAttribs[kAttribStrength] = strength;
 		}
 	};
 

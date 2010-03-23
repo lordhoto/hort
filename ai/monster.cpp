@@ -47,9 +47,9 @@ enum kMonsterFSMInputID {
 };
 
 struct FSMTransition {
-	kMonsterFSMStateID state;
-	kMonsterFSMInputID input;
-	kMonsterFSMStateID newState;
+	kMonsterFSMStateID _state;
+	kMonsterFSMInputID _input;
+	kMonsterFSMStateID _newState;
 };
 
 const FSMTransition s_monsterFSMTransitions[] = {
@@ -72,13 +72,13 @@ FSM::FSM *createMonsterFSM() {
 	for (size_t i = 0; i < sizeof(s_monsterFSMTransitions)/sizeof(s_monsterFSMTransitions[0]); ++i) {
 		const FSMTransition &trans = s_monsterFSMTransitions[i];
 
-		StateMap::iterator i = states.find(trans.state);
+		StateMap::iterator i = states.find(trans._state);
 		if (i == states.end()) {
 			FSM::State *newState = new FSM::State();
-			newState->addTransition(trans.input, trans.newState);
-			states[trans.state] = newState;
+			newState->addTransition(trans._input, trans._newState);
+			states[trans._state] = newState;
 		} else {
-			i->second->addTransition(trans.input, trans.newState);
+			i->second->addTransition(trans._input, trans._newState);
 		}
 	}
 
@@ -115,18 +115,18 @@ void Monster::update() {
 			continue;
 
 		// TODO: Proper implementation of this :-D
-		switch (i->second.fsmState) {
+		switch (i->second._fsmState) {
 		case kMonsterIdle: {
-			Base::Point newPos = i->second.monster->getPos() + Game::getDirection(Base::rollDice(9));
+			Base::Point newPos = i->second._monster->getPos() + Game::getDirection(Base::rollDice(9));
 
 			bool didAction = false;
-			if (newPos != i->second.monster->getPos()) {
+			if (newPos != i->second._monster->getPos()) {
 				if ((unsigned int)newPos._x <= _level.getMap().width()
 				    && (unsigned int)newPos._y <= _level.getMap().height()) {
 					if (_level.isWalkable(newPos)) {
 						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 						if (!def._isLiquid) {
-							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
+							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second._monster, newPos));
 							didAction = true;
 						}
 					}
@@ -139,20 +139,20 @@ void Monster::update() {
 
 		case kMonsterWary:
 			if (_player) {
-				int xDist = _player->getX() - i->second.monster->getX();
-				int yDist = _player->getY() - i->second.monster->getY();
+				int xDist = _player->getX() - i->second._monster->getX();
+				int yDist = _player->getY() - i->second._monster->getY();
 
 				int xAdd = (xDist < 0) ? -1 : ((xDist > 0) ? +1 : 0);
 				int yAdd = (yDist < 0) ? -1 : ((yDist > 0) ? +1 : 0);
 
-				Base::Point newPos = i->second.monster->getPos();
+				Base::Point newPos = i->second._monster->getPos();
 				newPos._x += xAdd;
 				newPos._y += yAdd;
 
 				if (_level.isWalkable(newPos)) {
 					const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 					if (!def._isLiquid)
-						_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second.monster, newPos));
+						_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second._monster, newPos));
 				} else {
 					_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
 				}
@@ -176,10 +176,10 @@ void Monster::processEvent(const Game::Event &event) {
 	if (event.type == Game::Event::kTypeMove) {
 		if (event.move.monster == Game::kPlayerMonsterID) {
 			for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-				_fsm->setState(i->second.fsmState);
+				_fsm->setState(i->second._fsmState);
 
 				// Calculate distance
-				const double dist = event.move.newPos.distanceTo(i->second.monster->getPos());
+				const double dist = event.move.newPos.distanceTo(i->second._monster->getPos());
 
 				if (dist <= std::sqrt(2))
 					_fsm->process(kPlayerTriggerDist2);
@@ -188,7 +188,7 @@ void Monster::processEvent(const Game::Event &event) {
 				else
 					_fsm->process(kPlayerTriggerDist0);
 
-				i->second.fsmState = _fsm->getState();
+				i->second._fsmState = _fsm->getState();
 			}
 		} else if (_player) {
 			MonsterMap::iterator i = _monsters.find(event.move.monster);
@@ -196,7 +196,7 @@ void Monster::processEvent(const Game::Event &event) {
 				// Calculate distance
 				const double dist = event.move.newPos.distanceTo(_player->getPos());
 
-				_fsm->setState(i->second.fsmState);
+				_fsm->setState(i->second._fsmState);
 
 				if (dist <= std::sqrt(2))
 					_fsm->process(kPlayerTriggerDist2);
@@ -205,15 +205,15 @@ void Monster::processEvent(const Game::Event &event) {
 				else
 					_fsm->process(kPlayerTriggerDist0);
 
-				i->second.fsmState = _fsm->getState();
+				i->second._fsmState = _fsm->getState();
 			}
 		}
 	} else if (event.type == Game::Event::kTypeAttack) {
 		MonsterMap::iterator i = _monsters.find(event.attack.target);
 		if (i != _monsters.end()) {
-			_fsm->setState(i->second.fsmState);
+			_fsm->setState(i->second._fsmState);
 			_fsm->process(kPlayerAttack);
-			i->second.fsmState = _fsm->getState();
+			i->second._fsmState = _fsm->getState();
 		}
 	}
 }

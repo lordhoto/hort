@@ -71,7 +71,7 @@ void Screen::update(bool drawMsg) {
 		for (unsigned int x = 0; x < maxWidth; ++x) {
 			const Game::Tile tile = _map->tileAt(x + _mapOffsetX, y + _mapOffsetY);
 			const Intern::DrawDesc &desc = _mapDrawDescs->lookUp(tile);
-			_mapWindow->printChar(desc.symbol, x, y, desc.color, desc.attribs);
+			_mapWindow->printChar(desc._symbol, x, y, desc._color, desc._attribs);
 		}
 	}
 
@@ -84,7 +84,7 @@ void Screen::update(bool drawMsg) {
 			continue;
 
 		const Intern::DrawDesc &desc = _monsterDrawDescs->lookUp((*i)->getType());
-		_mapWindow->printChar(desc.symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc.color, desc.attribs);
+		_mapWindow->printChar(desc._symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc._color, desc._attribs);
 	}
 
 	_screen.setCursor(*_mapWindow, _centerX - _mapOffsetX, _centerY - _mapOffsetY);
