@@ -30,43 +30,17 @@
 namespace GUI {
 namespace Intern {
 
-DrawDescParser::DrawDescParser(const std::string &filename, const std::string &suffix) throw (Base::NonRecoverableException)
-    : _parser(0), _descs() {
-	Base::FileParser::RuleMap rules;
-
-	try {
-		rules["def"] = Base::Rule("def" + suffix + ";%S,name;:=;%S,glyph;%S,color;%S,attribs");
-	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
-		throw Base::NonRecoverableException(e.toString());
-	}
-
-	_parser = new Base::FileParser(filename, rules);
+DrawDescParser::DrawDescParser(const std::string &suffix)
+    : DefinitionLoader("def" + suffix + ";%S,name;:=;%S,glyph;%S,color;%S,attribs") {
 }
 
-DrawDescParser::~DrawDescParser() {
-	delete _parser;
-}
+DrawDescParser::DefinitionLoader::Definition DrawDescParser::definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
+	Base::Matcher::ValueMap::const_iterator n = values.find("name");
+	Base::Matcher::ValueMap::const_iterator g = values.find("glyph");
+	Base::Matcher::ValueMap::const_iterator c = values.find("color");
+	Base::Matcher::ValueMap::const_iterator a = values.find("attribs");
 
-void DrawDescParser::parse() throw (Base::NonRecoverableException) {
-	_descs.clear();
-	try {
-		_parser->parse(this);
-	} catch (Base::Exception &e) {
-		// TODO: More information is preferable
-		throw Base::NonRecoverableException(e.toString());
-	}
-}
-
-void DrawDescParser::notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception) {
-	if (name != "def")
-		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
-
-	Base::Matcher::ValueMap::const_iterator n = variables.find("name");
-	Base::Matcher::ValueMap::const_iterator g = variables.find("glyph");
-	Base::Matcher::ValueMap::const_iterator c = variables.find("color");
-	Base::Matcher::ValueMap::const_iterator a = variables.find("attribs");
-
-	_descs[n->second] = DrawDesc(parseSymbol(g->second), parseColor(c->second), parseAttribs(a->second));
+	return DrawDescParser::DefinitionLoader::Definition(n->second, DrawDesc(parseSymbol(g->second), parseColor(c->second), parseAttribs(a->second)));
 }
 
 int DrawDescParser::parseSymbol(const std::string &value) throw (Base::ParserListener::Exception) {
@@ -149,16 +123,14 @@ int DrawDescParser::parseAttribs(const std::string &value) throw (Base::ParserLi
 }
 
 TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
-	DrawDescParser parser(filename, "-tile");
-	parser.parse();
-
-	const DrawDescParser::DrawDescMap &dds = parser.getDescs();
+	DrawDescParser parser("-tile");
+	DrawDescParser::DefinitionList dds = parser.load(filename);
 	TileDDMap::DrawDescMap drawDescs;
 
 	Game::TileDatabase &tdb = Game::TileDatabase::instance();
 	const Game::Tile lastTileType = tdb.getTileCount();
 
-	BOOST_FOREACH(const DrawDescParser::DrawDescMap::value_type &i, dds) {
+	BOOST_FOREACH(const DrawDescParser::DefinitionList::value_type &i, dds) {
 		const Game::Tile tile = tdb.queryTile(i.first);
 		if (tile < lastTileType)
 			drawDescs[tile] = i.second;
@@ -178,16 +150,14 @@ TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, 
 }
 
 MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
-	DrawDescParser parser(filename, "-monster");
-	parser.parse();
-
-	const DrawDescParser::DrawDescMap &dds = parser.getDescs();
+	DrawDescParser parser("-monster");
+	DrawDescParser::DefinitionList dds = parser.load(filename);
 	MonsterDDMap::DrawDescMap drawDescs;
 
 	Game::MonsterDatabase &mdb = g_monsterDatabase;
 	const Game::MonsterType lastMonsterType = mdb.getMonsterTypeCount();
 
-	BOOST_FOREACH(const DrawDescParser::DrawDescMap::value_type &i, dds) {
+	BOOST_FOREACH(const DrawDescParser::DefinitionList::value_type &i, dds) {
 		const Game::MonsterType type = mdb.queryMonsterType(i.first);
 		if (type == lastMonsterType)
 			throw std::string("Undefined monster \"" + i.first + '"');

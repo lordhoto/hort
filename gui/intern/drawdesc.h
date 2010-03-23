@@ -23,7 +23,7 @@
 
 #include "gui/defs.h"
 
-#include "base/parser.h"
+#include "base/definitionloader.h"
 
 #include "game/map.h"
 #include "game/monsterdefinition.h"
@@ -65,24 +65,13 @@ private:
 	DrawDescMap _descs;
 };
 
-class DrawDescParser : public Base::ParserListener {
+class DrawDescParser : public Base::DefinitionLoader<std::pair<std::string, DrawDesc> > {
 public:
-	DrawDescParser(const std::string &filename, const std::string &suffix) throw (Base::NonRecoverableException);
-	~DrawDescParser();
+	typedef Base::DefinitionLoader<std::pair<std::string, DrawDesc> > DefinitionLoader;
 
-	/**
-	 * Does all the parsing.
-	 */
-	void parse() throw (Base::NonRecoverableException);
-
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &variables) throw (Base::ParserListener::Exception);
-
-	typedef std::map<std::string, DrawDesc> DrawDescMap;
-	const DrawDescMap &getDescs() const { return _descs; }
+	DrawDescParser(const std::string &suffix);
 private:
-	Base::FileParser *_parser;
-
-	DrawDescMap _descs;
+	DefinitionLoader::Definition definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
 	int parseSymbol(const std::string &value) throw (Base::ParserListener::Exception);
 	ColorPair parseColor(const std::string &value) throw (Base::ParserListener::Exception);

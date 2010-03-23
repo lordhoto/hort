@@ -30,7 +30,7 @@ namespace Base {
 /**
  * A generic definition loader layout.
  */
-template<typename Definition>
+template<typename D>
 class DefinitionLoader : private ParserListener {
 public:
 	/**
@@ -40,6 +40,11 @@ public:
 	 * @see Base::Rule
 	 */
 	DefinitionLoader(const std::string &rule) : _rule(rule) {}
+
+	/**
+	 * The definition base type.
+	 */
+	typedef D Definition;
 
 	/**
 	 * The definitions.
@@ -58,7 +63,8 @@ protected:
 	/**
 	 * Callback for the specific definition loader.
      *
-	 * The value map
+	 * @param values The value map
+	 * @return The definition parsed.
 	 */
 	virtual Definition definitionRule(const Matcher::ValueMap &values) throw (ParserListener::Exception) = 0;
 
