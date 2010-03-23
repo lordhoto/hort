@@ -20,22 +20,47 @@
 
 #include "map.h"
 
+#include "base/rnd.h"
+#include "base/parser.h"
+
 #include <cassert>
 #include <algorithm>
+#include <list>
 
-#include "base/rnd.h"
+#include <boost/foreach.hpp>
 
 namespace Game {
 
-TileDatabase *TileDatabase::_instance = 0;
+/**
+ * A loader for a tile definition file.
+ */
+class TileDefinitionLoader : public Base::ParserListener {
+public:
+	/**
+	 * The tile definiton vector.
+	 */
+	typedef std::list<TileDatabase::Definition> TileDefinitionList;
 
-TileDatabase::TileDatabase()
-    : _nextTileID(0), _tileDefinitions() {
-}
+	/**
+	 * Load tile definitions from the given file.
+	 *
+	 * @param filename File to load from
+	 * @return the tile definitions
+	 */
+	TileDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
 
-void TileDatabase::load(const std::string &filename) throw (Base::NonRecoverableException) {
-	_nextTileID = 0;
-	_tileDefinitions.clear();
+	/**
+	 * Rule notifiaction as required by Base::ParserListener.
+	 *
+	 * @see Base::ParserListener::notifyRule
+	 */
+	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
+private:
+	TileDefinitionList _tiles;
+};
+
+TileDefinitionLoader::TileDefinitionList TileDefinitionLoader::load(const std::string &filename) throw (Base::NonRecoverableException) {
+	_tiles.clear();
 
 	Base::FileParser::RuleMap rules;
 
@@ -49,6 +74,39 @@ void TileDatabase::load(const std::string &filename) throw (Base::NonRecoverable
 	} catch (Base::Exception &e) {
 		// TODO: More information is preferable
 		throw Base::NonRecoverableException(e.toString());
+	}
+
+	return _tiles;
+}
+
+void TileDefinitionLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
+	assert(name == "def");
+
+	TileDatabase::Definition def;
+	def._name = values.find("name")->second;
+	def._glyph = values.find("glyph")->second[0];
+	def._isWalkable = (values.find("isWalkable")->second[0] == '1');
+	def._blocksSight = (values.find("blocksSight")->second[0] == '1');
+	def._isLiquid = (values.find("isLiquid")->second[0] == '1');
+
+	_tiles.push_back(def);
+}
+
+TileDatabase *TileDatabase::_instance = 0;
+
+TileDatabase::TileDatabase()
+    : _nextTileID(0), _tileDefinitions() {
+}
+
+void TileDatabase::load(const std::string &filename) throw (Base::NonRecoverableException) {
+	_nextTileID = 0;
+	_tileDefinitions.clear();
+
+	TileDefinitionLoader loader;
+	TileDefinitionLoader::TileDefinitionList tiles = loader.load(filename);
+
+	BOOST_FOREACH(Definition &def, tiles) {
+		_tileDefinitions[_nextTileID++] = def;
 	}
 }
 
@@ -87,19 +145,6 @@ TileDatabase &TileDatabase::instance() {
 void TileDatabase::destroy() {
 	delete _instance;
 	_instance = 0;
-}
-
-void TileDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	assert(name == "def");
-
-	Definition def;
-	def._name = values.find("name")->second;
-	def._glyph = values.find("glyph")->second[0];
-	def._isWalkable = (values.find("isWalkable")->second[0] == '1');
-	def._blocksSight = (values.find("blocksSight")->second[0] == '1');
-	def._isLiquid = (values.find("isLiquid")->second[0] == '1');
-
-	_tileDefinitions[_nextTileID++] = def;
 }
 
 Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)

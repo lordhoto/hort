@@ -22,7 +22,7 @@
 #define GAME_MAP_H
 
 #include "base/geo.h"
-#include "base/parser.h"
+#include "base/exception.h"
 
 #include <vector>
 #include <map>
@@ -35,7 +35,7 @@ namespace Game {
  */
 typedef unsigned int Tile;
 
-class TileDatabase : private Base::ParserListener {
+class TileDatabase {
 public:
 	/**
 	 * Loads the tile database from a file.
@@ -99,8 +99,6 @@ private:
 	TileDatabase();
 
 	static TileDatabase *_instance;
-
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
 	Tile _nextTileID;
 	typedef std::map<Tile, Definition> TileDefMap;
