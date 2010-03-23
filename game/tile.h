@@ -40,6 +40,10 @@ struct TileDefinition {
 	bool _isWalkable; //< Is the tile walkable?
 	bool _blocksSight; //< Does this tile block the sight?
 	bool _isLiquid; //< Is this a liquid?
+
+	TileDefinition() : _name(), _glyph(0), _isWalkable(false), _blocksSight(false), _isLiquid(false) {}
+	TileDefinition(const std::string &name, const char glyph, const bool isWalkable, const bool blocksSight, const bool isLiquid)
+	    : _name(name), _glyph(glyph), _isWalkable(isWalkable), _blocksSight(blocksSight), _isLiquid(isLiquid) {}
 };
 
 } // end of namespace Game

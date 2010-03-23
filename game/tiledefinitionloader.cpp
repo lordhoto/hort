@@ -48,14 +48,11 @@ void TileDefinitionLoader::notifyRule(const std::string &name, const Base::Match
 	if (name != "def")
 		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
 
-	TileDefinition def;
-	def._name = values.find("name")->second;
-	def._glyph = values.find("glyph")->second[0];
-	def._isWalkable = (values.find("isWalkable")->second[0] == '1');
-	def._blocksSight = (values.find("blocksSight")->second[0] == '1');
-	def._isLiquid = (values.find("isLiquid")->second[0] == '1');
-
-	_tiles.push_back(def);
+	_tiles.push_back(TileDefinition(values.find("name")->second,
+	                                values.find("glyph")->second[0],
+	                                (values.find("isWalkable")->second[0] == '1'),
+	                                (values.find("blocksSight")->second[0] == '1'),
+	                                (values.find("isLiquid")->second[0] == '1')));
 }
 
 } // end of namespace Game
