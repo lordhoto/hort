@@ -23,38 +23,24 @@
 
 #include "tile.h"
 
-#include "base/parser.h"
-
-#include <list>
+#include "base/definitionloader.h"
 
 namespace Game {
 
 /**
  * A loader for a tile definition file.
  */
-class TileDefinitionLoader : public Base::ParserListener {
+class TileDefinitionLoader : public Base::DefinitionLoader<TileDefinition> {
 public:
+	TileDefinitionLoader();
+
 	/**
 	 * The tile definiton list.
 	 */
-	typedef std::list<TileDefinition> TileDefinitionList;
+	typedef DefinitionList TileDefinitionList;
 
-	/**
-	 * Load tile definitions from the given file.
-	 *
-	 * @param filename File to load from
-	 * @return the tile definitions
-	 */
-	TileDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
-
-	/**
-	 * Rule notifiaction as required by Base::ParserListener.
-	 *
-	 * @see Base::ParserListener::notifyRule
-	 */
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 private:
-	TileDefinitionList _tiles;
+	TileDefinition definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 };
 
 } // end of namespace Game

@@ -23,38 +23,24 @@
 
 #include "monsterdefinition.h"
 
-#include "base/parser.h"
-
-#include <list>
+#include "base/definitionloader.h"
 
 namespace Game {
 
 /**
  * A loader for a monster definition file.
  */
-class MonsterDefinitionLoader : public Base::ParserListener {
+class MonsterDefinitionLoader : public Base::DefinitionLoader<MonsterDefinition> {
 public:
+	MonsterDefinitionLoader();
+
 	/**
 	 * The tile definiton list.
 	 */
-	typedef std::list<MonsterDefinition> MonsterDefinitionList;
+	typedef DefinitionList MonsterDefinitionList;
 
-	/**
-	 * Load monster definitions from the given file.
-	 *
-	 * @param filename File to load from
-	 * @return the monster definitions
-	 */
-	MonsterDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
-
-	/**
-	 * Rule notifiaction as required by Base::ParserListener.
-	 *
-	 * @see Base::ParserListener::notifyRule
-	 */
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 private:
-	MonsterDefinitionList _monsters;
+	MonsterDefinition definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 };
 
 } // end of namespace Game

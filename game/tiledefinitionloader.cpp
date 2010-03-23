@@ -22,35 +22,16 @@
 
 namespace Game {
 
-TileDefinitionLoader::TileDefinitionList TileDefinitionLoader::load(const std::string &filename) throw (Base::NonRecoverableException) {
-	_tiles.clear();
-
-	Base::FileParser::RuleMap rules;
-
-	try {
-		rules["def"] = Base::Rule("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid");
-
-		Base::FileParser parser(filename, rules);
-		parser.parse(this);
-	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
-		throw Base::NonRecoverableException(e.toString());
-	} catch (Base::Exception &e) {
-		// TODO: More information is preferable
-		throw Base::NonRecoverableException(e.toString());
-	}
-
-	return _tiles;
+TileDefinitionLoader::TileDefinitionLoader()
+    : Base::DefinitionLoader<TileDefinition>("def-tile;%S,name;:=;%S,glyph;%D,isWalkable;%D,blocksSight;%D,isLiquid") {
 }
 
-void TileDefinitionLoader::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	if (name != "def")
-		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
-
-	_tiles.push_back(TileDefinition(values.find("name")->second,
-	                                values.find("glyph")->second[0],
-	                                (values.find("isWalkable")->second[0] == '1'),
-	                                (values.find("blocksSight")->second[0] == '1'),
-	                                (values.find("isLiquid")->second[0] == '1')));
+TileDefinition TileDefinitionLoader::definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
+	return TileDefinition(values.find("name")->second,
+	                      values.find("glyph")->second[0],
+	                      (values.find("isWalkable")->second[0] == '1'),
+	                      (values.find("blocksSight")->second[0] == '1'),
+	                      (values.find("isLiquid")->second[0] == '1'));
 }
 
 } // end of namespace Game
