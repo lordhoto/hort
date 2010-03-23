@@ -69,7 +69,7 @@ void DrawDescParser::notifyRule(const std::string &name, const Base::Matcher::Va
 	_descs[n->second] = DrawDesc(parseSymbol(g->second), parseColor(c->second), parseAttribs(a->second));
 }
 
-int DrawDescParser::parseSymbol(const std::string &value) {
+int DrawDescParser::parseSymbol(const std::string &value) throw (Base::ParserListener::Exception) {
 	if (value.size() == 1) {
 		return value[0];
 	} else {
@@ -98,11 +98,11 @@ int DrawDescParser::parseSymbol(const std::string &value) {
 		else if (value == "kDiamond")
 			return kDiamond;
 		else
-			throw std::string("Unknown glyph value \"" + value + '"');
+			throw Base::ParserListener::Exception("Unknown glyph value \"" + value + '"');
 	}
 }
 
-ColorPair DrawDescParser::parseColor(const std::string &value) {
+ColorPair DrawDescParser::parseColor(const std::string &value) throw (Base::ParserListener::Exception) {
 	if (value == "kWhiteOnBlack")
 		return kWhiteOnBlack;
 	else if (value == "kRedOnBlack")
@@ -118,10 +118,10 @@ ColorPair DrawDescParser::parseColor(const std::string &value) {
 	else if (value == "kCyanOnBlack")
 		return kCyanOnBlack;
 	else
-		throw std::string("Unknown color value \"" + value + '"');
+		throw Base::ParserListener::Exception("Unknown color value \"" + value + '"');
 }
 
-int DrawDescParser::parseAttribs(const std::string &value) {
+int DrawDescParser::parseAttribs(const std::string &value) throw (Base::ParserListener::Exception) {
 	if (value == "kAttribNormal")
 		return kAttribNormal;
 	else if (value == "kAttribUnderline")
@@ -145,7 +145,7 @@ int DrawDescParser::parseAttribs(const std::string &value) {
 	else if (value == "kAttribDimReverse")
 		return (kAttribDim | kAttribReverse);
 	else
-		throw std::string("Unknown attribs value \"" + value + '"');
+		throw Base::ParserListener::Exception("Unknown attribs value \"" + value + '"');
 }
 
 TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException) {

@@ -84,9 +84,9 @@ private:
 
 	DrawDescMap _descs;
 
-	int parseSymbol(const std::string &value);
-	ColorPair parseColor(const std::string &value);
-	int parseAttribs(const std::string &value);
+	int parseSymbol(const std::string &value) throw (Base::ParserListener::Exception);
+	ColorPair parseColor(const std::string &value) throw (Base::ParserListener::Exception);
+	int parseAttribs(const std::string &value) throw (Base::ParserListener::Exception);
 };
 
 typedef ASCIIRepresentation<Game::Tile> TileDDMap;
