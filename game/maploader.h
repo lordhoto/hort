@@ -18,14 +18,12 @@
  *
  */
 
-#ifndef GAME_LEVEL_LOADER_H
-#define GAME_LEVEL_LOADER_H
+#ifndef GAME_MAPLOADER_H
+#define GAME_MAPLOADER_H
 
-#include "game.h"
-#include "level.h"
+#include "map.h"
 
-#include "base/parser.h"
-#include "base/geo.h"
+#include "base/exception.h"
 
 #include <string>
 #include <list>
@@ -33,36 +31,31 @@
 namespace Game {
 
 /**
- * Object which loads a level from a directory.
- *
- * It loads the map from "path/map.def"
- * and the objects on the map from "path/objects.def"
+ * Object which loads a map from a file.
  */
-class LevelLoader : private Base::ParserListener {
+class MapLoader {
 public:
 	/**
-	 * Creates a level loader, which loads from the
-	 * given path.
+	 * Creates a map loader, which loads from the given
+	 * filename.
+	 *
+	 * @param filename Filename of the map
 	 */
-	LevelLoader(const std::string &path);
-	~LevelLoader() { delete _level; }
+	MapLoader(const std::string &filename);
 
 	/**
-	 * Load the level.
+	 * Load the map.
 	 *
-	 * @param gs Game state associated with the new level.
-	 * @return A pointer to the new level object.
+	 * @return A pointer to a new map object.
 	 */
-	Level *load(GameState &gs) throw (Base::NonRecoverableException);
+	Map *load() throw (Base::NonRecoverableException);
 private:
-	const std::string _path;
+	const std::string _filename;
 
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
-	void processMonster(const Base::Matcher::ValueMap &values);
-	void processStartPoint(const Base::Matcher::ValueMap &values);
+	void throwError(const std::string &error, int line) throw (Base::NonRecoverableException);
 
-	Base::Point _start;
-	Level *_level;
+	typedef std::list<std::string> StringList;
+	StringList _lines;
 };
 
 } // end of namespace Game

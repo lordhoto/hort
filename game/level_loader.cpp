@@ -19,76 +19,12 @@
  */
 
 #include "level_loader.h"
-#include "tiledatabase.h"
+#include "maploader.h"
 
 #include <fstream>
-#include <sstream>
 #include <cassert>
-#include <stdlib.h> // for atoi
 
 namespace Game {
-
-MapLoader::MapLoader(const std::string &filename)
-    : _filename(filename), _lines() {
-	std::ifstream in(filename.c_str());
-
-	while (!in.eof()) {
-		std::string line;
-		std::getline(in, line);
-		_lines.push_back(line);
-	}
-}
-
-Map *MapLoader::load() throw (Base::NonRecoverableException) {
-	if (_lines.empty() || _lines.size() < 3)
-		throwError("Contains too few lines", 0);
-
-	int lineCount = 2;
-
-	TileDatabase &tdb = TileDatabase::instance();
-	const unsigned int w = ::atoi(_lines.front().c_str()); _lines.pop_front();
-	const unsigned int h = ::atoi(_lines.front().c_str()); _lines.pop_front();
-
-	if (_lines.size() < h)
-		throwError("Height exceeds remaining lines", lineCount);
-
-	std::vector<Tile> tiles;
-	tiles.resize(w * h);
-
-	const Tile lastValidTile = tdb.getTileCount();
-
-	for (unsigned int y = 0; y < h; ++y) {
-		if (_lines.empty())
-			throwError("Unexpected end of file", lineCount);
-
-		std::string line = _lines.front(); _lines.pop_front();
-		++lineCount;
-
-		if (line.empty()) {
-			--y;
-			continue;
-		}
-
-		if (line.size() < w)
-			throwError("Unexpected end of line", lineCount);
-
-		for (unsigned int x = 0; x < w; ++x) {
-			const Tile tile = tdb.queryTile(line[x]);
-			if (tile >= lastValidTile)
-				throwError(std::string("Undefined tile glyph \"") + line[x] + "\"", lineCount);
-
-			tiles[y * w + x] = tile;
-		}
-	}
-
-	return new Map(w, h, tiles);
-}
-
-void MapLoader::throwError(const std::string &error, int line) throw (Base::NonRecoverableException) {
-	std::stringstream ss;
-	ss << "Map loading failed. File: " << _filename << " Line: " << line << " ERROR: " << error;
-	throw Base::NonRecoverableException(ss.str());
-}
 
 LevelLoader::LevelLoader(const std::string &path)
     : _path(path), _level(0) {

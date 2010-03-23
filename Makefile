@@ -23,6 +23,7 @@ OBJS := base/main.o \
 		game/level_loader.o \
 		game/tiledatabase.o \
 		game/tiledefinitionloader.o \
+		game/maploader.o \
 		ai/fsm.o \
 		ai/monster.o
 
