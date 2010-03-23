@@ -29,15 +29,47 @@
 
 namespace Game {
 
+/**
+ * A type describing a monster type.
+ */
 typedef unsigned int MonsterType;
 
+/**
+ * The monster type of the player.
+ */
 extern const MonsterType kMonsterPlayer;
 
+/**
+ * The monster attributes.
+ */
 enum Attribute {
+	/**
+	 * The wisdom attribute of a monster.
+	 */
 	kAttribWisdom = 0,
+
+	/**
+	 * The dexterity attribute of a monster.
+	 */
 	kAttribDexterity,
+
+	/**
+	 * The agility attribute of a monster.
+	 */
 	kAttribAgility,
+
+	/**
+	 * The strength attribute of a monster.
+	 */
 	kAttribStrength,
+
+	/**
+	 * How many different attributes exist.
+	 *
+	 * Note that his enumeration values should
+	 * never be used for accesing an specific
+	 * attribute value.
+	 */
 	kAttribMaxTypes
 };
 
