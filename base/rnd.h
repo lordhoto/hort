@@ -21,6 +21,8 @@
 #ifndef BASE_RND_H
 #define BASE_RND_H
 
+#include "defs.h"
+
 namespace Base {
 
 /**
@@ -55,6 +57,22 @@ unsigned int rollDice(unsigned int num, unsigned int pips);
  * @return The random value.
  */
 unsigned int rndValueRange(unsigned int min, unsigned int max);
+
+/**
+ * Gets a random number in the given range.
+ *
+ * @param range The range
+ * @return The random value.
+ */
+unsigned int rndValueRange(const IntRange &range);
+
+/**
+ * Gets a random number in the given range.
+ *
+ * @param range The range
+ * @return The random value.
+ */
+unsigned int rndValueRange(const ByteRange &range);
 
 } // end of namespace Base
 

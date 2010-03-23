@@ -54,11 +54,11 @@ Monster *MonsterDatabase::createNewMonster(const MonsterType type) const {
 		return 0;
 
 	const MonsterDefinition &def = i->second;
-	const unsigned char wis = Base::rndValueRange(def.getDefaultAttribs(kAttribWisdom).min(), def.getDefaultAttribs(kAttribWisdom).max());
-	const unsigned char dex = Base::rndValueRange(def.getDefaultAttribs(kAttribDexterity).min(), def.getDefaultAttribs(kAttribDexterity).max());
-	const unsigned char agi = Base::rndValueRange(def.getDefaultAttribs(kAttribAgility).min(), def.getDefaultAttribs(kAttribAgility).max());
-	const unsigned char str = Base::rndValueRange(def.getDefaultAttribs(kAttribStrength).min(), def.getDefaultAttribs(kAttribStrength).max());
-	const int hp = Base::rndValueRange(def.getDefaultHitPoints().min(), def.getDefaultHitPoints().max());
+	const unsigned char wis = Base::rndValueRange(def.getDefaultAttribs(kAttribWisdom));
+	const unsigned char dex = Base::rndValueRange(def.getDefaultAttribs(kAttribDexterity));
+	const unsigned char agi = Base::rndValueRange(def.getDefaultAttribs(kAttribAgility));
+	const unsigned char str = Base::rndValueRange(def.getDefaultAttribs(kAttribStrength));
+	const int hp = Base::rndValueRange(def.getDefaultHitPoints());
 
 	return new Monster(type, wis, dex, agi, str, hp, def.getDefaultSpeed(), 0, 0);
 }

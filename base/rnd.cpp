@@ -54,5 +54,13 @@ unsigned int rndValueRange(unsigned int min, unsigned int max) {
 	return min + rollDice(max - min + 1) - 1;
 }
 
+unsigned int rndValueRange(const IntRange &range) {
+	return rndValueRange(range.min(), range.max());
+}
+
+unsigned int rndValueRange(const ByteRange &range) {
+	return rndValueRange(range.min(), range.max());
+}
+
 } // end of namespace Base
 
