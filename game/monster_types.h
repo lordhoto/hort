@@ -108,6 +108,17 @@ private:
 		Base::ByteRange defaultAttribs[kAttribMaxTypes];
 		Base::IntRange defaultHitPoints;
 		unsigned char defaultSpeed;
+
+		MonsterDefinition() : name(), defaultAttribs(), defaultHitPoints(), defaultSpeed() {}
+		MonsterDefinition(const std::string &name, const Base::ByteRange &wisdom, const Base::ByteRange &dexterity,
+		                  const Base::ByteRange &agility, const Base::ByteRange &strength, const Base::IntRange &hitPoints,
+		                  const unsigned char defaultSpeed)
+		    : name(name), defaultAttribs(), defaultHitPoints(hitPoints), defaultSpeed(defaultSpeed) {
+			defaultAttribs[kAttribWisdom] = wisdom;
+			defaultAttribs[kAttribDexterity] = dexterity;
+			defaultAttribs[kAttribAgility] = agility;
+			defaultAttribs[kAttribStrength] = strength;
+		}
 	};
 
 	MonsterType _nextMonsterType;

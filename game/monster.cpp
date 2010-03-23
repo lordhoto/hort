@@ -112,16 +112,14 @@ void MonsterDatabase::notifyRule(const std::string &name, const Base::Matcher::V
 		const int hpMax = boost::lexical_cast<int>(values.find("hpMax")->second);
 		const unsigned char speed = boost::lexical_cast<int>(values.find("speed")->second);
 
-		MonsterDefinition def;
-		def.name = n;
-		def.defaultAttribs[kAttribWisdom] = Base::ByteRange(wisMin, wisMax);
-		def.defaultAttribs[kAttribDexterity] = Base::ByteRange(dexMin, dexMax);
-		def.defaultAttribs[kAttribAgility] = Base::ByteRange(agiMin, agiMax);
-		def.defaultAttribs[kAttribStrength] = Base::ByteRange(strMin, strMax);
-		def.defaultHitPoints = Base::IntRange(hpMin, hpMax);
-		def.defaultSpeed = speed;
+		_monsterDefs[_nextMonsterType] = MonsterDefinition(n,
+		                                     Base::ByteRange(wisMin, wisMax),
+		                                     Base::ByteRange(dexMin, dexMax),
+		                                     Base::ByteRange(agiMin, agiMax),
+		                                     Base::ByteRange(strMin, strMax),
+		                                     Base::IntRange(hpMin, hpMax),
+		                                     speed);
 
-		_monsterDefs[_nextMonsterType] = def;
 		_monsterNames[n] = _nextMonsterType;
 		++_nextMonsterType;
 	} catch (boost::bad_lexical_cast &e) {
