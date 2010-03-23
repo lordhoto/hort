@@ -21,7 +21,7 @@
 #ifndef GAME_MONSTERDATABASE_H
 #define GAME_MONSTERDATABASE_H
 
-#include "monster_types.h"
+#include "monsterdefinition.h"
 #include "monster.h"
 
 #include "base/exception.h"

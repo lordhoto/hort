@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GAME_MONSTER_TYPES_H
-#define GAME_MONSTER_TYPES_H
+#ifndef GAME_MONSTERDEFINITION_H
+#define GAME_MONSTERDEFINITION_H
 
 #include "base/defs.h"
 

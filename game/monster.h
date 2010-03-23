@@ -21,7 +21,7 @@
 #ifndef GAME_MONSTER_H
 #define GAME_MONSTER_H
 
-#include "monster_types.h"
+#include "monsterdefinition.h"
 
 #include "base/geo.h"
 

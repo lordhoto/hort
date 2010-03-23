@@ -23,7 +23,7 @@
 
 #include "base/rnd.h"
 
-#include "game/monster_types.h"
+#include "game/monsterdefinition.h"
 #include "game/defs.h"
 
 #include <map>

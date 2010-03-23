@@ -21,7 +21,7 @@
 #ifndef GAME_MONSTERDEFINITIONLOADER_H
 #define GAME_MONSTERDEFINITIONLOADER_H
 
-#include "monster_types.h"
+#include "monsterdefinition.h"
 
 #include "base/parser.h"
 

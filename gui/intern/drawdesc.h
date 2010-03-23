@@ -26,7 +26,7 @@
 #include "base/parser.h"
 
 #include "game/map.h"
-#include "game/monster_types.h"
+#include "game/monsterdefinition.h"
 
 #include <map>
 #include <string>
