@@ -79,10 +79,10 @@ private:
 };
 
 typedef ASCIIRepresentation<Game::Tile> TileDDMap;
-TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException);
+TileDDMap *parseTileDefinitons(const std::string &filename) throw (Base::NonRecoverableException);
 
 typedef ASCIIRepresentation<Game::MonsterType> MonsterDDMap;
-MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::string, Base::NonRecoverableException);
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (Base::NonRecoverableException);
 
 } // end of namespace Intern
 } // end of namespace GUI

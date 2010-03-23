@@ -122,7 +122,7 @@ int DrawDescParser::parseAttribs(const std::string &value) throw (Base::ParserLi
 		throw Base::ParserListener::Exception("Unknown attribs value \"" + value + '"');
 }
 
-TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
+TileDDMap *parseTileDefinitons(const std::string &filename) throw (Base::NonRecoverableException) {
 	DrawDescParser parser("-tile");
 	DrawDescParser::DefinitionList dds = parser.load(filename);
 	TileDDMap::DrawDescMap drawDescs;
@@ -135,21 +135,21 @@ TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, 
 		if (tile < lastTileType)
 			drawDescs[tile] = i.second;
 		else
-			throw std::string("Unknown tile \"" + i.first + '"');
+			throw Base::NonRecoverableException("Unknown tile \"" + i.first + '"');
 	}
 
 	for (Game::Tile i = 0; i < lastTileType; ++i) {
 		if (drawDescs.find(i) == drawDescs.end()) {
 			const Game::TileDefinition *def = tdb.queryTileDefinition(i);
 			assert(i);
-			throw std::string("Missing tile definition for \"" + def->getName() + '"');
+			throw Base::NonRecoverableException("Missing tile definition for \"" + def->getName() + '"');
 		}
 	}
 
 	return new TileDDMap(drawDescs);
 }
 
-MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::string, Base::NonRecoverableException) {
+MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (Base::NonRecoverableException) {
 	DrawDescParser parser("-monster");
 	DrawDescParser::DefinitionList dds = parser.load(filename);
 	MonsterDDMap::DrawDescMap drawDescs;
@@ -160,14 +160,14 @@ MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::s
 	BOOST_FOREACH(const DrawDescParser::DefinitionList::value_type &i, dds) {
 		const Game::MonsterType type = mdb.queryMonsterType(i.first);
 		if (type == lastMonsterType)
-			throw std::string("Undefined monster \"" + i.first + '"');
+			throw Base::NonRecoverableException("Undefined monster \"" + i.first + '"');
 
 		drawDescs[type] = i.second;
 	}
 
 	for (Game::MonsterType i = 0; i < lastMonsterType; ++i) {
 		if (drawDescs.find(i) == drawDescs.end())
-			throw std::string("Missing monster definition for \"" + std::string(mdb.getMonsterName(i)) + '"');
+			throw Base::NonRecoverableException("Missing monster definition for \"" + std::string(mdb.getMonsterName(i)) + '"');
 	}
 
 	return new MonsterDDMap(drawDescs);
