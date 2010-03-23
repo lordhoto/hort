@@ -18,10 +18,10 @@
  *
  */
 
-#ifndef GAME_TILEDEFINITIONLOADER_H
-#define GAME_TILEDEFINITIONLOADER_H
+#ifndef GAME_MONSTERDEFINITIONLOADER_H
+#define GAME_MONSTERDEFINITIONLOADER_H
 
-#include "tile.h"
+#include "monster_types.h"
 
 #include "base/parser.h"
 
@@ -30,22 +30,22 @@
 namespace Game {
 
 /**
- * A loader for a tile definition file.
+ * A loader for a monster definition file.
  */
-class TileDefinitionLoader : public Base::ParserListener {
+class MonsterDefinitionLoader : public Base::ParserListener {
 public:
 	/**
 	 * The tile definiton list.
 	 */
-	typedef std::list<TileDefinition> TileDefinitionList;
+	typedef std::list<MonsterDefinition> MonsterDefinitionList;
 
 	/**
-	 * Load tile definitions from the given file.
+	 * Load monster definitions from the given file.
 	 *
 	 * @param filename File to load from
-	 * @return the tile definitions
+	 * @return the monster definitions
 	 */
-	TileDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
+	MonsterDefinitionList load(const std::string &filename) throw (Base::NonRecoverableException);
 
 	/**
 	 * Rule notifiaction as required by Base::ParserListener.
@@ -54,7 +54,7 @@ public:
 	 */
 	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 private:
-	TileDefinitionList _tiles;
+	MonsterDefinitionList _monsters;
 };
 
 } // end of namespace Game

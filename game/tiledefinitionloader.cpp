@@ -20,8 +20,6 @@
 
 #include "tiledefinitionloader.h"
 
-#include <boost/foreach.hpp>
-
 namespace Game {
 
 TileDefinitionLoader::TileDefinitionList TileDefinitionLoader::load(const std::string &filename) throw (Base::NonRecoverableException) {

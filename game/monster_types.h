@@ -22,10 +22,11 @@
 #define GAME_MONSTER_TYPES_H
 
 #include "base/defs.h"
-#include "base/parser.h"
+#include "base/exception.h"
 
 #include <string>
 #include <map>
+#include <cassert>
 
 namespace Game {
 
@@ -76,12 +77,55 @@ enum Attribute {
 class Monster;
 
 /**
+ * Definition of a monster.
+ */
+class MonsterDefinition {
+public:
+	MonsterDefinition() : _name(), _defaultAttribs(), _defaultHitPoints(), _defaultSpeed() {}
+	MonsterDefinition(const std::string &name, const Base::ByteRange &wisdom, const Base::ByteRange &dexterity,
+	                  const Base::ByteRange &agility, const Base::ByteRange &strength, const Base::IntRange &hitPoints,
+	                  const unsigned char defaultSpeed)
+	    : _name(name), _defaultAttribs(), _defaultHitPoints(hitPoints), _defaultSpeed(defaultSpeed) {
+		_defaultAttribs[kAttribWisdom] = wisdom;
+		_defaultAttribs[kAttribDexterity] = dexterity;
+		_defaultAttribs[kAttribAgility] = agility;
+		_defaultAttribs[kAttribStrength] = strength;
+	}
+
+	/**
+	 * @return the name of the monster.
+	 */
+	const std::string &getName() const { return _name; }
+
+	/**
+	 * @return the specified attribute.
+	 */
+	const Base::ByteRange &getDefaultAttribs(Attribute attrib) const { assert(attrib != kAttribMaxTypes); return _defaultAttribs[attrib]; }
+
+	/**
+	 * @return the default hit points.
+	 */
+	const Base::IntRange &getDefaultHitPoints() const { return _defaultHitPoints; }
+
+	/**
+	 * @return the default speed.
+	 */
+	unsigned char getDefaultSpeed() const { return _defaultSpeed; }
+private:
+	std::string _name;
+
+	Base::ByteRange _defaultAttribs[kAttribMaxTypes];
+	Base::IntRange _defaultHitPoints;
+	unsigned char _defaultSpeed;
+};
+
+/**
  * Object which handles all monster types.
  *
  * It is used to keep track of all the different monsters,
  * which can be defined via external files.
  */
-class MonsterDatabase : private Base::ParserListener {
+class MonsterDatabase {
 public:
 	/**
 	 * Loads the monster database from a file.
@@ -131,51 +175,6 @@ public:
 private:
 	MonsterDatabase();
 	static MonsterDatabase *_instance;
-
-	void notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
-
-	/**
-	 * Definition of a monster.
-	 */
-	class MonsterDefinition {
-	public:
-		MonsterDefinition() : _name(), _defaultAttribs(), _defaultHitPoints(), _defaultSpeed() {}
-		MonsterDefinition(const std::string &name, const Base::ByteRange &wisdom, const Base::ByteRange &dexterity,
-		                  const Base::ByteRange &agility, const Base::ByteRange &strength, const Base::IntRange &hitPoints,
-		                  const unsigned char defaultSpeed)
-		    : _name(name), _defaultAttribs(), _defaultHitPoints(hitPoints), _defaultSpeed(defaultSpeed) {
-			_defaultAttribs[kAttribWisdom] = wisdom;
-			_defaultAttribs[kAttribDexterity] = dexterity;
-			_defaultAttribs[kAttribAgility] = agility;
-			_defaultAttribs[kAttribStrength] = strength;
-		}
-
-		/**
-		 * @return the name of the monster.
-		 */
-		const std::string &getName() const { return _name; }
-
-		/**
-		 * @return the specified attribute.
-		 */
-		const Base::ByteRange &getDefaultAttribs(Attribute attrib) const { assert(attrib != kAttribMaxTypes); return _defaultAttribs[attrib]; }
-
-		/**
-		 * @return the default hit points.
-		 */
-		const Base::IntRange &getDefaultHitPoints() const { return _defaultHitPoints; }
-
-		/**
-		 * @return the default speed.
-		 */
-		unsigned char getDefaultSpeed() const { return _defaultSpeed; }
-	private:
-		std::string _name;
-
-		Base::ByteRange _defaultAttribs[kAttribMaxTypes];
-		Base::IntRange _defaultHitPoints;
-		unsigned char _defaultSpeed;
-	};
 
 	MonsterType _nextMonsterType;
 	typedef std::map<MonsterType, MonsterDefinition> MonsterDefMap;

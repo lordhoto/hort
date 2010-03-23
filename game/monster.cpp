@@ -19,12 +19,13 @@
  */
 
 #include "monster.h"
+#include "monsterdefinitionloader.h"
 
 #include "base/rnd.h"
 
 #include <cassert>
 
-#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 namespace Game {
 
@@ -33,18 +34,13 @@ void MonsterDatabase::load(const std::string &filename) throw (Base::NonRecovera
 	_monsterNames.clear();
 	_nextMonsterType = 0;
 
-	Base::FileParser::RuleMap rules;
+	MonsterDefinitionLoader loader;
+	MonsterDefinitionLoader::MonsterDefinitionList monsters = loader.load(filename);
 
-	try {
-		rules["def"] = Base::Rule("def-monster;%S,name;:=;%D,wisMin;%D,wisMax;%D,dexMin;%D,dexMax;%D,agiMin;%D,agiMax;%D,strMin;%D,strMax;%D,hpMin;%D,hpMax;%D,speed");
-
-		Base::FileParser parser(filename, rules);
-		parser.parse(this);
-	} catch (Base::Rule::InvalidRuleDefinitionException &e) {
-		throw Base::NonRecoverableException(e.toString());
-	} catch (Base::Exception &e) {
-		// TODO: More information is preferable
-		throw Base::NonRecoverableException(e.toString());
+	BOOST_FOREACH(const MonsterDefinition &def, monsters) {
+		_monsterDefs[_nextMonsterType] = def;
+		_monsterNames[def.getName()] = _nextMonsterType;
+		++_nextMonsterType;
 	}
 }
 
@@ -92,41 +88,6 @@ void MonsterDatabase::destroy() {
 
 MonsterDatabase::MonsterDatabase()
     : _nextMonsterType(0), _monsterDefs(), _monsterNames() {
-}
-
-void MonsterDatabase::notifyRule(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	if (name != "def")
-		throw Base::ParserListener::Exception("Unknown rule \"" + name + "\"");
-
-	try {
-		const std::string &n = values.find("name")->second;
-		const int wisMin = boost::lexical_cast<int>(values.find("wisMin")->second);
-		const int wisMax = boost::lexical_cast<int>(values.find("wisMax")->second);
-		const int dexMin = boost::lexical_cast<int>(values.find("dexMin")->second);
-		const int dexMax = boost::lexical_cast<int>(values.find("dexMax")->second);
-		const int agiMin = boost::lexical_cast<int>(values.find("agiMin")->second);
-		const int agiMax = boost::lexical_cast<int>(values.find("agiMax")->second);
-		const int strMin = boost::lexical_cast<int>(values.find("strMin")->second);
-		const int strMax = boost::lexical_cast<int>(values.find("strMax")->second);
-		const int hpMin = boost::lexical_cast<int>(values.find("hpMin")->second);
-		const int hpMax = boost::lexical_cast<int>(values.find("hpMax")->second);
-		const unsigned char speed = boost::lexical_cast<int>(values.find("speed")->second);
-
-		_monsterDefs[_nextMonsterType] = MonsterDefinition(n,
-		                                     Base::ByteRange(wisMin, wisMax),
-		                                     Base::ByteRange(dexMin, dexMax),
-		                                     Base::ByteRange(agiMin, agiMax),
-		                                     Base::ByteRange(strMin, strMax),
-		                                     Base::IntRange(hpMin, hpMax),
-		                                     speed);
-
-		_monsterNames[n] = _nextMonsterType;
-		++_nextMonsterType;
-	} catch (boost::bad_lexical_cast &e) {
-		// This should never happen, since the values are
-		// prechecked by the parser.
-		assert(false);
-	}
 }
 
 MonsterDatabase *MonsterDatabase::_instance = 0;
