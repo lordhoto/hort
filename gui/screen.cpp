@@ -23,6 +23,8 @@
 #include <cassert>
 #include <sstream>
 
+#include <boost/foreach.hpp>
+
 namespace GUI {
 
 Screen::Screen(const Game::Monster &player)
@@ -75,15 +77,15 @@ void Screen::update(bool drawMsg) {
 		}
 	}
 
-	for (MonsterList::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		const unsigned int monsterX = (*i)->getX(), monsterY = (*i)->getY();
+	BOOST_FOREACH(const MonsterList::value_type monster, _monsters) {
+		const unsigned int monsterX = monster->getX(), monsterY = monster->getY();
 
 		if (monsterX < _mapOffsetX || monsterY < _mapOffsetY
 		    || monsterX >= _mapOffsetX + outputWidth
 		    || monsterY >= _mapOffsetY + outputHeight)
 			continue;
 
-		const Intern::DrawDesc &desc = _monsterDrawDescs->lookUp((*i)->getType());
+		const Intern::DrawDesc &desc = _monsterDrawDescs->lookUp(monster->getType());
 		_mapWindow->printChar(desc._symbol, monsterX - _mapOffsetX, monsterY - _mapOffsetY, desc._color, desc._attribs);
 	}
 

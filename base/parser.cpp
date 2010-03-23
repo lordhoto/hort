@@ -203,12 +203,12 @@ void FileParser::parse(ParserListener *listener) throw (NoMatchingRuleException,
 }
 
 bool FileParser::parseLine(const std::string &line, ParserListener *listener) throw (ParserListener::Exception) {
-	for (RuleMap::const_iterator i = _rules.begin(); i != _rules.end(); ++i) {
-		Matcher matcher(line, i->second);
+	BOOST_FOREACH(const RuleMap::value_type &i, _rules) {
+		Matcher matcher(line, i.second);
 
 		if (matcher.wasSuccessful()) {
 			if (listener)
-				listener->notifyRule(i->first, matcher.getValues());
+				listener->notifyRule(i.first, matcher.getValues());
 			return true;
 		}
 	}

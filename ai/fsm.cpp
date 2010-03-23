@@ -22,6 +22,8 @@
 
 #include <cassert>
 
+#include <boost/foreach.hpp>
+
 namespace AI {
 namespace FSM {
 
@@ -39,8 +41,8 @@ StateID State::queryTransition(InputID input) const {
 }
 
 FSM::~FSM() {
-	for (StateMap::iterator i = _states.begin(); i != _states.end(); ++i)
-		delete i->second;
+	BOOST_FOREACH(StateMap::value_type &i, _states)
+		delete i.second;
 	_states.clear();
 }
 

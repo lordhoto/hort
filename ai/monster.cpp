@@ -29,6 +29,8 @@
 #include <map>
 #include <cmath>
 
+#include <boost/foreach.hpp>
+
 namespace AI {
 
 namespace {
@@ -69,9 +71,7 @@ FSM::FSM *createMonsterFSM() {
 	typedef std::map<kMonsterFSMStateID, FSM::State *> StateMap;
 	StateMap states;
 
-	for (size_t i = 0; i < sizeof(s_monsterFSMTransitions)/sizeof(s_monsterFSMTransitions[0]); ++i) {
-		const FSMTransition &trans = s_monsterFSMTransitions[i];
-
+	BOOST_FOREACH(const FSMTransition &trans, s_monsterFSMTransitions) {
 		StateMap::iterator i = states.find(trans._state);
 		if (i == states.end()) {
 			FSM::State *newState = new FSM::State();
@@ -83,8 +83,8 @@ FSM::FSM *createMonsterFSM() {
 	}
 
 	FSM::FSM *fsm = new FSM::FSM();
-	for (StateMap::iterator i = states.begin(); i != states.end(); ++i)
-		fsm->addState(i->first, i->second);
+	BOOST_FOREACH(StateMap::value_type &i, states)
+		fsm->addState(i.first, i.second);
 
 	return fsm;
 }
@@ -110,23 +110,23 @@ void Monster::removeMonster(const Game::MonsterID monster) {
 }
 
 void Monster::update() {
-	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (!_level.isAllowedToAct(i->first))
+	BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
+		if (!_level.isAllowedToAct(i.first))
 			continue;
 
 		// TODO: Proper implementation of this :-D
-		switch (i->second._fsmState) {
+		switch (i.second._fsmState) {
 		case kMonsterIdle: {
-			Base::Point newPos = i->second._monster->getPos() + Game::getDirection(Base::rollDice(9));
+			Base::Point newPos = i.second._monster->getPos() + Game::getDirection(Base::rollDice(9));
 
 			bool didAction = false;
-			if (newPos != i->second._monster->getPos()) {
+			if (newPos != i.second._monster->getPos()) {
 				if ((unsigned int)newPos._x <= _level.getMap().width()
 				    && (unsigned int)newPos._y <= _level.getMap().height()) {
 					if (_level.isWalkable(newPos)) {
 						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 						if (!def._isLiquid) {
-							_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second._monster, newPos));
+							_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
 							didAction = true;
 						}
 					}
@@ -134,36 +134,36 @@ void Monster::update() {
 			}
 
 			if (!didAction)
-				_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kNoReason));
+				_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kNoReason));
 			} break;
 
 		case kMonsterWary:
 			if (_player) {
-				int xDist = _player->getX() - i->second._monster->getX();
-				int yDist = _player->getY() - i->second._monster->getY();
+				int xDist = _player->getX() - i.second._monster->getX();
+				int yDist = _player->getY() - i.second._monster->getY();
 
 				int xAdd = (xDist < 0) ? -1 : ((xDist > 0) ? +1 : 0);
 				int yAdd = (yDist < 0) ? -1 : ((yDist > 0) ? +1 : 0);
 
-				Base::Point newPos = i->second._monster->getPos();
+				Base::Point newPos = i.second._monster->getPos();
 				newPos._x += xAdd;
 				newPos._y += yAdd;
 
 				if (_level.isWalkable(newPos)) {
 					const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 					if (!def._isLiquid)
-						_eventDisp.dispatch(Game::createMoveEvent(i->first, i->second._monster, newPos));
+						_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
 				} else {
-					_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+					_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kWary));
 				}
 			} else {
-				_eventDisp.dispatch(Game::createIdleEvent(i->first, Game::Event::Idle::kWary));
+				_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kWary));
 			}
 			break;
 
 		case kMonsterAttack:
 			if (_player)
-				_eventDisp.dispatch(Game::createAttackEvent(i->first, Game::kPlayerMonsterID));
+				_eventDisp.dispatch(Game::createAttackEvent(i.first, Game::kPlayerMonsterID));
 			break;
 
 		default:
@@ -175,11 +175,11 @@ void Monster::update() {
 void Monster::processEvent(const Game::Event &event) {
 	if (event.type == Game::Event::kTypeMove) {
 		if (event.move.monster == Game::kPlayerMonsterID) {
-			for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-				_fsm->setState(i->second._fsmState);
+			BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
+				_fsm->setState(i.second._fsmState);
 
 				// Calculate distance
-				const double dist = event.move.newPos.distanceTo(i->second._monster->getPos());
+				const double dist = event.move.newPos.distanceTo(i.second._monster->getPos());
 
 				if (dist <= std::sqrt(2))
 					_fsm->process(kPlayerTriggerDist2);
@@ -188,7 +188,7 @@ void Monster::processEvent(const Game::Event &event) {
 				else
 					_fsm->process(kPlayerTriggerDist0);
 
-				i->second._fsmState = _fsm->getState();
+				i.second._fsmState = _fsm->getState();
 			}
 		} else if (_player) {
 			MonsterMap::iterator i = _monsters.find(event.move.monster);

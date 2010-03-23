@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <boost/foreach.hpp>
+
 namespace GUI {
 namespace Intern {
 
@@ -155,12 +157,12 @@ TileDDMap *parseTileDefinitons(const std::string &filename) throw (std::string, 
 	Game::TileDatabase &tdb = Game::TileDatabase::instance();
 	const Game::Tile lastTileType = tdb.getTileCount();
 
-	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
-		const Game::Tile tile = tdb.queryTile(i->first);
+	BOOST_FOREACH(const DrawDescParser::DrawDescMap::value_type &i, dds) {
+		const Game::Tile tile = tdb.queryTile(i.first);
 		if (tile < lastTileType)
-			drawDescs[tile] = i->second;
+			drawDescs[tile] = i.second;
 		else
-			throw std::string("Unknown tile \"" + i->first + '"');
+			throw std::string("Unknown tile \"" + i.first + '"');
 	}
 
 	for (Game::Tile i = 0; i < lastTileType; ++i) {
@@ -184,12 +186,12 @@ MonsterDDMap *parseMonsterDefinitions(const std::string &filename) throw (std::s
 	Game::MonsterDatabase &mdb = g_monsterDatabase;
 	const Game::MonsterType lastMonsterType = mdb.getMonsterTypeCount();
 
-	for (DrawDescParser::DrawDescMap::const_iterator i = dds.begin(); i != dds.end(); ++i) {
-		const Game::MonsterType type = mdb.queryMonsterType(i->first);
+	BOOST_FOREACH(const DrawDescParser::DrawDescMap::value_type &i, dds) {
+		const Game::MonsterType type = mdb.queryMonsterType(i.first);
 		if (type == lastMonsterType)
-			throw std::string("Undefined monster \"" + i->first + '"');
+			throw std::string("Undefined monster \"" + i.first + '"');
 
-		drawDescs[type] = i->second;
+		drawDescs[type] = i.second;
 	}
 
 	for (Game::MonsterType i = 0; i < lastMonsterType; ++i) {

@@ -52,18 +52,18 @@ const TileDefinition *TileDatabase::queryTileDefinition(const Tile tile) const {
 }
 
 Tile TileDatabase::queryTile(const std::string &name) const {
-	for (TileDefMap::const_iterator i = _tileDefinitions.begin(); i != _tileDefinitions.end(); ++i) {
-		if (i->second._name == name)
-			return i->first;
+	BOOST_FOREACH(const TileDefMap::value_type &i, _tileDefinitions) {
+		if (i.second._name == name)
+			return i.first;
 	}
 
 	return getTileCount();
 }
 
 Tile TileDatabase::queryTile(const char glyph) const {
-	for (TileDefMap::const_iterator i = _tileDefinitions.begin(); i != _tileDefinitions.end(); ++i) {
-		if (i->second._glyph == glyph)
-			return i->first;
+	BOOST_FOREACH(const TileDefMap::value_type &i, _tileDefinitions) {
+		if (i.second._glyph == glyph)
+			return i.first;
 	}
 
 	return getTileCount();

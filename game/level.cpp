@@ -25,6 +25,8 @@
 
 #include <cassert>
 
+#include <boost/foreach.hpp>
+
 namespace Game {
 
 Level::Level(Map *map, GameState &gs)
@@ -43,9 +45,9 @@ Level::Level(Map *map, GameState &gs)
 Level::~Level() {
 	makeInactive();
 
-	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (i->first != kPlayerMonsterID)
-			delete i->second._monster;
+	BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
+		if (i.first != kPlayerMonsterID)
+			delete i.second._monster;
 	}
 	delete _map;
 }
@@ -54,8 +56,8 @@ void Level::makeActive(GUI::Screen &screen, Monster &player) {
 	makeInactive();
 
 	screen.setMap(_map);
-	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i)
-		screen.addObject(i->second._monster);
+	BOOST_FOREACH(const MonsterMap::value_type &i, _monsters)
+		screen.addObject(i.second._monster);
 	screen.addObject(&player);
 	_screen = &screen;
 
@@ -92,9 +94,9 @@ bool Level::isWalkable(const Base::Point &p) const {
 }
 
 MonsterID Level::monsterAt(const Base::Point &p) const {
-	for (MonsterMap::const_iterator i = _monsters.begin(); i != _monsters.end(); ++i) {
-		if (i->second._monster->getPos() == p)
-			return i->first;
+	BOOST_FOREACH(const MonsterMap::value_type &i, _monsters) {
+		if (i.second._monster->getPos() == p)
+			return i.first;
 	}
 
 	return kInvalidMonsterID;
@@ -157,23 +159,20 @@ void Level::removeMonster(const MonsterID monster) {
 void Level::update() {
 	const TickCount curTick = _gameState.getCurrentTick();
 
-	for (MonsterMap::iterator i = _monsters.begin(); i != _monsters.end();) {
-		if (i->second._monster->getHitPoints() <= 0) {
-			MonsterID toRemove = i->first;
-			++i;
-			removeMonster(toRemove);
+	BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
+		if (i.second._monster->getHitPoints() <= 0) {
+			removeMonster(i.first);
 		} else {
-			if (i->second._nextRegeneration <= curTick) {
-				int curHitPoints = i->second._monster->getHitPoints();
+			if (i.second._nextRegeneration <= curTick) {
+				int curHitPoints = i.second._monster->getHitPoints();
 
-				if (curHitPoints < i->second._monster->getMaxHitPoints())
+				if (curHitPoints < i.second._monster->getMaxHitPoints())
 					// TODO: Consider increasing the hit points based on some stats (Str?)
-					i->second._monster->setHitPoints(curHitPoints + 1);
+					i.second._monster->setHitPoints(curHitPoints + 1);
 
 				// TODO: Handle "nextRegeneration" properly
-				i->second._nextRegeneration = curTick + 5 * kTicksPerTurn;
+				i.second._nextRegeneration = curTick + 5 * kTicksPerTurn;
 			}
-			++i;
 		}
 	}
 

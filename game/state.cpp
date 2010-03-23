@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <string>
+#include <boost/foreach.hpp>
 
 namespace Game {
 
@@ -30,8 +31,8 @@ StateHandler::StateHandler() : _curState(), _queue() {
 }
 
 StateHandler::~StateHandler() {
-	for (StateQueue::iterator i = _queue.begin(); i != _queue.end(); ++i)
-		delete *i;
+	BOOST_FOREACH(StateQueue::value_type &i, _queue)
+		delete i;
 }
 
 void StateHandler::addStateToQueue(State *state) {

@@ -20,8 +20,7 @@
 
 #include "event.h"
 
-#include <algorithm>
-#include <functional>
+#include <boost/foreach.hpp>
 
 namespace Game {
 
@@ -35,8 +34,8 @@ void EventDispatcher::removeHandler(EventHandler *handler) {
 }
 
 void EventDispatcher::dispatch(const Event &event) {
-	for (HandlerList::iterator i = _handlers.begin(); i != _handlers.end(); ++i)
-		(*i)->processEvent(event);
+	BOOST_FOREACH(HandlerList::value_type i, _handlers)
+		i->processEvent(event);
 }
 
 Event createMoveEvent(const MonsterID monster, const Monster *mP, const Base::Point &newPos) {
