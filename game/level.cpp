@@ -31,7 +31,7 @@
 namespace Game {
 
 Level::Level(Map *map, GameState &gs)
-    : _map(map), _monsterField(), _start(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
+    : _map(map), _monsterField(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
 	assert(_map);
 
 	_monsterField.resize(_map->width() * _map->height());
@@ -54,30 +54,56 @@ Level::~Level() {
 }
 
 void Level::makeActive(GUI::Screen &screen, Monster &player) {
+	// First of all make this level inactive, just to prevent
+	// it from being made active twice (or more times).
 	makeInactive();
 
+	// Setup the game screen with everything that's on the level.
 	screen.setMap(_map);
 	BOOST_FOREACH(const MonsterMap::value_type &i, _monsters)
 		screen.addObject(i.second._monster);
 	screen.addObject(&player);
 	_screen = &screen;
 
+	// Setup the game state to patch its events through the
+	// level's event dispatcher, so that all the level internals
+	// get notified about player events.
 	_gameState.setEventDispatcher(&_eventDisp);
+
+	// Add the game state as handler for the level's events
+	// to allow the game state to keep track of the level content
+	// changes.
 	_eventDisp.addHandler(&_gameState);
 
+	// Setup the player in the monster's AI handlers, so that
+	// they have some nice target to aim at :-).
 	_monsterAI->setPlayer(&player);
-	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
 
+	// Add an entry of the player in the monster list.
+	// TODO: It should be considerd that the player doesn't get an immediate action here.
+	// That could be abused by the player when switching levels often.
+	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
 	_monsterField[player.getY() * _map->width() + player.getX()] = true;
 }
 
 void Level::makeInactive() {
+	// Remove the player from the monster list
 	removeMonster(kPlayerMonsterID);
+
+	// Remove the player from the AI handler
 	_monsterAI->setPlayer(0);
+
+	// Uninitialize the screen 
 	if (_screen)
 		_screen->setMap(0);
 	_screen = 0;
+
+	// Remove the game state from the event
+	// dispatcher.
 	_eventDisp.removeHandler(&_gameState);
+
+	// Reset the event dispatcher of the
+	// game state.
 	_gameState.setEventDispatcher(0);
 }
 
@@ -128,24 +154,34 @@ bool Level::isAllowedToAct(const MonsterID monster) const {
 }
 
 MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) {
+	// Create a new monster object and setup the position.
 	Monster *newMonster = g_monsterDatabase.createNewMonster(monster);
 	assert(newMonster);
 	newMonster->setPos(pos);
 
 	_monsterField[pos._y * _map->width() + pos._x] = true;
 
+	// Create a new monster ID and add the monster to the map
 	const MonsterID newId = createNewMonsterID();
 	_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
+
+	// Add the monster to the AI handler
 	_monsterAI->addMonster(newId, newMonster);
+
+	// Return the new ID
 	return newId;
 }
 
 void Level::removeMonster(const MonsterID monster) {
+	// Verify that the monster exists.
 	MonsterMap::iterator i = _monsters.find(monster);
 	if (i == _monsters.end())
 		return;
 
+	// Unset the monster.
 	_monsterField[i->second._monster->getY() * _map->width() + i->second._monster->getX()] = false;
+
+	// We only destroy the monster object, in case it's not the player
 	if (monster != kPlayerMonsterID) {
 		if (_screen)
 			_screen->remObject(i->second._monster);
@@ -154,21 +190,31 @@ void Level::removeMonster(const MonsterID monster) {
 		_monsterAI->removeMonster(i->first);
 	}
 
+	// Remove the monster from the map
 	_monsters.erase(i);
 }
 
 void Level::update() {
 	const TickCount curTick = _gameState.getCurrentTick();
 
+	// There is intentionally no "++i" done every loop here, since we might remove
+	// the element from the list in this loop and thus invalidate the current
+	// iterator.
 	for (MonsterMap::iterator i = _monsters.begin(), end = _monsters.end(); i != end;) {
+		// We remove dead monsters here, since that should be after all event processing
+		// has taken place. Of course we just do it in case the monster is already dead :-).
 		if (i->second._monster->getHitPoints() <= 0) {
 			MonsterID toRemove = i->first;
 			++i;
 			removeMonster(toRemove);
 		} else {
+			// In case the tick for the next regeneration has been reached, we
+			// will handle it.
 			if (i->second._nextRegeneration <= curTick) {
-				int curHitPoints = i->second._monster->getHitPoints();
+				const int curHitPoints = i->second._monster->getHitPoints();
 
+				// Only do regeneration in case the monster hasn't reached full
+				// hit points.
 				if (curHitPoints < i->second._monster->getMaxHitPoints())
 					// TODO: Consider increasing the hit points based on some stats (Str?)
 					i->second._monster->setHitPoints(curHitPoints + 1);
@@ -176,10 +222,12 @@ void Level::update() {
 				// TODO: Handle "nextRegeneration" properly
 				i->second._nextRegeneration = curTick + 5 * kTicksPerTurn;
 			}
+
 			++i;
 		}
 	}
 
+	// Process the AI
 	_monsterAI->update();
 }
 
@@ -232,6 +280,7 @@ void Level::processEvent(const Event &event) {
 Monster *Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {
 	MonsterMap::iterator i = _monsters.find(monster);
 	if (i != _monsters.end()) {
+		// TODO: In the future the speed should be modified by items the player wears and his condition
 		i->second._nextAction = _gameState.getCurrentTick() + (oneTickOnly ? 1 : i->second._monster->getSpeed());
 		return i->second._monster;
 	} else {

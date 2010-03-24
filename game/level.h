@@ -41,9 +41,22 @@ class Monster;
 
 namespace Game {
 
+/**
+ * A level object.
+ *
+ * A level is composed of a map and the monsters on the level.
+ * @see Map
+ * @see Monster
+ */
 class Level : public EventHandler {
 friend class LevelLoader;
 public:
+	/**
+	 * Constructor for a new level.
+	 *
+	 * @param map The map to use as base.
+	 * @param gs The game state, this level is associated with.
+	 */
 	Level(Map *map, GameState &gs);
 	~Level();
 
@@ -62,6 +75,9 @@ public:
 
 	/**
 	 * Unsets the level as the active game level.
+	 *
+	 * Note that the player will be automatically removed
+	 * from the monster list.
 	 */
 	void makeInactive();
 
@@ -139,20 +155,65 @@ public:
 
 	/**
 	 * Updates the level's state.
+	 *
+	 * An update should be called every tick. In this
+	 * function the regeneration takes place, the
+	 * dead monsters are removed from the level and
+	 * the monster's AI is processed.
 	 */
 	void update();
 private:
+	/**
+	 * The map.
+	 */
 	Map *_map;
-	std::vector<bool> _monsterField; // Keeps track, where monsters are placed
+
+	/**
+	 * This vector keeps track where monsters are placed.
+	 * It is oganized line-wise, this means you have to 
+	 * access it like _monsterField[y * _map->getWidth() + x]
+	 */
+	std::vector<bool> _monsterField;
+
+	/**
+	 * The entrance of the level.
+	 */
 	Base::Point _start;
 
+	/**
+	 * The screen object, which is associated with the level.
+	 * This can be 0 in case the level is not currently displayed.
+	 */
 	GUI::Screen *_screen;
+
+	/**
+	 * The game state associated with the level.
+	 */
 	GameState &_gameState;
+
+	/**
+	 * The internal event dispatcher.
+	 * This is used to handle AI and game events.
+	 */
 	EventDispatcher _eventDisp;
 
+	/**
+	 * A monster in the level.
+	 */
 	struct MonsterEntry {
+		/**
+		 * Pointer to the monster.
+		 */
 		Monster *_monster;
+
+		/**
+		 * When the next action for the monster is available.
+		 */
 		TickCount _nextAction;
+
+		/**
+		 * When the monster regenerates next.
+		 */
 		TickCount _nextRegeneration;
 
 		MonsterEntry() : _monster(0), _nextAction(0), _nextRegeneration(0) {}
@@ -160,11 +221,28 @@ private:
 		MonsterEntry(Monster *monster, TickCount curTick) : _monster(monster), _nextAction(curTick), _nextRegeneration(curTick) {}
 	};
 
+	/**
+	 * Updates the monster's next action tick number.
+	 *
+	 * @param monster ID of the monster to update.
+	 * @param oneTickOnly Whether it should only delayed by one tick instead of the speed of the monster.
+	 * @return Pointer to the monster modified.
+	 */
 	Monster *updateNextActionTick(MonsterID monster, bool oneTickOnly = false);
 
+	/**
+	 * Map type, which mapes a monster ID to a concrete monster in the level.
+	 */
 	typedef std::map<MonsterID, MonsterEntry> MonsterMap;
+
+	/**
+	 * The map containing all living monsters in the level.
+	 */
 	MonsterMap _monsters;
 
+	/**
+	 * The AI handler for all the level's monsters.
+	 */
 	AI::Monster *_monsterAI;
 };
 
