@@ -58,8 +58,8 @@ unsigned int rndValueRange(const IntRange &range) {
 	return rndValueRange(range.getMin(), range.getMax());
 }
 
-unsigned int rndValueRange(const ByteRange &range) {
-	return rndValueRange(range.getMin(), range.getMax());
+unsigned char rndValueRange(const ByteRange &range) {
+	return static_cast<unsigned char>(rndValueRange(range.getMin(), range.getMax()));
 }
 
 } // end of namespace Base

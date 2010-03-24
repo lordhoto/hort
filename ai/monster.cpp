@@ -117,7 +117,7 @@ void Monster::update() {
 		// TODO: Proper implementation of this :-D
 		switch (i.second._fsmState) {
 		case kMonsterIdle: {
-			Base::Point newPos = i.second._monster->getPos() + Game::getDirection(Base::rollDice(9));
+			Base::Point newPos = i.second._monster->getPos() + Game::getDirection(static_cast<unsigned char>(Base::rollDice(9)));
 
 			bool didAction = false;
 			if (newPos != i.second._monster->getPos()) {
@@ -209,11 +209,11 @@ void Monster::processMoveEvent(const Game::MoveEvent &event) {
 	}
 }
 
-void Monster::processIdleEvent(const Game::IdleEvent &event) {
+void Monster::processIdleEvent(const Game::IdleEvent &/*event*/) {
 	// Nothing to do here.
 }
 
-void Monster::processDeathEvent(const Game::DeathEvent &event) {
+void Monster::processDeathEvent(const Game::DeathEvent &/*event*/) {
 	// Nothing to do here.
 }
 
@@ -226,11 +226,11 @@ void Monster::processAttackEvent(const Game::AttackEvent &event) {
 	}
 }
 
-void Monster::processAttackDamageEvent(const Game::AttackDamageEvent &event) {
+void Monster::processAttackDamageEvent(const Game::AttackDamageEvent &/*event*/) {
 	// Nothing to do here.
 }
 
-void Monster::processAttackFailEvent(const Game::AttackFailEvent &event) {
+void Monster::processAttackFailEvent(const Game::AttackFailEvent &/*event*/) {
 	// Nothing to do here.
 }
 

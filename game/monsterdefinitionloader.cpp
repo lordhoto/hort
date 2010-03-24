@@ -20,8 +20,6 @@
 
 #include "monsterdefinitionloader.h"
 
-#include <boost/lexical_cast.hpp>
-
 namespace Game {
 
 MonsterDefinitionLoader::MonsterDefinitionLoader()
@@ -31,17 +29,17 @@ MonsterDefinitionLoader::MonsterDefinitionLoader()
 MonsterDefinition MonsterDefinitionLoader::definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
 	try {
 		const std::string &n = values.find("name")->second;
-		const int wisMin = boost::lexical_cast<int>(values.find("wisMin")->second);
-		const int wisMax = boost::lexical_cast<int>(values.find("wisMax")->second);
-		const int dexMin = boost::lexical_cast<int>(values.find("dexMin")->second);
-		const int dexMax = boost::lexical_cast<int>(values.find("dexMax")->second);
-		const int agiMin = boost::lexical_cast<int>(values.find("agiMin")->second);
-		const int agiMax = boost::lexical_cast<int>(values.find("agiMax")->second);
-		const int strMin = boost::lexical_cast<int>(values.find("strMin")->second);
-		const int strMax = boost::lexical_cast<int>(values.find("strMax")->second);
-		const int hpMin = boost::lexical_cast<int>(values.find("hpMin")->second);
-		const int hpMax = boost::lexical_cast<int>(values.find("hpMax")->second);
-		const unsigned char speed = boost::lexical_cast<int>(values.find("speed")->second);
+		const unsigned char wisMin = getVariableValue<unsigned char>("wisMin", values);
+		const unsigned char wisMax = getVariableValue<unsigned char>("wisMax", values);
+		const unsigned char dexMin = getVariableValue<unsigned char>("dexMin", values);
+		const unsigned char dexMax = getVariableValue<unsigned char>("dexMax", values);
+		const unsigned char agiMin = getVariableValue<unsigned char>("agiMin", values);
+		const unsigned char agiMax = getVariableValue<unsigned char>("agiMax", values);
+		const unsigned char strMin = getVariableValue<unsigned char>("strMin", values);
+		const unsigned char strMax = getVariableValue<unsigned char>("strMax", values);
+		const int hpMin = getVariableValue<int>("strMax", values);
+		const int hpMax = getVariableValue<int>("strMax", values);
+		const unsigned char speed = getVariableValue<unsigned char>("speed", values);
 
 		return MonsterDefinition(n, Base::ByteRange(wisMin, wisMax),
 		                         Base::ByteRange(dexMin, dexMax),

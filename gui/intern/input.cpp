@@ -23,6 +23,8 @@
 
 #include <cctype>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace GUI {
 namespace Intern {
 
@@ -50,9 +52,14 @@ const std::string Input::getLine(Window &win, unsigned int x, unsigned int y) {
 		input = poll();
 
 		if (x + 1 < win.getWidth() && std::isprint(input)) {
-			win.printChar(input, x, y);
-			++x;
-			line += input;
+			try {
+				line += boost::numeric_cast<char>(input);
+				win.printChar(input, x, y);
+				++x;
+			} catch (boost::numeric::bad_numeric_cast &e) {
+				// In case the input character does not fit
+				// into a "char", we just ignore it.
+			}
 		} else if (input == kKeyBackspace && !line.empty()) {
 			--x;
 			win.printChar(' ', x, y);

@@ -43,7 +43,7 @@ DrawDescParser::DefinitionLoader::Definition DrawDescParser::definitionRule(cons
 	return DrawDescParser::DefinitionLoader::Definition(n->second, DrawDesc(parseSymbol(g->second), parseColor(c->second), parseAttribs(a->second)));
 }
 
-int DrawDescParser::parseSymbol(const std::string &value) throw (Base::ParserListener::Exception) {
+chtype DrawDescParser::parseSymbol(const std::string &value) throw (Base::ParserListener::Exception) {
 	if (value.size() == 1) {
 		return value[0];
 	} else {

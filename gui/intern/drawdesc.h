@@ -38,7 +38,7 @@ struct DrawDesc {
 	DrawDesc() : _symbol(0), _color(kWhiteOnBlack), _attribs(0) {}
 	DrawDesc(int symbol, ColorPair color, int attribs) : _symbol(symbol), _color(color), _attribs(attribs) {}
 
-	int _symbol;
+	chtype _symbol;
 	ColorPair _color;
 	int _attribs;
 };
@@ -73,7 +73,7 @@ public:
 private:
 	DefinitionLoader::Definition definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 
-	int parseSymbol(const std::string &value) throw (Base::ParserListener::Exception);
+	chtype parseSymbol(const std::string &value) throw (Base::ParserListener::Exception);
 	ColorPair parseColor(const std::string &value) throw (Base::ParserListener::Exception);
 	int parseAttribs(const std::string &value) throw (Base::ParserListener::Exception);
 };

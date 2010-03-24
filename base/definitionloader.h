@@ -25,6 +25,9 @@
 
 #include <list>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace Base {
 
 /**
@@ -67,6 +70,15 @@ protected:
 	 * @return The definition parsed.
 	 */
 	virtual Definition definitionRule(const Matcher::ValueMap &values) throw (ParserListener::Exception) = 0;
+
+	template<typename T>
+	T getVariableValue(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+		try {
+			return boost::numeric_cast<T>(boost::lexical_cast<int>(values.find(name)->second));
+		} catch (boost::numeric::bad_numeric_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		}
+	}
 
 private:
 	/**

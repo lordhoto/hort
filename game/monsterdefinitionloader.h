@@ -41,6 +41,8 @@ public:
 
 private:
 	MonsterDefinition definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
+
+	unsigned char getByteValue(const std::string &name, const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception);
 };
 
 } // end of namespace Game

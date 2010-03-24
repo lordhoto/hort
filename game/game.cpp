@@ -210,7 +210,7 @@ void GameState::processDeathEvent(const DeathEvent &event) {
 	}
 }
 
-void GameState::processAttackEvent(const AttackEvent &event) {
+void GameState::processAttackEvent(const AttackEvent &/*event*/) {
 	// Nothing to do here.
 }
 

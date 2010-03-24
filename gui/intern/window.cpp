@@ -25,6 +25,8 @@
 #include <cstring>
 #include <algorithm>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace GUI {
 namespace Intern {
 
@@ -42,7 +44,7 @@ Window::Window(unsigned int x, unsigned int y, unsigned int w, unsigned int h, b
 	assert(x + w <= screen.width());
 	assert(y + h <= screen.height());
 
-	_content = new int[_rW * _rH];
+	_content = new chtype[_rW * _rH];
 	assert(_content);
 	clear();
 }
@@ -51,12 +53,8 @@ Window::~Window() {
 	delete[] _content;
 }
 
-int Window::getCharData(int ch, ColorPair color, int attrib) {
-	return ch | COLOR_PAIR(color) | attrib; 
-}
-
 void Window::putData(unsigned int x, unsigned int y, unsigned int width,
-                     unsigned int height, const int *data, unsigned int pitch) {
+                     unsigned int height, const chtype *data, unsigned int pitch) {
 	if (y >= _h || x >= _w)
 		return;
 	if (y + height > _h || x + width > _w)
@@ -67,10 +65,10 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 		++x;
 	}
 
-	int *dst = _content + y * _rW + x;
+	chtype *dst = _content + y * _rW + x;
 
 	while (height--) {
-		std::memcpy(dst, data, width * sizeof(int));
+		std::memcpy(dst, data, width * sizeof(chtype));
 		dst += _rW;
 		data += pitch;
 	}
@@ -78,7 +76,7 @@ void Window::putData(unsigned int x, unsigned int y, unsigned int width,
 	_needsRefresh = true;
 }
 
-void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, int attrib) {
+void Window::printChar(chtype ch, unsigned int x, unsigned int y, ColorPair color, int attrib) {
 	if (y >= _h || x >= _w)
 		return;
 
@@ -92,8 +90,13 @@ void Window::printChar(int ch, unsigned int x, unsigned int y, ColorPair color, 
 }
 
 void Window::printLine(const char *str, ColorPair color, int attrib) {
-	const size_t strLength = std::min<size_t>(_w, std::strlen(str));
-	printLine(str, (_w - strLength) / 2, _h / 2, color, attrib);
+	try {
+		const unsigned int strLength = boost::numeric_cast<unsigned int>(std::min<size_t>(_w, std::strlen(str)));
+		printLine(str, (_w - strLength) / 2, _h / 2, color, attrib);
+	} catch (boost::numeric::bad_numeric_cast &e) {
+		// TODO: Consider some handling here, not that it should ever happen...
+		assert(false && "Way too long string");
+	}
 }
 
 void Window::printLine(const char *str, unsigned int x, unsigned int y, ColorPair color, int attrib) {
@@ -105,7 +108,7 @@ void Window::printLine(const char *str, unsigned int x, unsigned int y, ColorPai
 }
 
 void Window::clear() {
-	int *dst = _content;
+	chtype *dst = _content;
 	for (unsigned int y = 0; y < _rH; ++y) {
 		for (unsigned int x = 0; x < _rW; ++x)
 			*dst++ = ' ';
@@ -117,7 +120,7 @@ void Window::clear() {
 		dst[(_rH - 1) * _rW + 0] = ACS_LLCORNER;
 		dst[(_rH - 1) * _rW + _rW - 1] = ACS_LLCORNER;
 
-		int *dst1 = _content + 1, *dst2 = _content + (_rH - 1) * _rW + 1;
+		chtype *dst1 = _content + 1, *dst2 = _content + (_rH - 1) * _rW + 1;
 		// Top/Bottom line
 		for (unsigned int i = 0; i < _w; ++i)
 			*dst1++ = *dst2++ = ACS_HLINE;
@@ -137,7 +140,7 @@ void Window::clear() {
 
 void Window::redraw(bool force) {
 	if (_needsRefresh || force) {
-		const int *src = _content;
+		const chtype *src = _content;
 
 		move(_rY, _rX);
 		for (unsigned int y = 0; y < _rH; ++y) {

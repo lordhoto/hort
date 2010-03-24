@@ -255,7 +255,7 @@ void Level::processIdleEvent(const IdleEvent &event) {
 	updateNextActionTick(event.getMonster(), (event.getReason() == IdleEvent::kWary));
 }
 
-void Level::processDeathEvent(const DeathEvent &event) {
+void Level::processDeathEvent(const DeathEvent &/*event*/) {
 	// Nothing to do here.
 }
 
@@ -283,11 +283,11 @@ void Level::processAttackEvent(const AttackEvent &event) {
 	// objects might still use it in the event queue.
 }
 
-void Level::processAttackDamageEvent(const AttackDamageEvent &event) {
+void Level::processAttackDamageEvent(const AttackDamageEvent &/*event*/) {
 	// Nothing to do here.
 }
 
-void Level::processAttackFailEvent(const AttackFailEvent &event) {
+void Level::processAttackFailEvent(const AttackFailEvent &/*event*/) {
 	// Nothing to do here.
 }
 

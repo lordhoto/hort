@@ -72,7 +72,7 @@ unsigned int rndValueRange(const IntRange &range);
  * @param range The range
  * @return The random value.
  */
-unsigned int rndValueRange(const ByteRange &range);
+unsigned char rndValueRange(const ByteRange &range);
 
 } // end of namespace Base
 

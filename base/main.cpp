@@ -28,7 +28,7 @@
 
 #include <cstdio>
 
-int main(int argc, char *argv[]) {
+int main(int /*argc*/, char ** /*argv*/) {
 	GUI::Intern::Screen::instance();
 
 	if (GUI::Intern::Screen::instance().width() < 80 || GUI::Intern::Screen::instance().height() < 24) {

@@ -183,7 +183,7 @@ FileParser::FileParser(const std::string &filename, const RuleMap &rules) throw 
 void FileParser::parse(ParserListener *listener) throw (NoMatchingRuleException, ListenerErrorException) {
 	_file->seekg(0);
 
-	size_t lineCount = 0;
+	int lineCount = 0;
 
 	while (!_file->eof()) {
 		std::string line;
