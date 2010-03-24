@@ -66,7 +66,9 @@ public:
 	 * @return Tile type.
 	 */
 	Tile tileAt(const Base::Point &p) const throw (std::out_of_range) {
-		return _tiles.at(p._y * _width + p._x);
+		if (static_cast<unsigned int>(p._x) >= _width || static_cast<unsigned int>(p._y) >= _height)
+			throw std::out_of_range("Tile to look up is not inside the map");
+		return _tiles[p._y * _width + p._x];
 	}
 
 	/**
@@ -77,7 +79,9 @@ public:
 	 * @return Tile type.
 	 */
 	Tile tileAt(unsigned int x, unsigned int y) const throw (std::out_of_range) {
-		return _tiles.at(y * _width + x);
+		if (x >= _width || y >= _height)
+			throw std::out_of_range("Tile to look up is not inside the map");
+		return _tiles[y * _width + x];
 	}
 
 	/**
@@ -87,7 +91,9 @@ public:
 	 * @return Tile definition.
 	 */
 	const TileDefinition &tileDefinition(const Base::Point &p) const throw (std::out_of_range) {
-		return *_tileDefs.at(p._y * _width + p._x);
+		if (static_cast<unsigned int>(p._x) >= _width || static_cast<unsigned int>(p._y) >= _height)
+			throw std::out_of_range("Tile to look up is not inside the map");
+		return *_tileDefs[p._y * _width + p._x];
 	}
 
 	/**
@@ -98,7 +104,9 @@ public:
 	 * @return Tile definition.
 	 */
 	const TileDefinition &tileDefinition(unsigned int x, unsigned int y) const throw (std::out_of_range) {
-		return *_tileDefs.at(y * _width + x);
+		if (x >= _width || y >= _height)
+			throw std::out_of_range("Tile to look up is not inside the map");
+		return *_tileDefs[y * _width + x];
 	}
 
 	/**
