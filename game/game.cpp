@@ -69,7 +69,11 @@ bool GameState::initialize() throw (Base::NonRecoverableException) {
 		_gameScreen->initialize();
 
 		_player->setPos(_curLevel->getStartPoint());
-		_curLevel->makeActive(*_gameScreen, *_player);
+		try {
+			_curLevel->makeActive(*_gameScreen, *_player);
+		} catch (std::out_of_range &e) {
+			throw Base::NonRecoverableException(e.what());
+		}
 		_gameScreen->setCenter(_player->getPos());
 	}
 
