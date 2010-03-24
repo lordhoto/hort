@@ -186,8 +186,8 @@ void Level::removeMonster(const MonsterID monster) {
 		return;
 
 	// Unset the monster.
-	assert(i->second._monster->getY() <= _map->getHeight() && "Corrupted monster position");
-	assert(i->second._monster->getX() <= _map->getWidth() && "Corrupted monster position");
+	assert(i->second._monster->getY() < _map->getHeight() && "Corrupted monster position");
+	assert(i->second._monster->getX() < _map->getWidth() && "Corrupted monster position");
 	_monsterField[i->second._monster->getY() * _map->getWidth() + i->second._monster->getX()] = false;
 
 	// We only destroy the monster object, in case it's not the player
@@ -245,11 +245,11 @@ void Level::processMoveEvent(const MoveEvent &event) throw () {
 	Monster *monster = updateNextActionTick(event.getMonster());
 	assert(monster);
 
-	assert(static_cast<unsigned int>(event.getOldPos()._y) <= _map->getHeight() && "Invalid old monster position");
-	assert(static_cast<unsigned int>(event.getOldPos()._x) <= _map->getWidth() && "Invalid old monster position");
+	assert(static_cast<unsigned int>(event.getOldPos()._y) < _map->getHeight() && "Invalid old monster position");
+	assert(static_cast<unsigned int>(event.getOldPos()._x) < _map->getWidth() && "Invalid old monster position");
 
-	assert(static_cast<unsigned int>(event.getNewPos()._y) <= _map->getHeight() && "Invalid new monster position");
-	assert(static_cast<unsigned int>(event.getNewPos()._x) <= _map->getWidth() && "Invalid new monster position");
+	assert(static_cast<unsigned int>(event.getNewPos()._y) < _map->getHeight() && "Invalid new monster position");
+	assert(static_cast<unsigned int>(event.getNewPos()._x) < _map->getWidth() && "Invalid new monster position");
 
 	_monsterField[event.getOldPos()._y * _map->getWidth() + event.getOldPos()._x] = false;
 	_monsterField[event.getNewPos()._y * _map->getWidth() + event.getNewPos()._x] = true;
