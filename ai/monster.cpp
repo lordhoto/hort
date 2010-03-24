@@ -121,8 +121,8 @@ void Monster::update() {
 
 			bool didAction = false;
 			if (newPos != i.second._monster->getPos()) {
-				if (static_cast<unsigned int>(newPos._x) <= _level.getMap().getWidth()
-				    && static_cast<unsigned int>(newPos._y) <= _level.getMap().getHeight()) {
+				if (static_cast<unsigned int>(newPos._x) < _level.getMap().getWidth()
+				    && static_cast<unsigned int>(newPos._y) < _level.getMap().getHeight()) {
 					if (_level.isWalkable(newPos)) {
 						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 						if (!def.getIsLiquid()) {
