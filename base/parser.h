@@ -98,7 +98,8 @@ public:
 	 * A "part" of a rule, this is either a string to match against
 	 * or a variable definition.
 	 */
-	struct Part {
+	class Part {
+	public:
 		/**
 		 * Type definition of the part.
 		 */
@@ -112,26 +113,43 @@ public:
 			 * Whether the part is a variable to match.
 			 */
 			kTypeVariable
-		} type;
+		};
 
-		Part(Type type) : type(type) {}
+		Part(Type type) : _type(type) {}
 		virtual ~Part() {}
+
+		/**
+		 * @return the type of the rule part.
+		 */
+		Type getType() const { return _type; }
+
+	private:
+		const Type _type;
 	};
 
 	/**
 	 * A string part.
 	 */
-	struct StringPart : public Part {
-		const std::string string;
+	class StringPart : public Part {
+	public:
+		StringPart(const std::string &s) : Part(kTypeString), _string(s) {}
 
-		StringPart(const std::string &s) : Part(kTypeString), string(s) {}
+		/**
+		 * @return the string which must be present.
+		 */
+		const std::string &getString() const { return _string; }
+	private:
+		const std::string _string;
 	};
 
 	/**
 	 * A variable part.
 	 */
-	struct VariablePart : public Part {
-		const std::string name;
+	class VariablePart : public Part {
+	public:
+		/**
+		 * The variable type.
+		 */
 		enum VariableType {
 			/**
 			 * Whether it's an integer variable.
@@ -142,9 +160,22 @@ public:
 			 * Whether it's an string variable.
 			 */
 			kVariableTypeString
-		} variableType;
+		};
 
-		VariablePart(const std::string &n, VariableType vT) : Part(kTypeVariable), name(n), variableType(vT) {}
+		VariablePart(const std::string &n, VariableType vT) : Part(kTypeVariable), _name(n), _variableType(vT) {}
+
+		/**
+		 * @return the name of the variable.
+		 */
+		const std::string &getName() const { return _name; }
+
+		/**
+		 * @return the variable type.
+		 */
+		VariableType getVariableType() const { return _variableType; }
+	private:
+		const std::string _name;
+		const VariableType _variableType;
 	};
 
 	typedef boost::shared_ptr<const Part> PartPointer;

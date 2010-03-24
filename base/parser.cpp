@@ -117,7 +117,7 @@ Matcher::Matcher(const std::string &line, const Rule &rule)
 		}
 
 		// Check the part type.
-		switch (p->type) {
+		switch (p->getType()) {
 		case Rule::Part::kTypeString:
 			matchString(*(const Rule::StringPart *)p.get(), *token++);
 			break;
@@ -135,18 +135,18 @@ Matcher::Matcher(const std::string &line, const Rule &rule)
 }
 
 void Matcher::matchString(const Rule::StringPart &part, const std::string &token) {
-	if (part.string != token) {
-		_error = "Found \"" + token + "\" but expected: \"" + part.string + "\"";
+	if (part.getString() != token) {
+		_error = "Found \"" + token + "\" but expected: \"" + part.getString() + "\"";
 		_ok = false;
 	}
 }
 
 void Matcher::matchVariable(const Rule::VariablePart &part, const std::string &token) {
-	switch (part.variableType) {
+	switch (part.getVariableType()) {
 	case Rule::VariablePart::kVariableTypeInteger:
 		try {
 			boost::lexical_cast<int>(token);
-			_values[part.name] = token;
+			_values[part.getName()] = token;
 		} catch (boost::bad_lexical_cast &e) {
 			_error = "\"" + token + "\" is no integer variable";
 			_ok = false;
@@ -155,10 +155,10 @@ void Matcher::matchVariable(const Rule::VariablePart &part, const std::string &t
 
 	case Rule::VariablePart::kVariableTypeString:
 		if (token.empty()) {
-			_error = "Found empty string variable \"" + part.name + "\"";
+			_error = "Found empty string variable \"" + part.getName() + "\"";
 			_ok = false;
 		} else {
-			_values[part.name] = token;
+			_values[part.getName()] = token;
 		}
 		break;
 	}
