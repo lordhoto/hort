@@ -25,6 +25,7 @@
 #include "ai/monster.h"
 
 #include <cassert>
+#include <memory>
 
 #include <boost/foreach.hpp>
 
@@ -157,8 +158,8 @@ bool Level::isAllowedToAct(const MonsterID monster) const {
 
 MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) throw (std::out_of_range) {
 	// Create a new monster object and setup the position.
-	Monster *newMonster = g_monsterDatabase.createNewMonster(monster);
-	assert(newMonster);
+	std::auto_ptr<Monster> newMonster(g_monsterDatabase.createNewMonster(monster));
+	assert(newMonster.get() != 0);
 	newMonster->setPos(pos);
 
 	if (static_cast<unsigned int>(pos._x) >= _map->getWidth() ||
@@ -169,10 +170,10 @@ MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) t
 
 	// Create a new monster ID and add the monster to the map
 	const MonsterID newId = createNewMonsterID();
-	_monsters[newId] = MonsterEntry(newMonster, _gameState.getCurrentTick());
+	_monsters[newId] = MonsterEntry(newMonster.get(), _gameState.getCurrentTick());
 
 	// Add the monster to the AI handler
-	_monsterAI->addMonster(newId, newMonster);
+	_monsterAI->addMonster(newId, newMonster.release());
 
 	// Return the new ID
 	return newId;
