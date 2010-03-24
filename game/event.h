@@ -247,42 +247,42 @@ public:
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processMoveEvent(const MoveEvent &event) = 0;
+	virtual void processMoveEvent(const MoveEvent &event) throw () = 0;
 
 	/**
 	 * Processes an idle event.
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processIdleEvent(const IdleEvent &event) = 0;
+	virtual void processIdleEvent(const IdleEvent &event) throw ()= 0;
 
 	/**
 	 * Processes an death event.
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processDeathEvent(const DeathEvent &event) = 0;
+	virtual void processDeathEvent(const DeathEvent &event) throw () = 0;
 
 	/**
 	 * Processes an attack event.
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processAttackEvent(const AttackEvent &event) = 0;
+	virtual void processAttackEvent(const AttackEvent &event) throw () = 0;
 
 	/**
 	 * Processes an attack damage event.
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processAttackDamageEvent(const AttackDamageEvent &event) = 0;
+	virtual void processAttackDamageEvent(const AttackDamageEvent &event) throw () = 0;
 
 	/**
 	 * Processes an attack fail event.
 	 *
 	 * @param event event to process.
 	 */
-	virtual void processAttackFailEvent(const AttackFailEvent &event) = 0;
+	virtual void processAttackFailEvent(const AttackFailEvent &event) throw () = 0;
 };
 
 /**

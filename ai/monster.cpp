@@ -172,7 +172,7 @@ void Monster::update() {
 	}
 }
 
-void Monster::processMoveEvent(const Game::MoveEvent &event) {
+void Monster::processMoveEvent(const Game::MoveEvent &event) throw () {
 	if (event.getMonster() == Game::kPlayerMonsterID) {
 		BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
 			_fsm->setState(i.second._fsmState);
@@ -209,15 +209,15 @@ void Monster::processMoveEvent(const Game::MoveEvent &event) {
 	}
 }
 
-void Monster::processIdleEvent(const Game::IdleEvent &/*event*/) {
+void Monster::processIdleEvent(const Game::IdleEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void Monster::processDeathEvent(const Game::DeathEvent &/*event*/) {
+void Monster::processDeathEvent(const Game::DeathEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void Monster::processAttackEvent(const Game::AttackEvent &event) {
+void Monster::processAttackEvent(const Game::AttackEvent &event) throw () {
 	MonsterMap::iterator i = _monsters.find(event.getTarget());
 	if (i != _monsters.end()) {
 		_fsm->setState(i->second._fsmState);
@@ -226,11 +226,11 @@ void Monster::processAttackEvent(const Game::AttackEvent &event) {
 	}
 }
 
-void Monster::processAttackDamageEvent(const Game::AttackDamageEvent &/*event*/) {
+void Monster::processAttackDamageEvent(const Game::AttackDamageEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void Monster::processAttackFailEvent(const Game::AttackFailEvent &/*event*/) {
+void Monster::processAttackFailEvent(const Game::AttackFailEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 

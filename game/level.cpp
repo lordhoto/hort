@@ -239,7 +239,7 @@ void Level::update() {
 	_monsterAI->update();
 }
 
-void Level::processMoveEvent(const MoveEvent &event) {
+void Level::processMoveEvent(const MoveEvent &event) throw () {
 	assert(isAllowedToAct(event.getMonster()));
 	Monster *monster = updateNextActionTick(event.getMonster());
 	assert(monster);
@@ -268,16 +268,16 @@ void Level::processMoveEvent(const MoveEvent &event) {
 	_screen->flagForUpdate();
 }
 
-void Level::processIdleEvent(const IdleEvent &event) {
+void Level::processIdleEvent(const IdleEvent &event) throw () {
 	assert(isAllowedToAct(event.getMonster()));
 	updateNextActionTick(event.getMonster(), (event.getReason() == IdleEvent::kWary));
 }
 
-void Level::processDeathEvent(const DeathEvent &/*event*/) {
+void Level::processDeathEvent(const DeathEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void Level::processAttackEvent(const AttackEvent &event) {
+void Level::processAttackEvent(const AttackEvent &event) throw () {
 	assert(isAllowedToAct(event.getMonster()));
 	const Monster *monster = updateNextActionTick(event.getMonster());
 	assert(monster);
@@ -301,11 +301,11 @@ void Level::processAttackEvent(const AttackEvent &event) {
 	// objects might still use it in the event queue.
 }
 
-void Level::processAttackDamageEvent(const AttackDamageEvent &/*event*/) {
+void Level::processAttackDamageEvent(const AttackDamageEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void Level::processAttackFailEvent(const AttackFailEvent &/*event*/) {
+void Level::processAttackFailEvent(const AttackFailEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 

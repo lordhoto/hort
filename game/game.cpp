@@ -107,12 +107,12 @@ bool GameState::run() {
 	return true;
 }
 
-void GameState::processMoveEvent(const MoveEvent &event) {
+void GameState::processMoveEvent(const MoveEvent &event) throw () {
 	if (event.getMonster() == kPlayerMonsterID)
 		_gameScreen->setCenter(event.getNewPos());
 }
 
-void GameState::processIdleEvent(const IdleEvent &event) {
+void GameState::processIdleEvent(const IdleEvent &event) throw () {
 	if (event.getMonster() == kPlayerMonsterID) {
 		// TODO: This should definitly not be stored over here
 		static const char * const messages[] = {
@@ -162,7 +162,7 @@ void GameState::processIdleEvent(const IdleEvent &event) {
 	}
 }
 
-void GameState::processDeathEvent(const DeathEvent &event) {
+void GameState::processDeathEvent(const DeathEvent &event) throw () {
 	const Monster *monster = _curLevel->getMonster(event.getMonster());
 	assert(monster);
 
@@ -210,11 +210,11 @@ void GameState::processDeathEvent(const DeathEvent &event) {
 	}
 }
 
-void GameState::processAttackEvent(const AttackEvent &/*event*/) {
+void GameState::processAttackEvent(const AttackEvent &/*event*/) throw () {
 	// Nothing to do here.
 }
 
-void GameState::processAttackDamageEvent(const AttackDamageEvent &event) {
+void GameState::processAttackDamageEvent(const AttackDamageEvent &event) throw () {
 	const Monster *monster = _curLevel->getMonster(event.getMonster());
 	assert(monster);
 	const Monster *target = _curLevel->getMonster(event.getTarget());
@@ -233,7 +233,7 @@ void GameState::processAttackDamageEvent(const AttackDamageEvent &event) {
 	_gameScreen->addToMsgWindow(ss.str());
 }
 
-void GameState::processAttackFailEvent(const AttackFailEvent &event) {
+void GameState::processAttackFailEvent(const AttackFailEvent &event) throw () {
 	const Monster *monster = _curLevel->getMonster(event.getMonster());
 	assert(monster);
 
