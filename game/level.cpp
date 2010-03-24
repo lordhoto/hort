@@ -160,20 +160,23 @@ void Level::removeMonster(const MonsterID monster) {
 void Level::update() {
 	const TickCount curTick = _gameState.getCurrentTick();
 
-	BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
-		if (i.second._monster->getHitPoints() <= 0) {
-			removeMonster(i.first);
+	for (MonsterMap::iterator i = _monsters.begin(), end = _monsters.end(); i != end;) {
+		if (i->second._monster->getHitPoints() <= 0) {
+			MonsterID toRemove = i->first;
+			++i;
+			removeMonster(toRemove);
 		} else {
-			if (i.second._nextRegeneration <= curTick) {
-				int curHitPoints = i.second._monster->getHitPoints();
+			if (i->second._nextRegeneration <= curTick) {
+				int curHitPoints = i->second._monster->getHitPoints();
 
-				if (curHitPoints < i.second._monster->getMaxHitPoints())
+				if (curHitPoints < i->second._monster->getMaxHitPoints())
 					// TODO: Consider increasing the hit points based on some stats (Str?)
-					i.second._monster->setHitPoints(curHitPoints + 1);
+					i->second._monster->setHitPoints(curHitPoints + 1);
 
 				// TODO: Handle "nextRegeneration" properly
-				i.second._nextRegeneration = curTick + 5 * kTicksPerTurn;
+				i->second._nextRegeneration = curTick + 5 * kTicksPerTurn;
 			}
+			++i;
 		}
 	}
 
