@@ -4,30 +4,31 @@ LDFLAGS:=-g -lncurses
 CXX:=g++
 DEPDIR:=.deps
 
-OBJS := base/main.o \
-		base/rnd.o \
+OBJS := \
+		ai/monster.o \
+		ai/fsm.o \
 		base/geo.o \
+		base/main.o \
 		base/parser.o \
-		gui/intern/screen.o \
-		gui/intern/window.o \
-		gui/intern/input.o \
-		gui/intern/drawdesc.o \
-		gui/screen.o \
-		game/map.o \
-		game/state.o \
+		base/rnd.o \
+		game/defs.o \
+		game/event.o \
 		game/game.o \
 		game/level.o \
-		game/event.o \
-		game/monster.o \
-		game/defs.o \
 		game/levelloader.o \
+		game/map.o \
+		game/maploader.o \
+		game/monster.o \
+		game/monsterdatabase.o \
+		game/monsterdefinitionloader.o \
+		game/state.o \
 		game/tiledatabase.o \
 		game/tiledefinitionloader.o \
-		game/maploader.o \
-		game/monsterdefinitionloader.o \
-		game/monsterdatabase.o \
-		ai/fsm.o \
-		ai/monster.o
+		gui/screen.o \
+		gui/intern/drawdesc.o \
+		gui/intern/input.o \
+		gui/intern/screen.o \
+		gui/intern/window.o
 
 DEPDIRS = $(addsuffix $(DEPDIR),$(sort $(dir $(OBJS))))
 
