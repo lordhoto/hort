@@ -36,8 +36,8 @@ MonsterDefinition MonsterDefinitionLoader::definitionRule(const Base::Matcher::V
 	const unsigned char agiMax = getVariableValue<unsigned char>("agiMax", values);
 	const unsigned char strMin = getVariableValue<unsigned char>("strMin", values);
 	const unsigned char strMax = getVariableValue<unsigned char>("strMax", values);
-	const int hpMin = getVariableValue<int>("strMax", values);
-	const int hpMax = getVariableValue<int>("strMax", values);
+	const int hpMin = getVariableValue<unsigned short>("hpMin", values);
+	const int hpMax = getVariableValue<unsigned short>("hpMax", values);
 	const unsigned char speed = getVariableValue<unsigned char>("speed", values);
 
 	return MonsterDefinition(n, Base::ByteRange(wisMin, wisMax),
