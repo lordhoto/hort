@@ -1,4 +1,17 @@
-CXXFLAGS:=-g -Wall
+CXXFLAGS:=-pedantic-errors \
+		  -g \
+		  -Wall \
+		  -Wextra \
+		  -Wpointer-arith \
+		  -Wcast-qual \
+		  -Wcast-align \
+		  -Wshadow \
+		  -Wimplicit \
+		  -Wnon-virtual-dtor \
+		  -Wformat=2 \
+		  -Winit-self \
+		  -Wfloat-equal \
+		  -Wconversion
 CPPFLAGS:=-I.
 LDFLAGS:=-g -lncurses
 CXX:=g++
