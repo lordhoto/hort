@@ -26,6 +26,7 @@
 #include "tile.h"
 
 #include <vector>
+#include <stdexcept>
 
 namespace Game {
 
@@ -41,8 +42,8 @@ public:
 	 * @param p Position.
 	 * @return true if walkable, false otherwise
 	 */
-	bool isWalkable(const Base::Point &p) const {
-		return isWalkable(p._x, p._y);
+	bool isWalkable(const Base::Point &p) const throw (std::out_of_range) {
+		return tileDefinition(p).getIsWalkable();
 	}
 
 	/**
@@ -54,7 +55,9 @@ public:
 	 * @param y y coordinate
 	 * @return true if walkable, false otherwise
 	 */
-	bool isWalkable(unsigned int x, unsigned int y) const;
+	bool isWalkable(unsigned int x, unsigned int y) const throw (std::out_of_range) {
+		return tileDefinition(x, y).getIsWalkable();
+	}
 
 	/**
 	 * Returns the tile at the given position.
@@ -62,7 +65,9 @@ public:
 	 * @param p Position.
 	 * @return Tile type.
 	 */
-	Tile tileAt(const Base::Point &p) const { return _tiles[p._y * _width + p._x]; }
+	Tile tileAt(const Base::Point &p) const throw (std::out_of_range) {
+		return _tiles.at(p._y * _width + p._x);
+	}
 
 	/**
 	 * Returns the tile at the given position.
@@ -71,7 +76,9 @@ public:
 	 * @param y y coordinate of the tile (must not exceed height - 1)
 	 * @return Tile type.
 	 */
-	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _width + x]; }
+	Tile tileAt(unsigned int x, unsigned int y) const throw (std::out_of_range) {
+		return _tiles.at(y * _width + x);
+	}
 
 	/**
 	 * Queries the tile definition at the given position.
@@ -79,7 +86,20 @@ public:
 	 * @param p Position.
 	 * @return Tile definition.
 	 */
-	const TileDefinition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _width + p._x]; }
+	const TileDefinition &tileDefinition(const Base::Point &p) const throw (std::out_of_range) {
+		return *_tileDefs.at(p._y * _width + p._x);
+	}
+
+	/**
+	 * Queries the tile definition at the given position.
+	 *
+	 * @param x x coordinate of the tile (must not exceed width - 1)
+	 * @param y y coordinate of the tile (must not exceed height - 1)
+	 * @return Tile definition.
+	 */
+	const TileDefinition &tileDefinition(unsigned int x, unsigned int y) const throw (std::out_of_range) {
+		return *_tileDefs.at(y * _width + x);
+	}
 
 	/**
 	 * Returns the width of the map.

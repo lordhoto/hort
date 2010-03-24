@@ -53,7 +53,12 @@ Level::~Level() {
 	delete _map;
 }
 
-void Level::makeActive(GUI::Screen &screen, Monster &player) {
+void Level::makeActive(GUI::Screen &screen, Monster &player) throw (std::out_of_range) {
+	// Verify that the monster position is setup correctly.
+	if (player.getX() >= _map->getWidth() ||
+	    player.getY() >= _map->getHeight())
+		throw std::out_of_range("Monster entrance position is out of range");
+
 	// First of all make this level inactive, just to prevent
 	// it from being made active twice (or more times).
 	makeInactive();
@@ -107,14 +112,11 @@ void Level::makeInactive() {
 	_gameState.setEventDispatcher(0);
 }
 
-bool Level::isWalkable(const Base::Point &p) const {
-	if (static_cast<unsigned int>(p._x) >= _map->getWidth() || static_cast<unsigned int>(p._y) >= _map->getHeight())
-		return false;
-
+bool Level::isWalkable(const Base::Point &p) const throw (std::out_of_range) {
 	if (!_map->isWalkable(p))
 		return false;
 
-	if (_monsterField[p._y * _map->getWidth() + p._x])
+	if (_monsterField.at(p._y * _map->getWidth() + p._x))
 		return false;
 
 	return true;
@@ -153,11 +155,15 @@ bool Level::isAllowedToAct(const MonsterID monster) const {
 		return (i->second._nextAction <= _gameState.getCurrentTick());
 }
 
-MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) {
+MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) throw (std::out_of_range) {
 	// Create a new monster object and setup the position.
 	Monster *newMonster = g_monsterDatabase.createNewMonster(monster);
 	assert(newMonster);
 	newMonster->setPos(pos);
+
+	if (static_cast<unsigned int>(pos._x) >= _map->getWidth() ||
+	    static_cast<unsigned int>(pos._y) >= _map->getHeight())
+		throw std::out_of_range("Monster spawn point is outside the map");
 
 	_monsterField[pos._y * _map->getWidth() + pos._x] = true;
 
@@ -179,6 +185,8 @@ void Level::removeMonster(const MonsterID monster) {
 		return;
 
 	// Unset the monster.
+	assert(i->second._monster->getY() <= _map->getHeight() && "Corrupted monster position");
+	assert(i->second._monster->getX() <= _map->getWidth() && "Corrupted monster position");
 	_monsterField[i->second._monster->getY() * _map->getWidth() + i->second._monster->getX()] = false;
 
 	// We only destroy the monster object, in case it's not the player
@@ -236,15 +244,25 @@ void Level::processMoveEvent(const MoveEvent &event) {
 	Monster *monster = updateNextActionTick(event.getMonster());
 	assert(monster);
 
-	// TODO: add some error checking
+	assert(static_cast<unsigned int>(event.getOldPos()._y) <= _map->getHeight() && "Invalid old monster position");
+	assert(static_cast<unsigned int>(event.getOldPos()._x) <= _map->getWidth() && "Invalid old monster position");
+
+	assert(static_cast<unsigned int>(event.getNewPos()._y) <= _map->getHeight() && "Invalid new monster position");
+	assert(static_cast<unsigned int>(event.getNewPos()._x) <= _map->getWidth() && "Invalid new monster position");
+
 	_monsterField[event.getOldPos()._y * _map->getWidth() + event.getOldPos()._x] = false;
 	_monsterField[event.getNewPos()._y * _map->getWidth() + event.getNewPos()._x] = true;
 	monster->setPos(event.getNewPos());
 
-	const TileDefinition &def = _map->tileDefinition(event.getNewPos());
-	if (def.getIsLiquid()) {
-		monster->setHitPoints(0);
-		_eventDisp.dispatch(new DeathEvent(event.getMonster(), DeathEvent::kDrowned));
+	try {
+		const TileDefinition &def = _map->tileDefinition(event.getNewPos());
+		if (def.getIsLiquid()) {
+			monster->setHitPoints(0);
+			_eventDisp.dispatch(new DeathEvent(event.getMonster(), DeathEvent::kDrowned));
+		}
+	} catch (std::out_of_range &e) {
+		// This should never happen.
+		assert(false);
 	}
 
 	_screen->flagForUpdate();

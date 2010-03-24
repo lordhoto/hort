@@ -37,9 +37,5 @@ Map::Map(unsigned int width, unsigned int height, const std::vector<Tile> &tiles
 	}
 }
 
-bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	return _tileDefs[y * _width + x]->getIsWalkable();
-}
-
 } // end of namespace Game
 

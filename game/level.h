@@ -34,6 +34,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 namespace AI {
 class Monster;
@@ -71,7 +72,7 @@ public:
 	 * @param screen Screen to setup.
 	 * @param player The player monster.
 	 */
-	void makeActive(GUI::Screen &screen, Monster &player);
+	void makeActive(GUI::Screen &screen, Monster &player) throw (std::out_of_range);
 
 	/**
 	 * Unsets the level as the active game level.
@@ -94,7 +95,7 @@ public:
 	 * @param p Position.
 	 * @return true if walkable, false otherwise.
 	 */
-	bool isWalkable(const Base::Point &p) const;
+	bool isWalkable(const Base::Point &p) const throw (std::out_of_range);
 
 	/**
 	 * Returns a monster id of the monster at the given position or
@@ -137,7 +138,7 @@ public:
 	 * @param pos Position to add.
 	 * @return The monster id.
 	 */
-	MonsterID addMonster(const MonsterType monster, const Base::Point &pos);
+	MonsterID addMonster(const MonsterType monster, const Base::Point &pos) throw (std::out_of_range);
 
 	/**
 	 * Removes the given monster from the level.

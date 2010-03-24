@@ -86,17 +86,21 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 		assert(false);
 	}
 
-	const Base::Point pos(x, y);
+	try {
+		const Base::Point pos(x, y);
 
-	if (!_level->isWalkable(pos))
-		throw Base::ParserListener::Exception("Position is blocked");
+		if (!_level->isWalkable(pos))
+			throw Base::ParserListener::Exception("Position is blocked");
 
-	MonsterDatabase &mdb = g_monsterDatabase;
-	const MonsterType monType = mdb.queryMonsterType(type);
-	if (monType >= mdb.getMonsterTypeCount())
-		throw Base::ParserListener::Exception("Undefined monster type \"" + type + '"');
+		MonsterDatabase &mdb = g_monsterDatabase;
+		const MonsterType monType = mdb.queryMonsterType(type);
+		if (monType >= mdb.getMonsterTypeCount())
+			throw Base::ParserListener::Exception("Undefined monster type \"" + type + '"');
 
-	_level->addMonster(monType, pos);
+		_level->addMonster(monType, pos);
+	} catch (std::out_of_range &e) {
+		throw Base::ParserListener::Exception("Incorrect monster spawn point");
+	}
 }
 
 void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
@@ -112,10 +116,14 @@ void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
 
 	const Base::Point pos(x, y);
 
-	if (!_level->isWalkable(pos))
-		throw Base::ParserListener::Exception("Position is blocked");
+	try {
+		if (!_level->isWalkable(pos))
+			throw Base::ParserListener::Exception("Position is blocked");
 
-	_start = pos;
+		_start = pos;
+	} catch (std::out_of_range &e) {
+		throw Base::ParserListener::Exception("Start position parameter is out of range");
+	}
 }
 
 } // end of namespace Game
