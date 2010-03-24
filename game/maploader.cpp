@@ -46,11 +46,14 @@ Map *MapLoader::load() throw (Base::NonRecoverableException) {
 	int lineCount = 2;
 
 	TileDatabase &tdb = TileDatabase::instance();
-	unsigned int w, h;
+	unsigned int w = -1, h = -1;
    
 	try {
 		w = boost::lexical_cast<int>(_lines.front());
 		_lines.pop_front();
+
+		if (w <= 0)
+			throwError("Width is zero or less", 0);
 	} catch (boost::bad_lexical_cast &e) {
 		throwError("Width definition is no integer", 0);
 	}
@@ -58,6 +61,9 @@ Map *MapLoader::load() throw (Base::NonRecoverableException) {
 	try {
 		h = boost::lexical_cast<int>(_lines.front());
 		_lines.pop_front();
+
+		if (h <= 0)
+			throwError("Height is zero or less", 1);
 	} catch (boost::bad_lexical_cast &e) {
 		throwError("Height definition is no integer", 1);
 	}
