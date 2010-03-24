@@ -285,13 +285,19 @@ bool GameState::handleInput(GUI::Input input) {
 
 	const Base::Point newPos = _player->getPos() + offset;
 
-	MonsterID monster = _curLevel->monsterAt(newPos);
-	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
-		_eventDisp->dispatch(new AttackEvent(kPlayerMonsterID, monster));
-	else if (_curLevel->isWalkable(newPos))
-		_eventDisp->dispatch(new MoveEvent(kPlayerMonsterID, _player->getPos(), newPos));
-	else
+	try {
+		MonsterID monster = _curLevel->monsterAt(newPos);
+		if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
+			_eventDisp->dispatch(new AttackEvent(kPlayerMonsterID, monster));
+		else if (_curLevel->isWalkable(newPos))
+			_eventDisp->dispatch(new MoveEvent(kPlayerMonsterID, _player->getPos(), newPos));
+		else
+			return false;
+	} catch (std::out_of_range &e) {
+		// In case an invalid position was specified to isWalkable, we just ingore it
+		// TODO: Consider adding some check for that, instead of (ab)using the exception
 		return false;
+	}
 
 	return true;
 }
