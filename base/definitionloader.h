@@ -135,8 +135,16 @@ void DefinitionLoader<Definition>::notifyRule(const std::string &name, const Bas
 	_definitions.push_back(definitionRule(values));
 }
 
+/**
+ * A variable getter, used to implement DefintionLoader::getVariableValue.
+ */
 template<typename T>
 struct VariableGetter {
+	/**
+	 * This function does exactly the same as DefintionLoader::getVariableValue.
+	 *
+	 * @see DefintionLoader::getVariableValue
+	 */
 	T operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
 			return boost::lexical_cast<T>(values.find(name)->second);
@@ -146,8 +154,18 @@ struct VariableGetter {
 	}
 };
 
+/**
+ * A variable getter, used to implement DefintionLoader::getVariableValue for unsigned char.
+ *
+ * This is required because of how boost::lexical_cast works.
+ */
 template<>
 struct VariableGetter<unsigned char> {
+	/**
+	 * This function does exactly the same as DefintionLoader::getVariableValue.
+	 *
+	 * @see DefintionLoader::getVariableValue
+	 */
 	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
 			return boost::numeric_cast<unsigned char>(boost::lexical_cast<int>(values.find(name)->second));
@@ -159,8 +177,18 @@ struct VariableGetter<unsigned char> {
 	}
 };
 
+/**
+ * A variable getter, used to implement DefintionLoader::getVariableValue for signed char.
+ *
+ * This is required because of how boost::lexical_cast works.
+ */
 template<>
 struct VariableGetter<signed char> {
+	/**
+	 * This function does exactly the same as DefintionLoader::getVariableValue.
+	 *
+	 * @see DefintionLoader::getVariableValue
+	 */
 	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
 			return boost::numeric_cast<signed char>(boost::lexical_cast<int>(values.find(name)->second));
@@ -172,6 +200,11 @@ struct VariableGetter<signed char> {
 	}
 };
 
+/**
+ * A variable getter, used to implement DefintionLoader::getVariableValue for char.
+ *
+ * This is required because of how boost::lexical_cast works.
+ */
 template<>
 struct VariableGetter<char> {
 	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
