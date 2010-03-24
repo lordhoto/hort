@@ -29,8 +29,12 @@
 
 namespace Game {
 
-struct Event {
-	enum kType {
+/**
+ * Base class for game events.
+ */
+class Event {
+public:
+	enum Type {
 		/**
 		 * Indicates that a monster moves.
 		 */
@@ -65,48 +69,170 @@ struct Event {
 		kTypeIdle
 	};
 
-	kType type;
+	Event(const Type type) : _type(type) {}
+	virtual ~Event() = 0;
 
-	struct Idle {
-		MonsterID monster;
+	/**
+	 * @return the type of the event.
+	 */
+	Type getType() const { return _type; }
+private:
+	const Type _type;
+};
 
-		enum Reason {
-			kNoReason,
-			kWary
-		} reason;
-	} idle;
+/**
+ * An event from a monster.
+ */
+class MonsterEvent : public Event {
+public:
+	MonsterEvent(Type type, const MonsterID monster) : Event(type), _monster(monster) {}
+	virtual ~MonsterEvent() = 0;
 
-	struct Death {
-		MonsterID monster;
-		MonsterID killer; // This might be kInvalidMonsterID!
+	/**
+	 * @return the monster, which is the cause of the event
+	 */
+	MonsterID getMonster() const { return _monster; }
+private:
+	const MonsterID _monster;
+};
 
-		enum Cause {
-			kKilled,
-			kDrowned
-		} cause;
-	} death;
+/**
+ * An idle monster event.
+ */
+class IdleEvent : public MonsterEvent {
+public:
+	/**
+	 * The reason for the monster to idle.
+	 */
+	enum Reason {
+		/**
+		 * No reason, i.e. just idling :-).
+		 */
+		kNoReason,
 
-	struct Move {
-		MonsterID monster;
+		/**
+		 * The monster is in a wary state and thus watching
+		 * the enviorment for changes.
+		 */
+		kWary
+	};
 
-		Base::Point newPos, oldPos;
-	} move;
+	IdleEvent(const MonsterID monster, const Reason reason) : MonsterEvent(kTypeIdle, monster), _reason(reason) {}
 
-	struct Attack {
-		MonsterID monster;
-		MonsterID target;
-	} attack;
+	/**
+	 * @return the reason, why the monster is idling.
+	 */
+	Reason getReason() const { return _reason; }
+private:
+	const Reason _reason;
+};
 
-	struct AttackDamage {
-		MonsterID monster;
-		MonsterID target;
+/**
+ * A monster death event.
+ */
+class DeathEvent : public MonsterEvent {
+public:
+	/**
+	 * The cause for the monster's death.
+	 */
+	enum Cause {
+		/**
+		 * Indicates, that the monster has been killed.
+		 */
+		kKilled,
 
-		bool didDmg;
-	} attackDamage;
+		/**
+		 * Indicates, that the monster drowned.
+		 */
+		kDrowned
+	};
 
-	struct AttackFail {
-		MonsterID monster;
-	} attackFail;
+	DeathEvent(const MonsterID monster, const Cause cause, const MonsterID killer = kInvalidMonsterID)
+	    : MonsterEvent(kTypeDeath, monster), _cause(cause), _killer(killer) {}
+
+	/**
+	 * @return the cause for the death.
+	 */
+	Cause getCause() const { return _cause; }
+
+	/**
+	 * @return the (optional) killer.
+	 */
+	MonsterID getKiller() const { return _killer; }
+private:
+	const Cause _cause;
+	const MonsterID _killer;
+};
+
+/**
+ * A monster movement event.
+ */
+class MoveEvent : public MonsterEvent {
+public:
+	MoveEvent(const MonsterID monster, const Base::Point &oldPos, const Base::Point &newPos)
+	    : MonsterEvent(kTypeMove, monster), _newPos(newPos), _oldPos(oldPos) {}
+
+	/**
+	 * @return the old position of the monster.
+	 */
+	const Base::Point &getOldPos() const { return _oldPos; }
+
+	/**
+	 * @return the new postion of the monster.
+	 */
+	const Base::Point &getNewPos() const { return _newPos; }
+private:
+	const Base::Point _newPos, _oldPos;
+};
+
+/**
+ * A generic monster attack event.
+ */
+class GenericAttackEvent : public MonsterEvent {
+public:
+	GenericAttackEvent(const Type type, const MonsterID monster, const MonsterID target)
+	    : MonsterEvent(type, monster), _target(target) {}
+	virtual ~GenericAttackEvent() = 0;
+
+	/**
+	 * @return the attacker
+	 */
+	MonsterID getTarget() const { return _target; }
+private:
+	const MonsterID _target;
+};
+
+/**
+ * A monster attack event.
+ */
+class AttackEvent : public GenericAttackEvent {
+public:
+	AttackEvent(const MonsterID monster, const MonsterID target) : GenericAttackEvent(kTypeAttack, monster, target) {}
+	~AttackEvent() {}
+};
+
+/**
+ * A monster attack damage event.
+ */
+class AttackDamageEvent : public GenericAttackEvent {
+public:
+	AttackDamageEvent(const MonsterID monster, const MonsterID target, const bool didDmg)
+	    : GenericAttackEvent(kTypeAttackDamage, monster, target), _didDmg(didDmg) {}
+
+	/**
+	 * @return whether the attack did any damage.
+	 */
+	bool getDidDmg() const { return _didDmg; }
+private:
+	const bool _didDmg;
+};
+
+/**
+ * A monster attack fail event.
+ */
+class AttackFailEvent : public GenericAttackEvent {
+public:
+	AttackFailEvent(const MonsterID monster, const MonsterID target) : GenericAttackEvent(kTypeAttackFail, monster, target) {}
 };
 
 /**
@@ -117,12 +243,46 @@ public:
 	virtual ~EventHandler() {}
 
 	/**
-	 * Process the event in the manner the EventHandler
-	 * sees fitting.
+	 * Processes a movement event.
 	 *
-	 * @param event to process.
+	 * @param event event to process.
 	 */
-	virtual void processEvent(const Event &event) = 0;
+	virtual void processMoveEvent(const MoveEvent &event) = 0;
+
+	/**
+	 * Processes an idle event.
+	 *
+	 * @param event event to process.
+	 */
+	virtual void processIdleEvent(const IdleEvent &event) = 0;
+
+	/**
+	 * Processes an death event.
+	 *
+	 * @param event event to process.
+	 */
+	virtual void processDeathEvent(const DeathEvent &event) = 0;
+
+	/**
+	 * Processes an attack event.
+	 *
+	 * @param event event to process.
+	 */
+	virtual void processAttackEvent(const AttackEvent &event) = 0;
+
+	/**
+	 * Processes an attack damage event.
+	 *
+	 * @param event event to process.
+	 */
+	virtual void processAttackDamageEvent(const AttackDamageEvent &event) = 0;
+
+	/**
+	 * Processes an attack fail event.
+	 *
+	 * @param event event to process.
+	 */
+	virtual void processAttackFailEvent(const AttackFailEvent &event) = 0;
 };
 
 /**
@@ -148,70 +308,18 @@ public:
 	/**
 	 * Dispatches the given event.
 	 *
+	 * Note that this event automatically destroies
+	 * the event after it has dispatched it to every
+	 * handler.
+	 *
 	 * @param event Event to dispatch accross
 	 *              the setup handlers.
 	 */
-	void dispatch(const Event &event);
+	void dispatch(const Event *event);
 private:
 	typedef std::list<EventHandler *> HandlerList;
 	HandlerList _handlers;
 };
-
-/**
- * Creates an event for the monster's movement.
- *
- * @param monster Monster to move.
- * @param mP Pointer to the monster to move.
- * @param newPos New position of the monster.
- * @return Event structure.
- */
-Event createMoveEvent(const MonsterID monster, const Monster *mP, const Base::Point &newPos);
-
-/**
- * Creates an attack event.
- *
- * @param monster Monster which attacks.
- * @param target Monster which is attacked.
- * @return Event structure.
- */
-Event createAttackEvent(const MonsterID monster, const MonsterID target);
-
-/**
- * Creates an attack damage event.
- *
- * @param monster Monster which attacks.
- * @param target Monster which is attacked.
- * @param didDmg Whether the attack caused any damage.
- * @return Event structure.
- */
-Event createAttackDamageEvent(const MonsterID monster, const MonsterID target, bool didDmg);
-
-/**
- * Creates an attack fail event.
- *
- * @param monster Monster which failed to attack.
- * @return Event sturcture.
- */
-Event createAttackFailEvent(const MonsterID monster);
-
-/**
- * Creates a death event.
- *
- * @param monster Monster which dies.
- * @param cause The cause of the death.
- * @param killer (Optional) killer monster.
- * @return Event structure.
- */
-Event createDeathEvent(const MonsterID monster, Event::Death::Cause cause, const MonsterID killer = kInvalidMonsterID);
-
-/**
- * Creates an idle event.
- *
- * @param monster Monster which idles.
- * @param reason The reason why it idles.
- * @return Event sturcture.
- */
-Event createIdleEvent(const MonsterID monster, Event::Idle::Reason reason);
 
 } // end of namespace Game
 

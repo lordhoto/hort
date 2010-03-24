@@ -45,7 +45,12 @@ public:
 
 	bool run();
 
-	void processEvent(const Event &event);
+	void processMoveEvent(const MoveEvent &event);
+	void processIdleEvent(const IdleEvent &event);
+	void processDeathEvent(const DeathEvent &event);
+	void processAttackEvent(const AttackEvent &event);
+	void processAttackDamageEvent(const AttackDamageEvent &event);
+	void processAttackFailEvent(const AttackFailEvent &event);
 
 	const Monster &getPlayer() const { return *_player; }
 

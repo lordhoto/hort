@@ -126,7 +126,7 @@ void Monster::update() {
 					if (_level.isWalkable(newPos)) {
 						const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 						if (!def.getIsLiquid()) {
-							_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
+							_eventDisp.dispatch(new Game::MoveEvent(i.first, i.second._monster->getPos(), newPos));
 							didAction = true;
 						}
 					}
@@ -134,7 +134,7 @@ void Monster::update() {
 			}
 
 			if (!didAction)
-				_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kNoReason));
+				_eventDisp.dispatch(new Game::IdleEvent(i.first, Game::IdleEvent::kNoReason));
 			} break;
 
 		case kMonsterWary:
@@ -152,18 +152,18 @@ void Monster::update() {
 				if (_level.isWalkable(newPos)) {
 					const Game::TileDefinition &def = _level.getMap().tileDefinition(newPos);
 					if (!def.getIsLiquid())
-						_eventDisp.dispatch(Game::createMoveEvent(i.first, i.second._monster, newPos));
+						_eventDisp.dispatch(new Game::MoveEvent(i.first, i.second._monster->getPos(), newPos));
 				} else {
-					_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kWary));
+					_eventDisp.dispatch(new Game::IdleEvent(i.first, Game::IdleEvent::kWary));
 				}
 			} else {
-				_eventDisp.dispatch(Game::createIdleEvent(i.first, Game::Event::Idle::kWary));
+				_eventDisp.dispatch(new Game::IdleEvent(i.first, Game::IdleEvent::kWary));
 			}
 			break;
 
 		case kMonsterAttack:
 			if (_player)
-				_eventDisp.dispatch(Game::createAttackEvent(i.first, Game::kPlayerMonsterID));
+				_eventDisp.dispatch(new Game::AttackEvent(i.first, Game::kPlayerMonsterID));
 			break;
 
 		default:
@@ -172,50 +172,66 @@ void Monster::update() {
 	}
 }
 
-void Monster::processEvent(const Game::Event &event) {
-	if (event.type == Game::Event::kTypeMove) {
-		if (event.move.monster == Game::kPlayerMonsterID) {
-			BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
-				_fsm->setState(i.second._fsmState);
+void Monster::processMoveEvent(const Game::MoveEvent &event) {
+	if (event.getMonster() == Game::kPlayerMonsterID) {
+		BOOST_FOREACH(MonsterMap::value_type &i, _monsters) {
+			_fsm->setState(i.second._fsmState);
 
-				// Calculate distance
-				const double dist = event.move.newPos.distanceTo(i.second._monster->getPos());
+			// Calculate distance
+			const double dist = event.getNewPos().distanceTo(i.second._monster->getPos());
 
-				if (dist <= std::sqrt(2))
-					_fsm->process(kPlayerTriggerDist2);
-				else if (dist <= 4.0f)
-					_fsm->process(kPlayerTriggerDist1);
-				else
-					_fsm->process(kPlayerTriggerDist0);
+			if (dist <= std::sqrt(2))
+				_fsm->process(kPlayerTriggerDist2);
+			else if (dist <= 4.0f)
+				_fsm->process(kPlayerTriggerDist1);
+			else
+				_fsm->process(kPlayerTriggerDist0);
 
-				i.second._fsmState = _fsm->getState();
-			}
-		} else if (_player) {
-			MonsterMap::iterator i = _monsters.find(event.move.monster);
-			if (i != _monsters.end()) {
-				// Calculate distance
-				const double dist = event.move.newPos.distanceTo(_player->getPos());
-
-				_fsm->setState(i->second._fsmState);
-
-				if (dist <= std::sqrt(2))
-					_fsm->process(kPlayerTriggerDist2);
-				else if (dist <= 4.0f)
-					_fsm->process(kPlayerTriggerDist1);
-				else
-					_fsm->process(kPlayerTriggerDist0);
-
-				i->second._fsmState = _fsm->getState();
-			}
+			i.second._fsmState = _fsm->getState();
 		}
-	} else if (event.type == Game::Event::kTypeAttack) {
-		MonsterMap::iterator i = _monsters.find(event.attack.target);
+	} else if (_player) {
+		MonsterMap::iterator i = _monsters.find(event.getMonster());
 		if (i != _monsters.end()) {
+			// Calculate distance
+			const double dist = event.getNewPos().distanceTo(_player->getPos());
+
 			_fsm->setState(i->second._fsmState);
-			_fsm->process(kPlayerAttack);
+
+			if (dist <= std::sqrt(2))
+				_fsm->process(kPlayerTriggerDist2);
+			else if (dist <= 4.0f)
+				_fsm->process(kPlayerTriggerDist1);
+			else
+				_fsm->process(kPlayerTriggerDist0);
+
 			i->second._fsmState = _fsm->getState();
 		}
 	}
+}
+
+void Monster::processIdleEvent(const Game::IdleEvent &event) {
+	// Nothing to do here.
+}
+
+void Monster::processDeathEvent(const Game::DeathEvent &event) {
+	// Nothing to do here.
+}
+
+void Monster::processAttackEvent(const Game::AttackEvent &event) {
+	MonsterMap::iterator i = _monsters.find(event.getTarget());
+	if (i != _monsters.end()) {
+		_fsm->setState(i->second._fsmState);
+		_fsm->process(kPlayerAttack);
+		i->second._fsmState = _fsm->getState();
+	}
+}
+
+void Monster::processAttackDamageEvent(const Game::AttackDamageEvent &event) {
+	// Nothing to do here.
+}
+
+void Monster::processAttackFailEvent(const Game::AttackFailEvent &event) {
+	// Nothing to do here.
 }
 
 } // end of namespace AI

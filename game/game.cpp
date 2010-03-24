@@ -107,134 +107,144 @@ bool GameState::run() {
 	return true;
 }
 
-void GameState::processEvent(const Event &event) {
-	if (event.type == Event::kTypeAttackDamage) {
-		const Monster *monster = _curLevel->getMonster(event.attackDamage.monster);
-		assert(monster);
-		const Monster *target = _curLevel->getMonster(event.attackDamage.target);
-		assert(target);
+void GameState::processMoveEvent(const MoveEvent &event) {
+	if (event.getMonster() == kPlayerMonsterID)
+		_gameScreen->setCenter(event.getNewPos());
+}
 
-		std::stringstream ss;
+void GameState::processIdleEvent(const IdleEvent &event) {
+	if (event.getMonster() == kPlayerMonsterID) {
+		// TODO: This should definitly not be stored over here
+		static const char * const messages[] = {
+			"You seem bored.",
+			"You yawn.",
+			"You nearly fall asleep."
+		};
 
-		if (event.attackDamage.target == kPlayerMonsterID)
-			ss << "The " << g_monsterDatabase.g_monsterDatabase.getMonsterName(monster->getType()) << " hits you!";
-		else
-			ss << "You hit the " << g_monsterDatabase.getMonsterName(target->getType()) << "!";
-
-		if (!event.attackDamage.didDmg)
-			ss << " Somehow the attack does not cause any damage.";
-
-		_gameScreen->addToMsgWindow(ss.str());
-	} else if (event.type == Event::kTypeAttackFail) {
-		const Monster *monster = _curLevel->getMonster(event.attackFail.monster);
+		if (Base::rollDice(10) == 10)
+			_gameScreen->addToMsgWindow(messages[Base::rollDice(3) - 1]);
+	} else {
+		const Monster *monster = _curLevel->getMonster(event.getMonster());
 		assert(monster);
 
-		std::stringstream ss;
+		if (Base::rollDice(20) == 20 && _player->getPos().distanceTo(monster->getPos()) <= 10.0f) {
+			std::stringstream ss;
+			bool processMessage = true;
 
-		if (event.attackFail.monster == kPlayerMonsterID)
-			ss << "You miss!";
-		else
-			ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " misses!";
-
-		_gameScreen->addToMsgWindow(ss.str());
-	} else if (event.type == Event::kTypeDeath) {
-		const Monster *monster = _curLevel->getMonster(event.death.monster);
-		assert(monster);
-
-		if (_player->getPos().distanceTo(monster->getPos()) >= 10.0f)
-			return;
-
-		if (event.death.monster == kPlayerMonsterID) {
-			switch (event.death.cause) {
-			case Event::Death::kDrowned:
-				_gameScreen->addToMsgWindow("You drown.");
+			ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " ";
+			switch (event.getReason()) {
+			case IdleEvent::kNoReason:
+				ss << "seems unsure what to do next.";
 				break;
 
-			case Event::Death::kKilled: {
-				const Monster *killer = _curLevel->getMonster(event.death.killer);
-				assert(killer);
+			case IdleEvent::kWary: {
+				// TODO: This should definitly not be stored over here
+				static const char * const messages[] = {
+					"seems to be watching you.",
+					"makes you nervous.",
+					"seems to be aware of your presence."
+				};
 
-				std::stringstream ss;
-				ss << "The " << g_monsterDatabase.getMonsterName(killer->getType()) << " kills you!";
-				_gameScreen->addToMsgWindow(ss.str());
+				ss << messages[Base::rollDice(3) - 1];
+
+				if (_nextWarning <= _tickCounter)
+					// TODO: How often the player has the chance to catch this
+					// messages should be dependant on his wisdom.
+					_nextWarning = _tickCounter + 3 * kTicksPerTurn;
+				else
+					processMessage = false;
 				} break;
 			}
-			
-		} else {
-			std::stringstream ss;
-			if (event.death.killer == kPlayerMonsterID) {
-				ss << "You kill the " << g_monsterDatabase.getMonsterName(monster->getType()) << "!";
-			} else {
-				ss << "The " << g_monsterDatabase.getMonsterName(monster->getType());
 
-				switch (event.death.cause) {
-				case Event::Death::kKilled: {
-					const Monster *killer = _curLevel->getMonster(event.death.killer);
-					assert(killer);
-
-					ss << " is killed by the " << g_monsterDatabase.getMonsterName(killer->getType()) << "!";
-					} break;
-
-				case Event::Death::kDrowned:
-					ss << " drowned.";
-					break;
-				}
-			}
-
-			_gameScreen->addToMsgWindow(ss.str());
+			if (processMessage)
+				_gameScreen->addToMsgWindow(ss.str());
 		}
-	} else if (event.type == Event::kTypeIdle) {
-		if (event.idle.monster == kPlayerMonsterID) {
-			// TODO: This should definitly not be stored over here
-			static const char * const messages[] = {
-				"You seem bored.",
-				"You yawn.",
-				"You nearly fall asleep."
-			};
-
-			if (Base::rollDice(10) == 10)
-				_gameScreen->addToMsgWindow(messages[Base::rollDice(3) - 1]);
-		} else {
-			const Monster *monster = _curLevel->getMonster(event.idle.monster);
-			assert(monster);
-
-			if (Base::rollDice(20) == 20 && _player->getPos().distanceTo(monster->getPos()) <= 10.0f) {
-				std::stringstream ss;
-				bool processMessage = true;
-
-				ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " ";
-				switch (event.idle.reason) {
-				case Event::Idle::kNoReason:
-					ss << "seems unsure what to do next.";
-					break;
-
-				case Event::Idle::kWary: {
-					// TODO: This should definitly not be stored over here
-					static const char * const messages[] = {
-						"seems to be watching you.",
-						"makes you nervous.",
-						"seems to be aware of your presence."
-					};
-
-					ss << messages[Base::rollDice(3) - 1];
-
-					if (_nextWarning <= _tickCounter)
-						// TODO: How often the player has the chance to catch this
-						// messages should be dependant on his wisdom.
-						_nextWarning = _tickCounter + 3 * kTicksPerTurn;
-					else
-						processMessage = false;
-					} break;
-				}
-
-				if (processMessage)
-					_gameScreen->addToMsgWindow(ss.str());
-			}
-		}
-	} else if (event.type == Event::kTypeMove) {
-		if (event.move.monster == kPlayerMonsterID)
-			_gameScreen->setCenter(event.move.newPos);
 	}
+}
+
+void GameState::processDeathEvent(const DeathEvent &event) {
+	const Monster *monster = _curLevel->getMonster(event.getMonster());
+	assert(monster);
+
+	if (_player->getPos().distanceTo(monster->getPos()) >= 10.0f)
+		return;
+
+	if (event.getMonster() == kPlayerMonsterID) {
+		switch (event.getCause()) {
+		case DeathEvent::kDrowned:
+			_gameScreen->addToMsgWindow("You drown.");
+			break;
+
+		case DeathEvent::kKilled: {
+			const Monster *killer = _curLevel->getMonster(event.getKiller());
+			assert(killer);
+
+			std::stringstream ss;
+			ss << "The " << g_monsterDatabase.getMonsterName(killer->getType()) << " kills you!";
+			_gameScreen->addToMsgWindow(ss.str());
+			} break;
+		}
+		
+	} else {
+		std::stringstream ss;
+		if (event.getKiller() == kPlayerMonsterID) {
+			ss << "You kill the " << g_monsterDatabase.getMonsterName(monster->getType()) << "!";
+		} else {
+			ss << "The " << g_monsterDatabase.getMonsterName(monster->getType());
+
+			switch (event.getCause()) {
+			case DeathEvent::kKilled: {
+				const Monster *killer = _curLevel->getMonster(event.getKiller());
+				assert(killer);
+
+				ss << " is killed by the " << g_monsterDatabase.getMonsterName(killer->getType()) << "!";
+				} break;
+
+			case DeathEvent::kDrowned:
+				ss << " drowned.";
+				break;
+			}
+		}
+
+		_gameScreen->addToMsgWindow(ss.str());
+	}
+}
+
+void GameState::processAttackEvent(const AttackEvent &event) {
+	// Nothing to do here.
+}
+
+void GameState::processAttackDamageEvent(const AttackDamageEvent &event) {
+	const Monster *monster = _curLevel->getMonster(event.getMonster());
+	assert(monster);
+	const Monster *target = _curLevel->getMonster(event.getTarget());
+	assert(target);
+
+	std::stringstream ss;
+
+	if (event.getTarget() == kPlayerMonsterID)
+		ss << "The " << g_monsterDatabase.g_monsterDatabase.getMonsterName(monster->getType()) << " hits you!";
+	else
+		ss << "You hit the " << g_monsterDatabase.getMonsterName(target->getType()) << "!";
+
+	if (!event.getDidDmg())
+		ss << " Somehow the attack does not cause any damage.";
+
+	_gameScreen->addToMsgWindow(ss.str());
+}
+
+void GameState::processAttackFailEvent(const AttackFailEvent &event) {
+	const Monster *monster = _curLevel->getMonster(event.getMonster());
+	assert(monster);
+
+	std::stringstream ss;
+
+	if (event.getMonster() == kPlayerMonsterID)
+		ss << "You miss!";
+	else
+		ss << "The " << g_monsterDatabase.getMonsterName(monster->getType()) << " misses!";
+
+	_gameScreen->addToMsgWindow(ss.str());
 }
 
 bool GameState::handleInput(GUI::Input input) {
@@ -247,7 +257,7 @@ bool GameState::handleInput(GUI::Input input) {
 		return true;
 
 	case GUI::kInputDir5:
-		_eventDisp->dispatch(createIdleEvent(kPlayerMonsterID, Event::Idle::kNoReason));
+		_eventDisp->dispatch(new IdleEvent(kPlayerMonsterID, IdleEvent::kNoReason));
 		return true;
 
 	case GUI::kInputNone:
@@ -273,9 +283,9 @@ bool GameState::handleInput(GUI::Input input) {
 
 	MonsterID monster = _curLevel->monsterAt(newPos);
 	if (monster != kInvalidMonsterID && monster != kPlayerMonsterID)
-		_eventDisp->dispatch(createAttackEvent(kPlayerMonsterID, monster));
+		_eventDisp->dispatch(new AttackEvent(kPlayerMonsterID, monster));
 	else if (_curLevel->isWalkable(newPos))
-		_eventDisp->dispatch(createMoveEvent(kPlayerMonsterID, _player, newPos));
+		_eventDisp->dispatch(new MoveEvent(kPlayerMonsterID, _player->getPos(), newPos));
 	else
 		return false;
 

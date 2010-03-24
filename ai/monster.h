@@ -61,12 +61,12 @@ public:
 	 */
 	void update();
 
-	/**
-	 * Processes a given event.
-	 *
-	 * @param event Event to process.
-	 */
-	void processEvent(const Game::Event &event);
+	void processMoveEvent(const Game::MoveEvent &event);
+	void processIdleEvent(const Game::IdleEvent &event);
+	void processDeathEvent(const Game::DeathEvent &event);
+	void processAttackEvent(const Game::AttackEvent &event);
+	void processAttackDamageEvent(const Game::AttackDamageEvent &event);
+	void processAttackFailEvent(const Game::AttackFailEvent &event);
 private:
 	const Game::Level &_level;
 	Game::EventDispatcher &_eventDisp;

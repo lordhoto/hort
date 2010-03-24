@@ -231,50 +231,64 @@ void Level::update() {
 	_monsterAI->update();
 }
 
-void Level::processEvent(const Event &event) {
-	if (event.type == Event::kTypeMove) {
-		assert(isAllowedToAct(event.move.monster));
-		Monster *monster = updateNextActionTick(event.move.monster);
-		assert(monster);
+void Level::processMoveEvent(const MoveEvent &event) {
+	assert(isAllowedToAct(event.getMonster()));
+	Monster *monster = updateNextActionTick(event.getMonster());
+	assert(monster);
 
-		// TODO: add some error checking
-		_monsterField[event.move.oldPos._y * _map->width() + event.move.oldPos._x] = false;
-		_monsterField[event.move.newPos._y * _map->width() + event.move.newPos._x] = true;
-		monster->setPos(event.move.newPos);
+	// TODO: add some error checking
+	_monsterField[event.getOldPos()._y * _map->width() + event.getOldPos()._x] = false;
+	_monsterField[event.getNewPos()._y * _map->width() + event.getNewPos()._x] = true;
+	monster->setPos(event.getNewPos());
 
-		const TileDefinition &def = _map->tileDefinition(event.move.newPos);
-		if (def.getIsLiquid()) {
-			monster->setHitPoints(0);
-			_eventDisp.dispatch(createDeathEvent(event.move.monster, Event::Death::kDrowned));
-		}
-
-		_screen->flagForUpdate();
-	} else if (event.type == Event::kTypeAttack) {
-		assert(isAllowedToAct(event.attack.monster));
-		const Monster *monster = updateNextActionTick(event.attack.monster);
-		assert(monster);
-		Monster *target = getMonster(event.attack.target);
-		assert(target);
-
-		if (Base::rollDice(20) == 20) {
-			_eventDisp.dispatch(createAttackFailEvent(event.attack.monster));
-		} else {
-			int damage = 1;
-			int newHitPoints = target->getHitPoints() - damage;
-			target->setHitPoints(newHitPoints);
-
-			_eventDisp.dispatch(createAttackDamageEvent(event.attack.monster, event.attack.target, damage != 0));
-
-			if (newHitPoints <= 0)
-				_eventDisp.dispatch(createDeathEvent(event.attack.target, Event::Death::kKilled, event.attack.monster));
-		}
-
-		// Do not remove the monster yet, since some other
-		// objects might still use it in the event queue.
-	} else if (event.type == Event::kTypeIdle) {
-		assert(isAllowedToAct(event.idle.monster));
-		updateNextActionTick(event.idle.monster, (event.idle.reason == Event::Idle::kWary));
+	const TileDefinition &def = _map->tileDefinition(event.getNewPos());
+	if (def.getIsLiquid()) {
+		monster->setHitPoints(0);
+		_eventDisp.dispatch(new DeathEvent(event.getMonster(), DeathEvent::kDrowned));
 	}
+
+	_screen->flagForUpdate();
+}
+
+void Level::processIdleEvent(const IdleEvent &event) {
+	assert(isAllowedToAct(event.getMonster()));
+	updateNextActionTick(event.getMonster(), (event.getReason() == IdleEvent::kWary));
+}
+
+void Level::processDeathEvent(const DeathEvent &event) {
+	// Nothing to do here.
+}
+
+void Level::processAttackEvent(const AttackEvent &event) {
+	assert(isAllowedToAct(event.getMonster()));
+	const Monster *monster = updateNextActionTick(event.getMonster());
+	assert(monster);
+	Monster *target = getMonster(event.getTarget());
+	assert(target);
+
+	if (Base::rollDice(20) == 20) {
+		_eventDisp.dispatch(new AttackFailEvent(event.getMonster(), event.getTarget()));
+	} else {
+		int damage = 1;
+		int newHitPoints = target->getHitPoints() - damage;
+		target->setHitPoints(newHitPoints);
+
+		_eventDisp.dispatch(new AttackDamageEvent(event.getMonster(), event.getTarget(), damage != 0));
+
+		if (newHitPoints <= 0)
+			_eventDisp.dispatch(new DeathEvent(event.getTarget(), DeathEvent::kKilled, event.getMonster()));
+	}
+
+	// Do not remove the monster yet, since some other
+	// objects might still use it in the event queue.
+}
+
+void Level::processAttackDamageEvent(const AttackDamageEvent &event) {
+	// Nothing to do here.
+}
+
+void Level::processAttackFailEvent(const AttackFailEvent &event) {
+	// Nothing to do here.
 }
 
 Monster *Level::updateNextActionTick(MonsterID monster, bool oneTickOnly) {

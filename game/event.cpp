@@ -33,59 +33,48 @@ void EventDispatcher::removeHandler(EventHandler *handler) {
 	_handlers.remove(handler);
 }
 
-void EventDispatcher::dispatch(const Event &event) {
-	BOOST_FOREACH(HandlerList::value_type i, _handlers)
-		i->processEvent(event);
+void EventDispatcher::dispatch(const Event *event) {
+	BOOST_FOREACH(HandlerList::value_type i, _handlers) {
+		switch (event->getType()) {
+		case Event::kTypeIdle:
+			i->processIdleEvent(*(const IdleEvent *)event);
+			break;
+
+		case Event::kTypeMove:
+			i->processMoveEvent(*(const MoveEvent *)event);
+			break;
+
+		case Event::kTypeDeath:
+			i->processDeathEvent(*(const DeathEvent *)event);
+			break;
+
+		case Event::kTypeAttack:
+			i->processAttackEvent(*(const AttackEvent *)event);
+			break;
+
+		case Event::kTypeAttackDamage:
+			i->processAttackDamageEvent(*(const AttackDamageEvent *)event);
+			break;
+
+		case Event::kTypeAttackFail:
+			i->processAttackFailEvent(*(const AttackFailEvent *)event);
+			break;
+
+		default:
+			assert(false && "Unknown event type passed");
+		}
+	}
+
+	delete event;
 }
 
-Event createMoveEvent(const MonsterID monster, const Monster *mP, const Base::Point &newPos) {
-	Event event;
-	event.type = Event::kTypeMove;
-	event.move.monster = monster;
-	event.move.oldPos = mP->getPos();
-	event.move.newPos = newPos;
-	return event;
+Event::~Event() {
 }
 
-Event createAttackEvent(const MonsterID monster, const MonsterID target) {
-	Event event;
-	event.type = Event::kTypeAttack;
-	event.attack.monster = monster;
-	event.attack.target = target;
-	return event;
+MonsterEvent::~MonsterEvent() {
 }
 
-Event createAttackDamageEvent(const MonsterID monster, const MonsterID target, bool didDmg) {
-	Event event;
-	event.type = Event::kTypeAttackDamage;
-	event.attackDamage.monster = monster;
-	event.attackDamage.target = target;
-	event.attackDamage.didDmg = didDmg;
-	return event;
-}
-
-Event createAttackFailEvent(const MonsterID monster) {
-	Event event;
-	event.type = Event::kTypeAttackFail;
-	event.attackFail.monster = monster;
-	return event;
-}
-
-Event createDeathEvent(const MonsterID monster, Event::Death::Cause cause, const MonsterID killer) {
-	Event event;
-	event.type = Event::kTypeDeath;
-	event.death.monster = monster;
-	event.death.killer = killer;
-	event.death.cause = cause;
-	return event;
-}
-
-Event createIdleEvent(const MonsterID monster, Event::Idle::Reason reason) {
-	Event event;
-	event.type = Event::kTypeIdle;
-	event.idle.monster = monster;
-	event.idle.reason = reason;
-	return event;
+GenericAttackEvent::~GenericAttackEvent() {
 }
 
 } // end of namespace Game
