@@ -71,14 +71,21 @@ protected:
 	 */
 	virtual Definition definitionRule(const Matcher::ValueMap &values) throw (ParserListener::Exception) = 0;
 
+	/**
+	 * Tries to read the given variable as the template type T.
+	 *
+	 * This will only work for integer based variables! For example
+	 * a type "char" will read a integer in the range of char and
+	 * not a character!
+	 * This will throw an exception in case the variable is not
+	 * of the specified type.
+	 *
+	 * @param name Variable to read.
+	 * @param values Value map to use.
+	 * @return Variable as T.
+	 */
 	template<typename T>
-	T getVariableValue(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
-		try {
-			return boost::numeric_cast<T>(boost::lexical_cast<int>(values.find(name)->second));
-		} catch (boost::numeric::bad_numeric_cast &e) {
-			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
-		}
-	}
+	T getVariableValue(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception);
 
 private:
 	/**
@@ -126,6 +133,62 @@ void DefinitionLoader<Definition>::notifyRule(const std::string &name, const Bas
 		throw ParserListener::Exception("Unknown rule \"" + name + "\" in DefinitionLoader");
 
 	_definitions.push_back(definitionRule(values));
+}
+
+template<typename T>
+struct VariableGetter {
+	T operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+		try {
+			return boost::lexical_cast<T>(values.find(name)->second);
+		} catch (boost::bad_lexical_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		}
+	}
+};
+
+template<>
+struct VariableGetter<unsigned char> {
+	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+		try {
+			return boost::numeric_cast<unsigned char>(boost::lexical_cast<int>(values.find(name)->second));
+		} catch (boost::bad_lexical_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		} catch (boost::numeric::bad_numeric_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		}
+	}
+};
+
+template<>
+struct VariableGetter<signed char> {
+	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+		try {
+			return boost::numeric_cast<signed char>(boost::lexical_cast<int>(values.find(name)->second));
+		} catch (boost::bad_lexical_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		} catch (boost::numeric::bad_numeric_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		}
+	}
+};
+
+template<>
+struct VariableGetter<char> {
+	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+		try {
+			return boost::numeric_cast<char>(boost::lexical_cast<int>(values.find(name)->second));
+		} catch (boost::bad_lexical_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		} catch (boost::numeric::bad_numeric_cast &e) {
+			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
+		}
+	}
+};
+
+template<typename Definition>
+template<typename T>
+T DefinitionLoader<Definition>::getVariableValue(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
+	return VariableGetter<T>()(name, values);
 }
 
 } // end of namespace Base

@@ -27,32 +27,25 @@ MonsterDefinitionLoader::MonsterDefinitionLoader()
 }
 
 MonsterDefinition MonsterDefinitionLoader::definitionRule(const Base::Matcher::ValueMap &values) throw (Base::ParserListener::Exception) {
-	try {
-		const std::string &n = values.find("name")->second;
-		const unsigned char wisMin = getVariableValue<unsigned char>("wisMin", values);
-		const unsigned char wisMax = getVariableValue<unsigned char>("wisMax", values);
-		const unsigned char dexMin = getVariableValue<unsigned char>("dexMin", values);
-		const unsigned char dexMax = getVariableValue<unsigned char>("dexMax", values);
-		const unsigned char agiMin = getVariableValue<unsigned char>("agiMin", values);
-		const unsigned char agiMax = getVariableValue<unsigned char>("agiMax", values);
-		const unsigned char strMin = getVariableValue<unsigned char>("strMin", values);
-		const unsigned char strMax = getVariableValue<unsigned char>("strMax", values);
-		const int hpMin = getVariableValue<int>("strMax", values);
-		const int hpMax = getVariableValue<int>("strMax", values);
-		const unsigned char speed = getVariableValue<unsigned char>("speed", values);
+	const std::string &n = values.find("name")->second;
+	const unsigned char wisMin = getVariableValue<unsigned char>("wisMin", values);
+	const unsigned char wisMax = getVariableValue<unsigned char>("wisMax", values);
+	const unsigned char dexMin = getVariableValue<unsigned char>("dexMin", values);
+	const unsigned char dexMax = getVariableValue<unsigned char>("dexMax", values);
+	const unsigned char agiMin = getVariableValue<unsigned char>("agiMin", values);
+	const unsigned char agiMax = getVariableValue<unsigned char>("agiMax", values);
+	const unsigned char strMin = getVariableValue<unsigned char>("strMin", values);
+	const unsigned char strMax = getVariableValue<unsigned char>("strMax", values);
+	const int hpMin = getVariableValue<int>("strMax", values);
+	const int hpMax = getVariableValue<int>("strMax", values);
+	const unsigned char speed = getVariableValue<unsigned char>("speed", values);
 
-		return MonsterDefinition(n, Base::ByteRange(wisMin, wisMax),
-		                         Base::ByteRange(dexMin, dexMax),
-		                         Base::ByteRange(agiMin, agiMax),
-		                         Base::ByteRange(strMin, strMax),
-		                         Base::IntRange(hpMin, hpMax),
-		                         speed);
-	} catch (boost::bad_lexical_cast &e) {
-		// This should never happen, since the values are
-		// prechecked by the parser.
-		assert(false);
-		return MonsterDefinition();
-	}
+	return MonsterDefinition(n, Base::ByteRange(wisMin, wisMax),
+	                         Base::ByteRange(dexMin, dexMax),
+	                         Base::ByteRange(agiMin, agiMax),
+	                         Base::ByteRange(strMin, strMax),
+	                         Base::IntRange(hpMin, hpMax),
+	                         speed);
 }
 
 } // end of namespace Game
