@@ -28,8 +28,8 @@ struct Range {
 	Range() : _min(), _max() {}
 	Range(T min, T max) : _min(min), _max(max) {}
 
-	const T &min() const { return _min; }
-	const T &max() const { return _max; }
+	const T &getMin() const { return _min; }
+	const T &getMax() const { return _max; }
 private:
 	T _min, _max;
 };

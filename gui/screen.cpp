@@ -65,8 +65,8 @@ void Screen::update(bool drawMsg) {
 	if (drawMsg)
 		printMessages();
 
-	const unsigned int outputWidth = _mapWindow->width(), outputHeight = _mapWindow->height();
-	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
+	const unsigned int outputWidth = _mapWindow->getWidth(), outputHeight = _mapWindow->getHeight();
+	const unsigned int mapWidth = _map->getWidth(), mapHeight = _map->getHeight();
 
 	const unsigned int maxWidth = std::min(outputWidth, mapWidth), maxHeight = std::min(outputHeight, mapHeight);
 	for (unsigned int y = 0; y < maxHeight; ++y) {
@@ -94,14 +94,14 @@ void Screen::update(bool drawMsg) {
 }
 
 void Screen::setCenter(unsigned int x, unsigned int y) {
-	assert(x < _map->width());
-	assert(y < _map->height());
+	assert(x < _map->getWidth());
+	assert(y < _map->getHeight());
 
 	_centerX = x;
 	_centerY = y;
 
-	const unsigned int outputWidth = _mapWindow->width(), outputHeight = _mapWindow->height();
-	const unsigned int mapWidth = _map->width(), mapHeight = _map->height();
+	const unsigned int outputWidth = _mapWindow->getWidth(), outputHeight = _mapWindow->getHeight();
+	const unsigned int mapWidth = _map->getWidth(), mapHeight = _map->getHeight();
 
 	int offsetX = _centerX - outputWidth / 2;
 	int offsetY = _centerY - outputHeight / 2;
@@ -244,8 +244,8 @@ void Screen::printMessages() {
 		line.clear();
 		while (!_messages.empty()) {
 			std::string front = _messages.front();
-			if (!line.empty() && front.size() < _messageLine->width()) {
-				if (line.size() + front.size() > _messageLine->width() || (_messages.size() > 1 && line.size() + front.size() > _messageLine->width() - 10))
+			if (!line.empty() && front.size() < _messageLine->getWidth()) {
+				if (line.size() + front.size() > _messageLine->getWidth() || (_messages.size() > 1 && line.size() + front.size() > _messageLine->getWidth() - 10))
 					break;
 			}
 

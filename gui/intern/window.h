@@ -50,25 +50,25 @@ public:
 	 * Returns the x offset of right most column, which is accessable to the user.
 	 * @return x offset in real terminca coordinates.
 	 */
-	unsigned int offsetX() const { return _x; }
+	unsigned int getOffsetX() const { return _x; }
 
 	/**
 	 * Returns the y offset of the top most line, which is accessable to the user.
 	 * @return y offset in real terminal coordinates.
 	 */
-	unsigned int offsetY() const { return _y; }
+	unsigned int getOffsetY() const { return _y; }
 
 	/**
 	 * Returns the width of the window, excluding the border size.
 	 * @return width
 	 */
-	unsigned int width() const { return _w; }
+	unsigned int getWidth() const { return _w; }
 
 	/**
 	 * Returns the height of the window, excluding border.
 	 * @return height
 	 */
-	unsigned int height() const { return _h; }
+	unsigned int getHeight() const { return _h; }
 
 	/**
 	 * Prints a centered string in the window.

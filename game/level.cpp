@@ -34,8 +34,8 @@ Level::Level(Map *map, GameState &gs)
     : _map(map), _monsterField(), _screen(0), _gameState(gs), _eventDisp(), _monsters(), _monsterAI(0) {
 	assert(_map);
 
-	_monsterField.resize(_map->width() * _map->height());
-	for (unsigned int i = 0; i < _map->width() * _map->height(); ++i)
+	_monsterField.resize(_map->getWidth() * _map->getHeight());
+	for (unsigned int i = 0; i < _map->getWidth() * _map->getHeight(); ++i)
 		_monsterField[i] = false;
 
 	_eventDisp.addHandler(this);
@@ -83,7 +83,7 @@ void Level::makeActive(GUI::Screen &screen, Monster &player) {
 	// TODO: It should be considerd that the player doesn't get an immediate action here.
 	// That could be abused by the player when switching levels often.
 	_monsters[kPlayerMonsterID] = MonsterEntry(&player, _gameState.getCurrentTick());
-	_monsterField[player.getY() * _map->width() + player.getX()] = true;
+	_monsterField[player.getY() * _map->getWidth() + player.getX()] = true;
 }
 
 void Level::makeInactive() {
@@ -108,13 +108,13 @@ void Level::makeInactive() {
 }
 
 bool Level::isWalkable(const Base::Point &p) const {
-	if ((unsigned int)p._x >= _map->width() || (unsigned int)p._y >= _map->height())
+	if ((unsigned int)p._x >= _map->getWidth() || (unsigned int)p._y >= _map->getHeight())
 		return false;
 
 	if (!_map->isWalkable(p))
 		return false;
 
-	if (_monsterField[p._y * _map->width() + p._x])
+	if (_monsterField[p._y * _map->getWidth() + p._x])
 		return false;
 
 	return true;
@@ -159,7 +159,7 @@ MonsterID Level::addMonster(const MonsterType monster, const Base::Point &pos) {
 	assert(newMonster);
 	newMonster->setPos(pos);
 
-	_monsterField[pos._y * _map->width() + pos._x] = true;
+	_monsterField[pos._y * _map->getWidth() + pos._x] = true;
 
 	// Create a new monster ID and add the monster to the map
 	const MonsterID newId = createNewMonsterID();
@@ -179,7 +179,7 @@ void Level::removeMonster(const MonsterID monster) {
 		return;
 
 	// Unset the monster.
-	_monsterField[i->second._monster->getY() * _map->width() + i->second._monster->getX()] = false;
+	_monsterField[i->second._monster->getY() * _map->getWidth() + i->second._monster->getX()] = false;
 
 	// We only destroy the monster object, in case it's not the player
 	if (monster != kPlayerMonsterID) {
@@ -237,8 +237,8 @@ void Level::processMoveEvent(const MoveEvent &event) {
 	assert(monster);
 
 	// TODO: add some error checking
-	_monsterField[event.getOldPos()._y * _map->width() + event.getOldPos()._x] = false;
-	_monsterField[event.getNewPos()._y * _map->width() + event.getNewPos()._x] = true;
+	_monsterField[event.getOldPos()._y * _map->getWidth() + event.getOldPos()._x] = false;
+	_monsterField[event.getNewPos()._y * _map->getWidth() + event.getNewPos()._x] = true;
 	monster->setPos(event.getNewPos());
 
 	const TileDefinition &def = _map->tileDefinition(event.getNewPos());

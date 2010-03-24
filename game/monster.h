@@ -124,7 +124,7 @@ public:
 	 * @param attrib The attribute to query.
 	 * @return Monster's attribute value.
 	 */
-	unsigned char getAttribute(Attribute attrib) const { return _attrib[attrib]; }
+	unsigned char getAttribute(Attribute attrib) const { assert(attrib != kAttribMaxTypes); return _attrib[attrib]; }
 
 	/**
 	 * Sets the given attribute.
@@ -132,7 +132,7 @@ public:
 	 * @param attrib Attribute to change
 	 * @param value New attribute value
 	 */
-	void setAttribute(Attribute attrib, unsigned char value) { _attrib[attrib] = value; }
+	void setAttribute(Attribute attrib, unsigned char value) { assert(attrib != kAttribMaxTypes); _attrib[attrib] = value; }
 
 	/**
 	 * Queries the speed of the monster.

@@ -34,7 +34,7 @@ int Input::poll() {
 }
 
 const std::string Input::getLine(Window &win, unsigned int x, unsigned int y) {
-	if (x >= win.width() || y >= win.height())
+	if (x >= win.getWidth() || y >= win.getHeight())
 		return std::string();
 
 	int oX, oY;
@@ -49,7 +49,7 @@ const std::string Input::getLine(Window &win, unsigned int x, unsigned int y) {
 		scr.update();
 		input = poll();
 
-		if (x + 1 < win.width() && std::isprint(input)) {
+		if (x + 1 < win.getWidth() && std::isprint(input)) {
 			win.printChar(input, x, y);
 			++x;
 			line += input;

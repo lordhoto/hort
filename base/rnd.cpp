@@ -55,11 +55,11 @@ unsigned int rndValueRange(unsigned int min, unsigned int max) {
 }
 
 unsigned int rndValueRange(const IntRange &range) {
-	return rndValueRange(range.min(), range.max());
+	return rndValueRange(range.getMin(), range.getMax());
 }
 
 unsigned int rndValueRange(const ByteRange &range) {
-	return rndValueRange(range.min(), range.max());
+	return rndValueRange(range.getMin(), range.getMax());
 }
 
 } // end of namespace Base

@@ -26,19 +26,19 @@
 
 namespace Game {
 
-Map::Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles)
-    : _w(w), _h(h), _tiles(tiles), _tileDefs() {
-	_tileDefs.resize(_w * _h);
-	assert(_tiles.size() == _w * _h);
+Map::Map(unsigned int width, unsigned int height, const std::vector<Tile> &tiles)
+    : _width(width), _height(height), _tiles(tiles), _tileDefs() {
+	_tileDefs.resize(_width * _height);
+	assert(_tiles.size() == _width * _height);
 
-	for (unsigned int i = 0; i < _w * _h; ++i) {
+	for (unsigned int i = 0; i < _width * _height; ++i) {
 		_tileDefs[i] = TileDatabase::instance().queryTileDefinition(_tiles[i]);
 		assert(_tileDefs[i]);
 	}
 }
 
 bool Map::isWalkable(unsigned int x, unsigned int y) const {
-	return _tileDefs[y * _w + x]->getIsWalkable();
+	return _tileDefs[y * _width + x]->getIsWalkable();
 }
 
 } // end of namespace Game

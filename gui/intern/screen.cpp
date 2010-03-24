@@ -100,9 +100,9 @@ void Screen::setCursor(unsigned int x, unsigned int y) {
 }
 
 void Screen::setCursor(const Window &win, unsigned int x, unsigned int y) {
-	assert(x < win.width());
-	assert(y < win.height());
-	setCursor(x + win.offsetX(), y + win.offsetY());
+	assert(x < win.getWidth());
+	assert(y < win.getHeight());
+	setCursor(x + win.getOffsetX(), y + win.getOffsetY());
 }
 
 void Screen::getCursor(unsigned int &x, unsigned int &y) {

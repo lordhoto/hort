@@ -31,7 +31,7 @@ namespace Game {
 
 class Map {
 public:
-	Map(unsigned int w, unsigned int h, const std::vector<Tile> &tiles);
+	Map(unsigned int width, unsigned int height, const std::vector<Tile> &tiles);
 
 	/**
 	 * Checks whether the given map tile is walkable.
@@ -62,7 +62,7 @@ public:
 	 * @param p Position.
 	 * @return Tile type.
 	 */
-	Tile tileAt(const Base::Point &p) const { return _tiles[p._y * _w + p._x]; }
+	Tile tileAt(const Base::Point &p) const { return _tiles[p._y * _width + p._x]; }
 
 	/**
 	 * Returns the tile at the given position.
@@ -71,7 +71,7 @@ public:
 	 * @param y y coordinate of the tile (must not exceed height - 1)
 	 * @return Tile type.
 	 */
-	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _w + x]; }
+	Tile tileAt(unsigned int x, unsigned int y) const { return _tiles[y * _width + x]; }
 
 	/**
 	 * Queries the tile definition at the given position.
@@ -79,21 +79,21 @@ public:
 	 * @param p Position.
 	 * @return Tile definition.
 	 */
-	const TileDefinition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _w + p._x]; }
+	const TileDefinition &tileDefinition(const Base::Point &p) const { return *_tileDefs[p._y * _width + p._x]; }
 
 	/**
 	 * Returns the width of the map.
 	 * @return width
 	 */
-	unsigned int width() const { return _w; }
+	unsigned int getWidth() const { return _width; }
 
 	/**
 	 * Returns the height of the map.
 	 * @return height
 	 */
-	unsigned int height() const { return _h; }
+	unsigned int getHeight() const { return _height; }
 private:
-	unsigned int _w, _h;
+	unsigned int _width, _height;
 	std::vector<Tile> _tiles;
 	std::vector<const TileDefinition *> _tileDefs;
 };
