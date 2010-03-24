@@ -36,13 +36,13 @@ Rule::Rule(const std::string &rule) throw (InvalidRuleDefinitionException)
 
 	Tokenizer tokenizer(rule, Separator(";", "%"));
 
-	for (Tokenizer::const_iterator t = tokenizer.begin(); t != tokenizer.end(); ++t) {
+	for (Tokenizer::const_iterator t = tokenizer.begin(), end = tokenizer.end(); t != end; ++t) {
 		if (*t == "%") {
 			// The next token should contain both type and name
 			++t;
 
 			// Check for premature end of the token list
-			if (t == tokenizer.end())
+			if (t == end)
 				throw InvalidRuleDefinitionException(rule, "Missing variable information");
 
 			createVariable(rule, *t);
