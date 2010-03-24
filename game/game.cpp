@@ -336,8 +336,8 @@ void GameState::examine() {
 			break;
 
 		const Base::Point newPos = pos + offset;
-		if (newPos._x >= 0 && (unsigned int)newPos._x < _curLevel->getMap().getWidth()
-		    && newPos._y >= 0 && (unsigned int)newPos._y < _curLevel->getMap().getHeight())
+		if (newPos._x >= 0 && static_cast<unsigned int>(newPos._x) < _curLevel->getMap().getWidth()
+		    && newPos._y >= 0 && static_cast<unsigned int>(newPos._y) < _curLevel->getMap().getHeight())
 			pos = newPos;
 
 		_gameScreen->setCenter(pos);

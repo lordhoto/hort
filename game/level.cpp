@@ -108,7 +108,7 @@ void Level::makeInactive() {
 }
 
 bool Level::isWalkable(const Base::Point &p) const {
-	if ((unsigned int)p._x >= _map->getWidth() || (unsigned int)p._y >= _map->getHeight())
+	if (static_cast<unsigned int>(p._x) >= _map->getWidth() || static_cast<unsigned int>(p._y) >= _map->getHeight())
 		return false;
 
 	if (!_map->isWalkable(p))

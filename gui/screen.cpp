@@ -107,11 +107,11 @@ void Screen::setCenter(unsigned int x, unsigned int y) {
 	int offsetY = _centerY - outputHeight / 2;
 
 	offsetX = std::max(offsetX, 0);
-	offsetX = std::min(offsetX, (int)mapWidth - (int)outputWidth);
+	offsetX = std::min(offsetX, static_cast<int>(mapWidth) - static_cast<int>(outputWidth));
 	_mapOffsetX = std::max(offsetX, 0);
 
 	offsetY = std::max(offsetY, 0);
-	offsetY = std::min(offsetY, (int)mapHeight - (int)outputHeight);
+	offsetY = std::min(offsetY, static_cast<int>(mapHeight) - static_cast<int>(outputHeight));
 	_mapOffsetY = std::max(offsetY, 0);
 
 	_needRedraw = true;
@@ -277,10 +277,10 @@ void Screen::drawStatsWindow() {
 	std::stringstream line;
 
 	// Stats line
-	line << "Str: " << (int)_player.getAttribute(Game::kAttribStrength)
-	     << " Dex: " << (int)_player.getAttribute(Game::kAttribDexterity)
-	     << " Agi: " << (int)_player.getAttribute(Game::kAttribAgility)
-	     << " Wis: " << (int)_player.getAttribute(Game::kAttribWisdom)
+	line << "Str: " << static_cast<int>(_player.getAttribute(Game::kAttribStrength))
+	     << " Dex: " << static_cast<int>(_player.getAttribute(Game::kAttribDexterity))
+	     << " Agi: " << static_cast<int>(_player.getAttribute(Game::kAttribAgility))
+	     << " Wis: " << static_cast<int>(_player.getAttribute(Game::kAttribWisdom))
 	     << " | " << "HP: " << _player.getHitPoints() << "/" << _player.getMaxHitPoints()
 	     << " | T: " << _turn;
 

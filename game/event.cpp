@@ -37,27 +37,27 @@ void EventDispatcher::dispatch(const Event *event) {
 	BOOST_FOREACH(HandlerList::value_type i, _handlers) {
 		switch (event->getType()) {
 		case Event::kTypeIdle:
-			i->processIdleEvent(*(const IdleEvent *)event);
+			i->processIdleEvent(*static_cast<const IdleEvent *>(event));
 			break;
 
 		case Event::kTypeMove:
-			i->processMoveEvent(*(const MoveEvent *)event);
+			i->processMoveEvent(*static_cast<const MoveEvent *>(event));
 			break;
 
 		case Event::kTypeDeath:
-			i->processDeathEvent(*(const DeathEvent *)event);
+			i->processDeathEvent(*static_cast<const DeathEvent *>(event));
 			break;
 
 		case Event::kTypeAttack:
-			i->processAttackEvent(*(const AttackEvent *)event);
+			i->processAttackEvent(*static_cast<const AttackEvent *>(event));
 			break;
 
 		case Event::kTypeAttackDamage:
-			i->processAttackDamageEvent(*(const AttackDamageEvent *)event);
+			i->processAttackDamageEvent(*static_cast<const AttackDamageEvent *>(event));
 			break;
 
 		case Event::kTypeAttackFail:
-			i->processAttackFailEvent(*(const AttackFailEvent *)event);
+			i->processAttackFailEvent(*static_cast<const AttackFailEvent *>(event));
 			break;
 
 		default:

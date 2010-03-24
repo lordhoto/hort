@@ -119,11 +119,11 @@ Matcher::Matcher(const std::string &line, const Rule &rule)
 		// Check the part type.
 		switch (p->getType()) {
 		case Rule::Part::kTypeString:
-			matchString(*(const Rule::StringPart *)p.get(), *token++);
+			matchString(*static_cast<const Rule::StringPart *>(p.get()), *token++);
 			break;
 
 		case Rule::Part::kTypeVariable:
-			matchVariable(*(const Rule::VariablePart *)p.get(), *token++);
+			matchVariable(*static_cast<const Rule::VariablePart *>(p.get()), *token++);
 			break;
 		}
 
