@@ -31,8 +31,17 @@
 
 namespace AI {
 
+/**
+ * The AI handler for all NPC monsters in a level.
+ */
 class Monster : public Game::EventHandler {
 public:
+	/**
+	 * Constructor for the object.
+	 *
+	 * @param parent Level in which all monsters are placed.
+	 * @param disp Dispatcher to use for dispatching game events.
+	 */
 	Monster(const Game::Level &parent, Game::EventDispatcher &disp);
 	~Monster();
 
@@ -68,21 +77,56 @@ public:
 	void processAttackDamageEvent(const Game::AttackDamageEvent &event) throw ();
 	void processAttackFailEvent(const Game::AttackFailEvent &event) throw ();
 private:
+	/**
+	 * The level the monsters are on.
+	 */
 	const Game::Level &_level;
+
+	/**
+	 * The event dispatcher through which all AI events should be
+	 * dispatched.
+	 */
 	Game::EventDispatcher &_eventDisp;
+
+	/**
+	 * The FSM to use for internal use.
+	 */
 	FSM::FSM *_fsm;
 
+	/**
+	 * The AI state of a monster.
+	 */
 	struct MonsterState {
+		/**
+		 * The FSM state. Based on this state
+		 * the monster makes it "decisions".
+		 */
 		FSM::StateID _fsmState;
+
+		/**
+		 * Pointer to the monster object.
+		 */
 		const Game::Monster *_monster;
 
 		MonsterState() : _fsmState(FSM::kInvalidStateID), _monster(0) {}
 		MonsterState(FSM::StateID f, const Game::Monster *m) : _fsmState(f), _monster(m) {}
 	};
 
+	/**
+	 * The monster map type. It maps a given monster ID to its AI state.
+	 */
 	typedef std::map<const Game::MonsterID, MonsterState> MonsterMap;
+
+	/**
+	 * The state of all monsters.
+	 */
 	MonsterMap _monsters;
 
+	/**
+	 * A pointer to the player monster. This might
+	 * be NULl to indicate that the player monster
+	 * is not in the same level as the monsters.
+	 */
 	const Game::Monster *_player;
 };
 
