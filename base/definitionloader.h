@@ -147,7 +147,10 @@ struct VariableGetter {
 	 */
 	T operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
-			return boost::lexical_cast<T>(values.find(name)->second);
+			Matcher::ValueMap::const_iterator value = values.find(name);
+			if (value == values.end())
+				throw ParserListener::Exception("Variable \"" + name + "\" was not declared");
+			return boost::lexical_cast<T>(value->second);
 		} catch (boost::bad_lexical_cast &e) {
 			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
 		}
@@ -168,7 +171,10 @@ struct VariableGetter<unsigned char> {
 	 */
 	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
-			return boost::numeric_cast<unsigned char>(boost::lexical_cast<int>(values.find(name)->second));
+			Matcher::ValueMap::const_iterator value = values.find(name);
+			if (value == values.end())
+				throw ParserListener::Exception("Variable \"" + name + "\" was not declared");
+			return boost::numeric_cast<unsigned char>(boost::lexical_cast<int>(value->second));
 		} catch (boost::bad_lexical_cast &e) {
 			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
 		} catch (boost::numeric::bad_numeric_cast &e) {
@@ -191,7 +197,10 @@ struct VariableGetter<signed char> {
 	 */
 	unsigned char operator()(const std::string &name, const Matcher::ValueMap &values) throw (ParserListener::Exception) {
 		try {
-			return boost::numeric_cast<signed char>(boost::lexical_cast<int>(values.find(name)->second));
+			Matcher::ValueMap::const_iterator value = values.find(name);
+			if (value == values.end())
+				throw ParserListener::Exception("Variable \"" + name + "\" was not declared");
+			return boost::numeric_cast<signed char>(boost::lexical_cast<int>(value->second));
 		} catch (boost::bad_lexical_cast &e) {
 			throw ParserListener::Exception("Illegal value for variable \"" + name + "\": " + e.what());
 		} catch (boost::numeric::bad_numeric_cast &e) {
