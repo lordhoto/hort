@@ -147,7 +147,7 @@ void Matcher::matchVariable(const Rule::VariablePart &part, const std::string &t
 		try {
 			boost::lexical_cast<int>(token);
 			_values[part.getName()] = token;
-		} catch (boost::bad_lexical_cast &e) {
+		} catch (boost::bad_lexical_cast &) {
 			_error = "\"" + token + "\" is no integer variable";
 			_ok = false;
 		}

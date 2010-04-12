@@ -54,7 +54,7 @@ Map *MapLoader::load() throw (Base::NonRecoverableException) {
 
 		if (w <= 0)
 			throwError("Width is zero or less", 0);
-	} catch (boost::bad_lexical_cast &e) {
+	} catch (boost::bad_lexical_cast &) {
 		throwError("Width definition is no integer", 0);
 	}
 
@@ -64,7 +64,7 @@ Map *MapLoader::load() throw (Base::NonRecoverableException) {
 
 		if (h <= 0)
 			throwError("Height is zero or less", 1);
-	} catch (boost::bad_lexical_cast &e) {
+	} catch (boost::bad_lexical_cast &) {
 		throwError("Height definition is no integer", 1);
 	}
 

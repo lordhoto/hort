@@ -80,10 +80,10 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 	try {
 		x = boost::lexical_cast<int>(values.find("x")->second);
 		y = boost::lexical_cast<int>(values.find("y")->second);
-	} catch (boost::bad_lexical_cast &e) {
+	} catch (boost::bad_lexical_cast &) {
 		// This should never happen, since the values are
 		// prechecked by the parser.
-		assert(false);
+		assert(false && "Pre checked integer values for x/y turn out to be no integers");
 	}
 
 	try {
@@ -98,7 +98,7 @@ void LevelLoader::processMonster(const Base::Matcher::ValueMap &values) {
 			throw Base::ParserListener::Exception("Undefined monster type \"" + type + '"');
 
 		_level->addMonster(monType, pos);
-	} catch (std::out_of_range &e) {
+	} catch (std::out_of_range &) {
 		throw Base::ParserListener::Exception("Incorrect monster spawn point");
 	}
 }
@@ -108,10 +108,10 @@ void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
 	try {
 		x = boost::lexical_cast<int>(values.find("x")->second);
 		y = boost::lexical_cast<int>(values.find("y")->second);
-	} catch (boost::bad_lexical_cast &e) {
+	} catch (boost::bad_lexical_cast &) {
 		// This should never happen, since the values are
 		// prechecked by the parser.
-		assert(false);
+		assert(false && "Pre checked integer values for x/y turn out to be no integers");
 	}
 
 	const Base::Point pos(x, y);
@@ -121,7 +121,7 @@ void LevelLoader::processStartPoint(const Base::Matcher::ValueMap &values) {
 			throw Base::ParserListener::Exception("Position is blocked");
 
 		_start = pos;
-	} catch (std::out_of_range &e) {
+	} catch (std::out_of_range &) {
 		throw Base::ParserListener::Exception("Start position parameter is out of range");
 	}
 }

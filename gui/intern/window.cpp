@@ -93,7 +93,7 @@ void Window::printLine(const char *str, ColorPair color, int attrib) {
 	try {
 		const unsigned int strLength = boost::numeric_cast<unsigned int>(std::min<size_t>(_w, std::strlen(str)));
 		printLine(str, (_w - strLength) / 2, _h / 2, color, attrib);
-	} catch (boost::numeric::bad_numeric_cast &e) {
+	} catch (boost::numeric::bad_numeric_cast &) {
 		// TODO: Consider some handling here, not that it should ever happen...
 		assert(false && "Way too long string");
 	}

@@ -261,9 +261,9 @@ void Level::processMoveEvent(const MoveEvent &event) throw () {
 			monster->setHitPoints(0);
 			_eventDisp.dispatch(new DeathEvent(event.getMonster(), DeathEvent::kDrowned));
 		}
-	} catch (std::out_of_range &e) {
+	} catch (std::out_of_range &) {
 		// This should never happen.
-		assert(false);
+		assert(false && "New monster position is invalid");
 	}
 
 	_screen->flagForUpdate();

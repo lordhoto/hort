@@ -56,7 +56,7 @@ const std::string Input::getLine(Window &win, unsigned int x, unsigned int y) {
 				line += boost::numeric_cast<char>(input);
 				win.printChar(input, x, y);
 				++x;
-			} catch (boost::numeric::bad_numeric_cast &e) {
+			} catch (boost::numeric::bad_numeric_cast &) {
 				// In case the input character does not fit
 				// into a "char", we just ignore it.
 			}
