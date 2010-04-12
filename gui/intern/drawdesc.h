@@ -36,7 +36,7 @@ namespace Intern {
 
 struct DrawDesc {
 	DrawDesc() : _symbol(0), _color(kWhiteOnBlack), _attribs(0) {}
-	DrawDesc(int symbol, ColorPair color, int attribs) : _symbol(symbol), _color(color), _attribs(attribs) {}
+	DrawDesc(chtype symbol, ColorPair color, int attribs) : _symbol(symbol), _color(color), _attribs(attribs) {}
 
 	chtype _symbol;
 	ColorPair _color;
