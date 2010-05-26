@@ -119,8 +119,8 @@ public:
 	 *
 	 * @param x x coordinate of the rect
 	 * @param y y coordinate of the rect
-	 * @param w width of the rect (max is width())
-	 * @param h height of the rect (max is height())
+	 * @param width width of the rect (max is width())
+	 * @param height height of the rect (max is height())
 	 * @param data data to put
 	 * @param pitch pitch of the data
 	 */

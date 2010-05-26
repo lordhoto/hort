@@ -308,7 +308,7 @@ public:
 	/**
 	 * Dispatches the given event.
 	 *
-	 * Note that this event automatically destroies
+	 * Note that this event automatically destroys
 	 * the event after it has dispatched it to every
 	 * handler.
 	 *

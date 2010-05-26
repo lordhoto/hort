@@ -47,7 +47,7 @@ public:
 	/**
 	 * Queries the definition of the given tile
 	 *
-	 * @param Tile Tile type to query.
+	 * @param tile Tile type to query.
 	 * @return Pointer to a Definition structure (or 0 in case it's not defined).
 	 */
 	const TileDefinition *queryTileDefinition(const Tile tile) const;

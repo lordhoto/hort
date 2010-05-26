@@ -90,7 +90,6 @@ public:
 	 * Create a new rule.
 	 *
 	 * @param rule Definition of the rule (see above).
-	 * @param name Name of the rule.
 	 */
 	Rule(const std::string &rule) throw (InvalidRuleDefinitionException);
 
