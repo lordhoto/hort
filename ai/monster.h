@@ -48,7 +48,9 @@ public:
 	/**
 	 * Sets the player monster.
 	 */
-	void setPlayer(const Game::Monster *player) { _player = player; }
+	void setPlayer(const Game::Monster *player) {
+		_player = player;
+	}
 
 	/**
 	 * Adds a new monster to the AI.
@@ -70,12 +72,12 @@ public:
 	 */
 	void update();
 
-	void processMoveEvent(const Game::MoveEvent &event) throw ();
-	void processIdleEvent(const Game::IdleEvent &event) throw ();
-	void processDeathEvent(const Game::DeathEvent &event) throw ();
-	void processAttackEvent(const Game::AttackEvent &event) throw ();
-	void processAttackDamageEvent(const Game::AttackDamageEvent &event) throw ();
-	void processAttackFailEvent(const Game::AttackFailEvent &event) throw ();
+	void processMoveEvent(const Game::MoveEvent &event) throw();
+	void processIdleEvent(const Game::IdleEvent &event) throw();
+	void processDeathEvent(const Game::DeathEvent &event) throw();
+	void processAttackEvent(const Game::AttackEvent &event) throw();
+	void processAttackDamageEvent(const Game::AttackDamageEvent &event) throw();
+	void processAttackFailEvent(const Game::AttackFailEvent &event) throw();
 private:
 	/**
 	 * The level the monsters are on.
